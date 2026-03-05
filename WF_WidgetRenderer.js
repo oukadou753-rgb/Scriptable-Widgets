@@ -24,24 +24,19 @@ module.exports = class WF_WidgetRenderer {
       }
     }
 
-    // header
-    if (Array.isArray(layout.header)) {
-      await this.renderBlock(widget, layout.header, context)
-    }
-
+  if (Array.isArray(layout.header) && layout.header.length) {
+    await this.renderBlock(widget, layout.header, context)
     widget.addSpacer()
+  }
 
-    // body
-    if (Array.isArray(layout.body)) {
-      await this.renderBlock(widget, layout.body, context)
-    }
+  if (Array.isArray(layout.body) && layout.body.length) {
+    await this.renderBlock(widget, layout.body, context)
+  }
 
+  if (Array.isArray(layout.footer) && layout.footer.length) {
     widget.addSpacer()
-
-    // footer
-    if (Array.isArray(layout.footer)) {
-      await this.renderBlock(widget, layout.footer, context)
-    }
+    await this.renderBlock(widget, layout.footer, context)
+  }
 
     return widget
   }
