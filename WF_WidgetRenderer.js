@@ -24,15 +24,18 @@ module.exports = class WF_WidgetRenderer {
       }
     }
 
+  //Header
   if (Array.isArray(layout.header) && layout.header.length) {
     await this.renderBlock(widget, layout.header, context)
     widget.addSpacer()
   }
 
+  // Body
   if (Array.isArray(layout.body) && layout.body.length) {
     await this.renderBlock(widget, layout.body, context)
   }
 
+  // Footer
   if (Array.isArray(layout.footer) && layout.footer.length) {
     widget.addSpacer()
     await this.renderBlock(widget, layout.footer, context)
