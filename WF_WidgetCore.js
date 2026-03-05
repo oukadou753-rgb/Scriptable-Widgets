@@ -5,7 +5,10 @@ const DataProvider = importModule("WF_DataProvider")
 
 module.exports = class WF_WidgetCore {
 
-  constructor([appId, appVersion], appConfig) {
+  constructor(appInfo, appConfig) {
+    const appId = appInfo.id
+    const appVersion = appInfo.version
+
     this.appId = appId || Script.name()
 
     this.storage = new StorageEngine(this.appId)
