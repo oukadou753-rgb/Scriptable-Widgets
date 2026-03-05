@@ -156,10 +156,6 @@ module.exports = class WF_ProfileEngine {
     return newValues
   }
 
-  getCfgVersion() {
-    return this.version
-  }
-
   // =========================
   // Config取得（正規化込み）
   // =========================
