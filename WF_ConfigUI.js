@@ -96,9 +96,8 @@ module.exports = {
     // Table
     const schemaObj = activeCfg.schema
     const values = activeCfg.values
-    const version = activeCfg.version
+    const version = profileEngine.version
     const defaultOpenSections = activeCfg.defaultOpenSections
-    const originalValues = JSON.parse(JSON.stringify(values))
 
     const sections = {}
     let selected = null
