@@ -1,1 +1,1 @@
-test
+console.log("github main.js")
