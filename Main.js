@@ -18,10 +18,14 @@ function loadAppConfig(appId) {
 }
 
 const APP_CONFIG = loadAppConfig(APP_ID)
-if (APP_DEV_MODE || (config.runsInWidget && !config.runsInApp)) {
-  const WF_WidgetCore = importModule("WF_WidgetCore")
-  await (new WF_WidgetCore(APP_INFO, APP_CONFIG)).start()
-} else {
-  const WF_AppCore = importModule("WF_AppCore")
-  await (new WF_AppCore(APP_INFO, APP_CONFIG)).start()
+
+async function main() {
+  if (APP_DEV_MODE || (config.runsInWidget && !config.runsInApp)) {
+    const WF_WidgetCore = importModule("WF_WidgetCore")
+    await (new WF_WidgetCore(APP_INFO, APP_CONFIG)).start()
+  } else {
+    const WF_AppCore = importModule("WF_AppCore")
+    await (new WF_AppCore(APP_INFO, APP_CONFIG)).start()
+  }
 }
+await main()
