@@ -1,6 +1,9 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
+/**
+ * WF_StorageEngine
+ **/
 const WF_DEV_MODE = true
 
 module.exports = class WF_StorageEngine {
