@@ -15,7 +15,7 @@ const Main = {
 
   loadAppConfig(appId) {
     try {
-      return importModule(`App_${appId}Config`)
+      return importModule(`WidgetFramework/App_${appId}Config`)
     } catch (e) {
       console.error(`App config not found: ${appId}`)
       return importModule(`App_${DEFAULT_APP_ID}Config`)
