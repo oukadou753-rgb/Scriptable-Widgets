@@ -31,8 +31,9 @@ async function devLoader() {
 
       fm.writeString(savePath, code)
 
-      console.log("Updated: " + file.name)
-//       console.log(api + "\n")
+      console.log(file.name)
+      console.log(JSON.stringify(file.html_url, null, 2) + "\n")
+//       console.log(JSON.stringify(file.download_url, null, 2) + "\n")
     }
   }
 
