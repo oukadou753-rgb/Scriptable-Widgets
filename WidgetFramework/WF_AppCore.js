@@ -159,8 +159,6 @@ module.exports = class WF_AppCore {
 
       const newValues = await this.configUI.present(
         {...cfg},
-//         cfg.schema,
-//         cfg.values,
         this.profile,
         active
       )
