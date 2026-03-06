@@ -1,12 +1,12 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
-const StorageEngine = importModule("WF_StorageEngine")
-const WidgetRenderer = importModule("WF_WidgetRenderer")
-const MenuEngine = importModule("WF_MenuEngine")
-const ProfileEngine = importModule("WF_ProfileEngine")
-const WF_ConfigUI = importModule("WF_ConfigUI")
-const DataProvider = importModule("WF_DataProvider")
+const StorageEngine = importModule("WidgetFramework/WF_StorageEngine")
+const WidgetRenderer = importModule("WidgetFramework/WF_WidgetRenderer")
+const MenuEngine = importModule("WidgetFramework/WF_MenuEngine")
+const ProfileEngine = importModule("WidgetFramework/WF_ProfileEngine")
+const WF_ConfigUI = importModule("WidgetFramework/WF_ConfigUI")
+const DataProvider = importModule("WidgetFramework/WF_DataProvider")
 
 module.exports = class WF_AppCore {
 
