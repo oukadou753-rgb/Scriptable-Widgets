@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: blue; icon-glyph: magic;
 const DEFAULT_APP_ID = "Weather"
 
 const APP_DEV_MODE = false
