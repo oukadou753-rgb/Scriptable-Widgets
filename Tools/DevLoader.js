@@ -15,6 +15,11 @@ async function devLoader() {
 
   const fm = FileManager.iCloud()
   const baseDir = fm.documentsDirectory()
+  const frameworkDir = fm.joinPath(baseDir, "WidgetFramework")
+
+  if (!fm.fileExists(frameworkDir)) {
+    fm.createDirectory(frameworkDir)
+  }
 
   const req = new Request(api)
   const list = await req.loadJSON()
@@ -26,8 +31,8 @@ async function devLoader() {
       const rawURL = file.download_url
       const code = await new Request(rawURL).loadString()
 
-      const subDir = (file.name == 'Main.js') ? "" : "/WidgetFramework"
-      const savePath = fm.joinPath(`${baseDir}${subDir}`, file.name)
+      const dir = (file.name == 'Main.js') ? baseDir : frameworkDir
+      const savePath = fm.joinPath(dir, file.name)
 
       fm.writeString(savePath, code)
 
