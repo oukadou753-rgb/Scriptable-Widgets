@@ -1,6 +1,9 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
+/**
+ * WF_WidgetCore
+ **/
 const StorageEngine = importModule("WF_StorageEngine")
 const WidgetRenderer = importModule("WF_WidgetRenderer")
 const ProfileEngine = importModule("WF_ProfileEngine")
