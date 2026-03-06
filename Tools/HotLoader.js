@@ -50,7 +50,7 @@ async function hotReload() {
 
     console.warn("Updated: " + file.name)
     console.warn(JSON.stringify(file.html_url, null, 2) + "\n")
-//     console.log(JSON.stringify(file.download_url, null, 2) + "\n")
+//     console.warn(JSON.stringify(file.download_url, null, 2) + "\n")
   }
 
   fm.writeString(shaPath, JSON.stringify(localSha))
