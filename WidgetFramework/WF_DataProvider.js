@@ -1,6 +1,9 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
+/**
+ * WF_DataProvider
+ **/
 module.exports = class WF_DataProvider {
 
   constructor(appId, storage, appConfig) {
