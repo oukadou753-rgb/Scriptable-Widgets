@@ -28,4 +28,5 @@ async function main() {
     await (new WF_AppCore(APP_INFO, APP_CONFIG)).start()
   }
 }
+
 await main()
