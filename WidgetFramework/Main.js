@@ -28,24 +28,24 @@ const Main = {
       await (new WF_WidgetCore(APP_INFO, APP_CONFIG)).start();
     } else {
       const WF_AppCore = importModule("WidgetFramework/WF_AppCore");
-      (async() => {
+      //(async() => {
         await (new WF_AppCore(APP_INFO, APP_CONFIG)).start()
-      })()
+      //})()
     }
   },
 
   async run() {
     const APP_CONFIG = Main.loadAppConfig(APP_ID);
-    (async() => {
+    //(async() => {
       await Main.start(APP_CONFIG)
-    })()
+    //})()
   }
 }
 module.exports = Main;
 
 const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
 if (module_name == Script.name()) {
-  (async() => {
+  //(async() => {
     await Main.run()
-  })()
+  //})()
 }
