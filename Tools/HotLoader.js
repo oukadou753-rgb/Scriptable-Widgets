@@ -5,7 +5,6 @@
  * HotLoader
  **/
 async function hotReload() {
-
   const user = "oukadou753-rgb"
   const repo = "Scriptable-Widgets"
   const branch = "main"
@@ -15,8 +14,12 @@ async function hotReload() {
 
   const fm = FileManager.iCloud()
   const dir = fm.documentsDirectory()
+  const frameworkDir = fm.joinPath(dir, "WidgetFramework")
+  const shaPath = fm.joinPath(frameworkDir, "github_sha.json")
 
-  const shaPath = fm.joinPath(`${dir}/WidgetFramework`, "github_sha.json")
+  if (!fm.fileExists(frameworkDir)) {
+    fm.createDirectory(frameworkDir)
+  }
 
   let localSha = {}
   if (fm.fileExists(shaPath)) {
@@ -32,7 +35,7 @@ async function hotReload() {
     if (localSha[file.name] === file.sha) {
       console.log("skip: " + file.name)
       console.log(JSON.stringify(file.html_url, null, 2) + "\n")
-//      console.log(JSON.stringify(file.download_url, null, 2) + "\n")
+//       console.log(JSON.stringify(file.download_url, null, 2) + "\n")
       continue
     }
 
@@ -47,17 +50,16 @@ async function hotReload() {
 
     console.log("Updated: " + file.name)
     console.log(JSON.stringify(file.html_url, null, 2) + "\n")
-//      console.log(JSON.stringify(file.download_url, null, 2) + "\n")
+//     console.log(JSON.stringify(file.download_url, null, 2) + "\n")
   }
 
   fm.writeString(shaPath, JSON.stringify(localSha))
 
   console.log("Hot reload complete")
 
-    // Mainå®è¡
+  // Mainå®è¡
   const Main = importModule("Main")
-  if (Main.run) await Main.run()
-
+  await Main.run()
 }
 
 await hotReload()
