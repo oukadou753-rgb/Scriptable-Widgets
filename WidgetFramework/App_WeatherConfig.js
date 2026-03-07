@@ -15,7 +15,8 @@ module.exports = {
         defaultText: { fontSize: 14, color: "{{bodyTextColor}}" },
         title: { fontSize: 16, bold: true, color: "{{titleColor}}" },
         version: { fontSize: 12, color: "{{bodyTextColor}}" },
-        bodyText: { fontSize: 14, color: "{{bodyTextColor}}" },
+        //bodyText: { fontSize: 14, color: "{{bodyTextColor}}" },
+        bodyText: { fontSize: 30, bold: true, color: "#ff0000" },
         footerText: { fontSize: 12, color: "{{footerTextColor}}" },
         updateText: { fontSize: 12, color: "{{updateTextColor}}" }
       },
