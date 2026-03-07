@@ -322,32 +322,6 @@ module.exports = class WF_DataProvider {
     return await req.loadJSON()
   }
 
-  async fetchImage(url){
-
-    const fm = FileManager.local()
-
-    const cacheDir = fm.joinPath(fm.cacheDirectory(), "img_cache")
-    if(!fm.fileExists(cacheDir))
-      fm.createDirectory(cacheDir)
-
-    const fileName = this.hash(url) + ".png"
-    const filePath = fm.joinPath(cacheDir, fileName)
-
-    // キャッシュがあればそれを使う
-    if(fm.fileExists(filePath)){
-      return fm.readImage(filePath)
-    }
-
-    // 無ければダウンロード
-    const req = new Request(url)
-    const img = await req.loadImage()
-
-    fm.writeImage(filePath, img)
-
-    return img
-
-  }
-
   // =========================
   // ■ キャッシュ有効判定
   // =========================
