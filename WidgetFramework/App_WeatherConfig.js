@@ -233,7 +233,8 @@ module.exports = {
   },
 
   transform(data, config) {
-
+log(config.location)
+log(config.values.location)
     const v = config?.values || {}
     const location = config?.location || null
 
