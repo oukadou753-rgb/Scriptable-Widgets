@@ -273,6 +273,9 @@ module.exports = class WF_WidgetRenderer {
 
     const size = el.size || 16
 
+    const tint = this.bind(el.tint, context)
+    const opacity = this.bind(el.opacity, context)
+
     let image
 
     // URL
@@ -303,13 +306,13 @@ module.exports = class WF_WidgetRenderer {
     const node = container.addImage(image)
 
     if(el.tint)
-      node.tintColor = new Color(el.tint)
+      node.tintColor = new Color(tint)
 
     if(size)
       node.imageSize = new Size(size, size)
   
     if(el.opacity)
-      node.imageOpacity = Number(el.opacity)
+      node.imageOpacity = Number(opacity)
 
   }
 
