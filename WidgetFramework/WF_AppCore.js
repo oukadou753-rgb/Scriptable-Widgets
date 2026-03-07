@@ -74,7 +74,7 @@ module.exports = class WF_AppCore {
         : "medium")
 
     // オンライン判定
-    config.values.isOnline = await checkOnline()
+    configData.values.isOnline = await checkOnline()
 
     const { data, location } = configData.values.useTestData
       ? this.appConfig.getTestData()
