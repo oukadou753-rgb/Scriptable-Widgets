@@ -16,13 +16,13 @@ module.exports = {
       styles: {
         defaultText: { fontSize: 14, bold: false, color: "{{defaultTextColor}}" },
         HighlightText: { fontSize: 14, bold: false, color: "{{highlightTextColor}}" },
-        headerText: { fontSize: 16, bold: true, color: "{{headerTextColor}}" },
+        headerText: { fontSize: 14, bold: true, color: "{{headerTextColor}}" },
         bodyText: { fontSize: 14, bold: false, color: "{{bodyTextColor}}" },
-        footerText: { fontSize: 12, bold: false, color: "{{footerTextColor}}" },
+        footerText: { fontSize: 9, bold: false, color: "{{footerTextColor}}" },
 
         titleText: { fontSize: 16, bold: true, color: "{{highlightTextColor}}" },
-        versionText: { fontSize: 12, bold: false, color: "{{defaultTextColor}}" },
-        updateText: { fontSize: 12, bold: false, color: "{{highlightTextColor}}" },
+        versionText: { fontSize: 9, bold: false, color: "{{defaultTextColor}}" },
+        updateText: { fontSize: 9, bold: false, color: "{{highlightTextColor}}" },
         locationText: { fontSize: 14, bold: false, color: "{{highlightTextColor}}" }
       },
 
@@ -127,7 +127,7 @@ module.exports = {
           {
             type: "hstack",
             children: [
-              { type: "image", src: "{{header_titleIcon}}", size: 16 },
+              { type: "image", src: "{{header_titleIcon}}", size: 24 },
               { type: "spacer", size: 5 },
               { type: "text", text: "{{header_titleStr}}", style: "titleText" },
               { type: "spacer" },
@@ -160,9 +160,15 @@ module.exports = {
         footer: [
           {
             type: "hstack",
+            justify: "start",
             children: [
               { type: "text", text: "{{location_name}}", style: "locationText" },
-              { type: "spacer" },
+            ]
+          },
+          {
+            type: "hstack",
+            justify: "end",
+            children: [
               { type: "text", text: "Update: ", style: "updateText" },
               { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
             ]
