@@ -483,9 +483,9 @@ module.exports = class WF_WidgetRenderer {
 
   async fetchImage(url){
 
-    const fm = FileManager.local()
+    const fm = FileManager.iCloud()
 
-    const cacheDir = fm.joinPath(fm.cacheDirectory(), "img_cache")
+    const cacheDir = fm.joinPath(fm.documentsDirectory(), "WF_Cache")
     if(!fm.fileExists(cacheDir))
       fm.createDirectory(cacheDir)
 
