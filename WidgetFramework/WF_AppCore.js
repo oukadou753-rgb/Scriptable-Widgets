@@ -157,7 +157,6 @@ module.exports = class WF_AppCore {
 
   // Online判定
   async checkOnline() {
-
     try {
       const req = new Request("https://www.apple.com")
       req.timeoutInterval = 2
