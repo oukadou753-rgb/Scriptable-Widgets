@@ -175,6 +175,9 @@ module.exports = class WF_WidgetRenderer {
       case "spacer":
         container.addSpacer(el.size ?? null)
         return
+  
+      case "image":
+        return await this.renderImage(container, el, context)
     }
   }
 
@@ -247,6 +250,53 @@ module.exports = class WF_WidgetRenderer {
     }
 
     return stack
+  }
+
+  // =========================
+  // Image
+  // =========================
+  async renderImage(container, el, context){
+
+    const src = this.bind(el.src, context)
+    if(!src) return
+
+    const size = el.size || 16
+
+    let image
+
+    // URL
+    if(src.startsWith("http")){
+
+      image = await this.dataProvider.fetchImage(src)
+
+    }
+
+    // SF Symbol
+    else if(!src.includes("/")){
+
+      const sym = SFSymbol.named(src)
+      sym.applyFont(Font.systemFont(size))
+
+      image = sym.image
+
+    }
+
+    // local image
+    else{
+
+      const fm = FileManager.local()
+      image = fm.readImage(src)
+
+    }
+
+    const node = container.addImage(image)
+
+    if(el.tint)
+      node.tintColor = new Color(el.tint)
+
+    if(size)
+      node.imageSize = new Size(size, size)
+
   }
 
   // =========================
