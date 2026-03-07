@@ -321,7 +321,7 @@ module.exports = class WF_DataProvider {
 
     return await req.loadJSON()
   }
-/*
+
   async fetchImage(url){
 
     const fm = FileManager.local()
@@ -347,7 +347,7 @@ module.exports = class WF_DataProvider {
     return img
 
   }
-*/
+
   // =========================
   // ■ キャッシュ有効判定
   // =========================
