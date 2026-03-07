@@ -6,9 +6,7 @@
  **/
 module.exports = class WF_WidgetRenderer {
 
-  constructor(dataProvider) {
-    this.dataProvider = dataProvider
-  }
+  constructor() {}
 
   // =========================
   // エントリ
