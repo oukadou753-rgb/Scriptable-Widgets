@@ -65,6 +65,7 @@ module.exports = class WF_AppCore {
 
     const configData = cfg ?? this.profile.getConfig()
 
+    configData.values.isOnline = await this.checkOnline()
     configData.layout = this.appConfig.getLayout(configData.values.layoutId)
 
     const finalSize =
@@ -72,9 +73,6 @@ module.exports = class WF_AppCore {
       (config.runsInWidget && !config.runsInApp
         ? config.widgetFamily
         : "medium")
-
-    // オンライン判定
-    configData.values.isOnline = await this.checkOnline()
 
     const { data, location } = configData.values.useTestData
       ? this.appConfig.getTestData()
@@ -155,7 +153,7 @@ module.exports = class WF_AppCore {
     )
   }
 
-  // Online判定
+  // Check Online
   async checkOnline() {
     try {
       const req = new Request("https://www.apple.com")
