@@ -12,6 +12,7 @@ const ProfileEngine = importModule("WidgetFramework/WF_ProfileEngine")
 module.exports = class WF_WidgetCore extends WF_CoreBase {
 
   constructor(appInfo, appConfig) {
+
     super(appInfo)
 
     const appId = appInfo.id
