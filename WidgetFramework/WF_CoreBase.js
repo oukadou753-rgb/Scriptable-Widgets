@@ -79,5 +79,4 @@ module.exports = class WF_CoreBase {
       return false
     }
   }
-
 }
