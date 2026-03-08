@@ -199,7 +199,7 @@ module.exports = class WF_WidgetRenderer {
   // Stack
   // =========================
   async renderStack(container, el, context, horizontal) {
-console.log("renderStack el: " + el)
+    console.log("renderStack el: " + el)
     const stack = container.addStack()
 
     if(el.size){
