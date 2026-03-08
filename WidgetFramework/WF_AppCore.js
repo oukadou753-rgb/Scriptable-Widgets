@@ -14,6 +14,7 @@ const WF_ConfigUI = importModule("WidgetFramework/WF_ConfigUI")
 module.exports = class WF_AppCore extends WF_CoreBase {
 
   constructor(appInfo, appConfig) {
+
     super(appInfo)
 
     const appId = appInfo.id
