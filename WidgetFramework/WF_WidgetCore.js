@@ -18,7 +18,7 @@ module.exports = class WF_WidgetCore {
     this.appId = appId || Script.name()
 
     this.storage = new StorageEngine(this.appId)
-    this.renderer = new WidgetRenderer()
+    this.renderer = new WidgetRenderer(appInfo)
 
     this.appConfig = appConfig
     this.defaultConfig = appConfig.getDefaultConfig()
