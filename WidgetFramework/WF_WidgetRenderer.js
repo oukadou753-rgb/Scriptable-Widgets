@@ -1,4 +1,4 @@
-// Variables used by Scriptable.
+i // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
 /**
@@ -165,7 +165,7 @@ module.exports = class WF_WidgetRenderer {
       const visible = this.evaluate(el.show, context)
       if (!visible) return
     }
-log(el)
+
     switch (el.type) {
 
       case "text":
@@ -175,6 +175,7 @@ log(el)
         return this.renderStack(container, el, context, true)
 
       case "vstack":
+      log(context)
         return this.renderStack(container, el, context, false)
 
       case "spacer":
