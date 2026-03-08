@@ -175,10 +175,10 @@ module.exports = class WF_WidgetRenderer {
         return this.renderStack(container, el, context, true)
 
       case "vstack":
-      log("vstack : " + JSON.stringify(context, null, 2))
         return this.renderStack(container, el, context, false)
 
       case "spacer":
+      if (el.type == "vstack")log(1)
       return this.renderSpacer(container, el)
   
       case "image":
