@@ -4,7 +4,7 @@
 /**
  * WF_CoreBase
  **/
-class WF_CoreBase {
+module.exports = class WF_CoreBase {
 
   async preview(size) {
 
