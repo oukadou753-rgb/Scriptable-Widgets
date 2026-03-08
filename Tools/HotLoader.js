@@ -1,8 +1,8 @@
 /**
- * DevLoader 最終版
+ * HotLoader
  * HotReload + targetFiles / targetFolders 両対応
  **/
-async function devLoader({
+async function hotLoader({
   useDiff = true,               // true=差分取得, false=無条件取得
   useTarget = false,            // true=指定ファイル/フォルダを対象にする
   targetFiles = null,           // 個別ファイル指定（GitHub 相対パス）
@@ -85,27 +85,27 @@ async function devLoader({
  **/
 
 // --- 初回全ファイル取得 ---
-// await devLoader({
+// await hotLoader({
 //   useDiff: false,          // 差分無視
 //   useTarget: false          // 全体対象
 // })
 
 // --- 通常運用: 指定ファイルのみ更新 ---
-// await devLoader({
+// await hotLoader({
 //   useDiff: true,           // 差分のみ
 //   useTarget: true,         // 指定対象のみ
 //   targetFiles: ["WidgetFramework/WF_AppCore.js","WidgetFramework/WF_DataProvider.js"]
 // })
 
 // --- 特定フォルダ単位で更新 ---
-// await devLoader({
+// await hotLoader({
 //   useDiff: true,           // 差分のみ
 //   useTarget: true,         // 指定フォルダのみ
 //   targetFolders: ["WidgetFramework"]
 // })
 
 // --- ファイル＋フォルダ併用 ---
-// await devLoader({
+// await hotLoader({
 //   useDiff: true,
 //   useTarget: true,
 //   targetFiles: ["Main.js"],
@@ -113,13 +113,13 @@ async function devLoader({
 // })
 
 // --- HotReload: SHA 差分で更新されたファイルのみ自動取得 ---
-// await devLoader({
+// await hotLoader({
 //   useDiff: true,
 //   useTarget: false
 // })
 
 // --- HotReload + 特定フォルダ併用 ---
-await devLoader({
+await hotLoader({
   useDiff: true,
   useTarget: true,
   targetFolders: ["WidgetFramework"]
