@@ -10,7 +10,6 @@ const WidgetRenderer = importModule("WidgetFramework/WF_WidgetRenderer")
 const MenuEngine = importModule("WidgetFramework/WF_MenuEngine")
 const ProfileEngine = importModule("WidgetFramework/WF_ProfileEngine")
 const WF_ConfigUI = importModule("WidgetFramework/WF_ConfigUI")
-const DataProvider = importModule("WidgetFramework/WF_DataProvider")
 
 module.exports = class WF_AppCore extends WF_CoreBase {
 
