@@ -24,7 +24,10 @@ module.exports = class WF_WidgetRenderer {
     const layout = cfg.layout || {}
 
     // 背景
-    if (values.bgColor) {
+    if (values.bgColorTop && values.bgColorBottom) {
+      await setGradientBackground(widget, values.bgColorTop, values.bgColorBottom)
+    }
+    else if (values.bgColor) {
       try {
         widget.backgroundColor = new Color(String(values.bgColor))
       } catch (e) {
@@ -494,6 +497,9 @@ module.exports = class WF_WidgetRenderer {
     return color
   }
 
+  // =========================
+  // ■ toColor
+  // =========================
   toColor(value) {
     if (!value) return this.getDefaultTextColor()
     if (value instanceof Color) return value
@@ -505,6 +511,26 @@ module.exports = class WF_WidgetRenderer {
     }
   }
 
+  // =========================
+  // ■ setGradientBackground
+  // =========================
+  async setGradientBackground(widget, colorTop, colorBottom) {
+    const size = new Size(400, 400) // 適当なサイズ、widget実サイズに合わせてもOK
+
+    const gradient = new LinearGradient()
+    gradient.colors = [new Color(colorTop), new Color(colorBottom)]
+    gradient.locations = [0, 1]           // 上端0 → 下端1
+    gradient.startPoint = new Point(0, 0) // 左上
+    gradient.endPoint = new Point(0, 1)   // 左下
+
+    const img = gradient.getImage(size)
+
+    widget.backgroundImage = img
+  }
+
+  // =========================
+  // ■ fetchImage
+  // =========================
   async fetchImage(url){
 
     const fm = FileManager.iCloud()
