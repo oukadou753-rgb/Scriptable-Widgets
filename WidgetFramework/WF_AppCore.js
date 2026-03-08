@@ -4,6 +4,7 @@
 /**
  * WF_AppCore
  **/
+// const WF_Core = importModule("WidgetFramework/WF_Core")
 const StorageEngine = importModule("WidgetFramework/WF_StorageEngine")
 const WidgetRenderer = importModule("WidgetFramework/WF_WidgetRenderer")
 const MenuEngine = importModule("WidgetFramework/WF_MenuEngine")
@@ -19,6 +20,7 @@ module.exports = class WF_AppCore {
 
     this.appId = appId || Script.name()
 
+    // this.core = new WF_Core(this.appId)
     this.storage = new StorageEngine(this.appId)
     this.renderer = new WidgetRenderer(this.appId)
     this.menu = new MenuEngine()
