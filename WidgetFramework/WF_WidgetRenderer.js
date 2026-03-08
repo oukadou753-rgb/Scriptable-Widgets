@@ -24,7 +24,7 @@ module.exports = class WF_WidgetRenderer {
     const layout = cfg.layout || {}
 
     // 背景
-    if (values.bgColorTop && values.bgColorBottom) {
+    if (values.useBgGradient && values.bgColorTop && values.bgColorBottom) {
       widget.backgroundGradient = await this.setGradientBackground(values.bgColorTop, values.bgColorBottom)
     }
     else if (values.bgColor) {
