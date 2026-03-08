@@ -128,6 +128,11 @@ module.exports = class WF_WidgetRenderer {
           continue
         }
 
+        // repeat用コンテナ
+        const repeatStack = container.addStack()
+        repeatStack.layoutHorizontally()
+        repeatStack.spacing = 6
+
         // 描画
         for (let i = 0; i < items.length; i++) {
 
