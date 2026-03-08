@@ -202,6 +202,10 @@ module.exports = class WF_WidgetRenderer {
 
     const stack = container.addStack()
 
+    if(el.size){
+      stack.size = new Size(el.size.width, el.size.height)
+    }
+
     if (horizontal) stack.layoutHorizontally()
     else stack.layoutVertically()
 
