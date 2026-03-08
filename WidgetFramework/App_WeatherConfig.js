@@ -14,10 +14,10 @@ module.exports = {
       version: "1.0.0",
 
       styles: {
-        defaultText: { fontSize: 14, bold: false, color: "{{defaultTextColor}}" },
-        HighlightText: { fontSize: 14, bold: false, color: "{{highlightTextColor}}" },
-        headerText: { fontSize: 14, bold: true, color: "{{headerTextColor}}" },
-        bodyText: { fontSize: 14, bold: false, color: "{{bodyTextColor}}" },
+        defaultText: { fontSize: 13, bold: false, color: "{{defaultTextColor}}" },
+        HighlightText: { fontSize: 13, bold: false, color: "{{highlightTextColor}}" },
+        headerText: { fontSize: 13, bold: true, color: "{{headerTextColor}}" },
+        bodyText: { fontSize: 13, bold: false, color: "{{bodyTextColor}}" },
         footerText: { fontSize: 9, bold: false, color: "{{footerTextColor}}" },
 
         titleText: { fontSize: 16, bold: true, color: "{{highlightTextColor}}" },
@@ -31,7 +31,10 @@ module.exports = {
       schema: {
         titleStr: { type: "text", label: "Title", section: "General", default: "My Widget" },
 
-        bgColor: { type: "color", label: "Background Color", section: "Style", default: "#003366", presets: ["#000000", "#ff9900"] },
+        useBgGradient: { type: "bool", label: "Use Gradient Color", section: "BackgroundColor", default: true },
+        bgColorTop: { type: "color", label: "Gradient Background Top Color", section: "BackgroundColor", default: "#000000", presets: ["#000000", "#ff9900"] },
+        bgColorBottom: { type: "color", label: "Gradient Background Bottom Color", section: "BackgroundColor", default: "#003366", presets: ["#000000", "#ff9900"] },
+        bgColor: { type: "color", label: "Background Color", section: "BackgroundColor", default: "#003366", presets: ["#000000", "#ff9900"] },
 
         defaultTextColor: { type: "color", label: "Default Text Color", section: "Style", default: "#d1cdda" },
         highlightTextColor: { type: "color", label: "Highlight Text Color", section: "Style", default: "#87cefa" },
@@ -126,12 +129,13 @@ module.exports = {
         header: [
           {
             type: "hstack",
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+            align: "center",
             children: [
-              { type: "image", src: "{{header_titleIcon}}", size: 24 },
+              { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: 24 },
               { type: "spacer", size: 5 },
               { type: "text", text: "{{header_titleStr}}", style: "titleText" },
               { type: "spacer" },
-              { type: "text", text: "v{{version.fw}}", style: "versionText" },
               { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
             ]
           }
@@ -147,6 +151,7 @@ module.exports = {
             empty: { type: "text", text: "No Data", style: "bodyText" },
             template: {
               type: "hstack",
+              size: { width: 300, height: 40 },
               justify: "space-between",
               children: [
                 { type: "text", text: "{{index}}. {{title}}", style: "bodyText" },
@@ -240,7 +245,7 @@ module.exports = {
 
     const v = config?.values || {}
 //     console.log(JSON.stringify(v, null, 2))
-//     console.log(JSON.stringify(data.current, null, 2))
+    console.log(JSON.stringify(data.current, null, 2))
 
     const minScore = Number(v.minScore) || 0
     const limit = Number(v.limit) || 0
@@ -270,6 +275,7 @@ module.exports = {
 
     // Online判定
     const online = v.isOnline ?? false
+    const dayTime = true
     const status = {
       icon: "location.fill",
       color: "#ffffff", //'#d1cdda',
@@ -294,7 +300,10 @@ module.exports = {
       count: items.length,
       header: {
         titleStr: current ? current.condition.text : v.titleStr,
-        titleIcon: url
+        titleIcon: {
+          src: url,
+          tint: "#ffffff"
+        }
       },
       body: {
         
