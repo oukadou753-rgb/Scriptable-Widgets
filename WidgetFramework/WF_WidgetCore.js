@@ -8,7 +8,6 @@ const WF_CoreBase = importModule("WidgetFramework/WF_CoreBase")
 const StorageEngine = importModule("WidgetFramework/WF_StorageEngine")
 const WidgetRenderer = importModule("WidgetFramework/WF_WidgetRenderer")
 const ProfileEngine = importModule("WidgetFramework/WF_ProfileEngine")
-const DataProvider = importModule("WidgetFramework/WF_DataProvider")
 
 module.exports = class WF_WidgetCore extends WF_CoreBase {
 
