@@ -41,17 +41,53 @@ async function devLoader({ useDiff = true, useTarget = false, targetFiles = null
 
   const fm = FileManager.iCloud()
   const baseDir = fm.documentsDirectory()
+  const shaRoot = fm.joinPath(baseDir, "WidgetFramework")
 
   // --- SHA 管理用 ---
-  const shaFilePath = fm.joinPath(baseDir, "github_sha.json") // ← 先頭に.は付けない
+  const shaFilePath = fm.joinPath(shaRoot, "github_sha.json") // ← 先頭に.は付けない
   let localSHA = {}
   if (fm.fileExists(shaFilePath)) {
     try { localSHA = JSON.parse(fm.readString(shaFilePath)) } catch(e) { localSHA = {} }
   }
 
   // --- GitHub 全ファイル取得（再帰的） ---
-  const api = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`
-  const tree = await new Request(api).loadJSON()
+  const treeCacheFile = fm.joinPath(shaRoot, "github_tree_cache.json")
+  const cacheLife = 600 // 10分
+
+  let tree
+
+  if (fm.fileExists(treeCacheFile)) {
+
+    const cache = JSON.parse(fm.readString(treeCacheFile))
+    const now = Date.now() / 1000
+
+    if (now - cache.time < cacheLife) {
+      console.log("Using GitHub tree cache")
+      tree = cache.data
+    }
+  }
+
+  if (!tree) {
+
+    console.log("Fetching GitHub tree")
+
+    const api = `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`
+
+    const req = new Request(api)
+
+    if (Keychain.contains("github_token")) {
+      req.headers = {
+        "Authorization": "token " + Keychain.get("github_token")
+      }
+    }
+
+    tree = await req.loadJSON()
+
+    fm.writeString(treeCacheFile, JSON.stringify({
+      time: Date.now() / 1000,
+      data: tree
+    }))
+  }
 
   const newSHA = {}
 
@@ -63,6 +99,7 @@ async function devLoader({ useDiff = true, useTarget = false, targetFiles = null
     let shouldDownload = false
 
     if (useTarget) {
+
       // 指定ファイル/フォルダ対象か判定
       if (targetFiles && targetFiles.includes(file.path)) shouldDownload = true
       if (!shouldDownload && targetFolders) {
@@ -106,7 +143,7 @@ async function devLoader({ useDiff = true, useTarget = false, targetFiles = null
   if (Main.run) await Main.run()
 }
 
-await devLoader({ useDiff, useTarget, targetFolders, targetFolders })
+await devLoader({ useDiff, useTarget, targetFiles, targetFolders })
 
 /**
  * DevLoader 呼び出しテンプレート（新フラグ版）
