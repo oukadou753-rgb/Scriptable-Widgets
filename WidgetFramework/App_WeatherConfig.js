@@ -25,9 +25,13 @@ module.exports = {
         updateText: { fontSize: 9, bold: false, color: "{{highlightTextColor}}" },
         locationText: { fontSize: 14, bold: false, color: "{{highlightTextColor}}" },
 
-        columnText: { fontSize: 12, bold: true, color: "{{highlightTextColor}}" },
-        dataText: { fontSize: 12, bold: true, color: "{{defaultTextColor}}" },
-        smallText: { fontSize: 11, bold: true, color: "{{defaultTextColor}}" }
+        currentColumnText: { fontSize: 12, bold: true, color: "{{highlightTextColor}}" },
+        currentDataText: { fontSize: 12, bold: true, color: "{{defaultTextColor}}" },
+        columnText: { fontSize: 11, bold: true, color: "{{highlightTextColor}}" },
+        dataText: { fontSize: 11, bold: true, color: "{{defaultTextColor}}" },
+        largeText: { fontSize: 20, bold: true, color: "{{defaultTextColor}}" },
+        normalText: { fontSize: 16, bold: true, color: "{{defaultTextColor}}" },
+        smallText: { fontSize: 10, bold: true, color: "{{defaultTextColor}}" }
       },
 
       defaultOpenSections: ["General", "Style"],
@@ -136,11 +140,11 @@ module.exports = {
         header: [
           {
             type: "hstack",
-            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+            padding: new Rect(0, 0, 0, 0),
             align: "center",
             children: [
               { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: 24 },
-              { type: "spacer", size: 2 },
+              { type: "spacer", size: 3 },
               { type: "text", text: "{{header_titleStr}}", style: "#ff9900" },
               { type: "spacer" },
               { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
@@ -151,17 +155,96 @@ module.exports = {
         body: [
           {
             type: "hstack",
+            padding: new Rect(0, 0, 0, 0),
+            size: new Size(0, 80),
+            children: [
+              {
+                type: "vstack",
+                size: new Size(160, 70),
+                align: "center",
+                children: [
+                  {
+                    type: "hstack",
+                    children: [
+                      { type: "spacer" },
+                      { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", fontSize: 60, bold: true } },
+                      { type: "spacer" }
+                    ]
+                  },
+                ]
+              },
+              {
+                type: "vstack",
+                padding: new Rect(0, 0, 0, 0),
+                size: new Size(120, 70),
+                align: "center",
+                children: [
+                  {
+                    type: "hstack",
+                    size: new Size(0, 25),
+                    align: "center",
+                    children: [
+                      { type: "spacer" },
+                      { type: "text", text: "{{current_tempC}}", style: { base: "normalText", fontSize: 20, color: "#ff453a" } },
+                      { type: "text", text: "°C", style: { base: "normalText", color: "#ff453a" } },
+                      { type: "spacer", size: 10 },
+                      { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: "#487de7" } },
+                      { type: "text", text: "％", style: { base: "normalText", color: "#487de7" } },
+                      { type: "spacer" }
+                    ]
+                  },
+                  {
+                    type: "hstack",
+                    padding: new Rect(0, 0, 0, 0),
+                    align: "center",
+                    children: [
+                      { type: "spacer" },
+                      { type: "text", text: "不快指数：", style: "currentColumnText" },
+                      { type: "text", text: "{{current_discomfortIndex}}", style: { base: "currentDataText", color: "{{current_discomfortIndexColor}}" } },
+                      { type: "spacer" }
+                    ]
+                  },
+                  {
+                    type: "hstack",
+                    padding: new Rect(0, 0, 0, 0),
+                    align: "center",
+                    children: [
+                      { type: "spacer" },
+                      { type: "text", text: "降水確率：", style: "currentColumnText" },
+                      { type: "text", text: "{{current_rain}}％", style: { base: "currentDataText", color: "{{current_rainColor}}" } },
+                      { type: "spacer" }
+                    ]
+                  },
+                  {
+                    type: "hstack",
+                    padding: new Rect(0, 0, 0, 0),
+                    align: "center",
+                    children: [
+                      { type: "spacer" },
+                      { type: "text", text: "雨量：", style: "currentColumnText" },
+                      { type: "text", text: "{{current_precipMm}}㎜", style: "currentDataText" },
+                      { type: "spacer" }
+                    ]
+                  }
+                ]
+              },
+            ]
+          },
+          {
+            type: "hstack",
+            padding: new Rect(0, 0, 0, 0),
             justify: "space-between",
             children: [
               {
                 type: "vstack",
-                size: new Size(30, 0),
+                padding: new Rect(0, 0, 0, 0),
+                size: new Size(57, 0),
                 children: [
-                  { type: "text", text: "時間:", style: "columnText" },
-                  { type: "text", text: "気圧:", style: "columnText" },
-                  { type: "text", text: "風速:", style: "columnText" },
-                  { type: "text", text: "気温:", style: "columnText" },
-                  { type: "text", text: "降水:", style: "columnText" }
+                  { type: "text", text: "{{intervalHours}}時間予報:", style: { base: "smallText", color: "{{highlightTextColor}}" } },
+                  { type: "text", text: "気圧(hPa):", style: "columnText" },
+                  { type: "text", text: "風速(m):", style: "columnText" },
+                  { type: "text", text: "気温(°C):", style: "columnText" },
+                  { type: "text", text: "降水(%):", style: "columnText" }
                 ]
               },
               {
@@ -172,20 +255,21 @@ module.exports = {
                 align: "center",          // 左右中央揃え
                 template: {
                   type: "vstack",
-                  size: new Size(55, 0),  // 列幅
+                  padding: new Rect(0, 0, 0, 0),
+                  size: new Size(48, 0),  // 列幅
                   children: [
-                    { type: "hstack", children: [
+                    { type: "hstack", align: "center", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{hour}}", style: "columnText" }
+                        { type: "text", text: "{{hour}}", style: { base: "smallText", color: "{{highlightTextColor}}" } }
                       ]
                     },
-                    { type: "hstack", children: [
+                    { type: "hstack", align: "center", children: [
                         { type: "spacer" },
                         { type: "text", text: "{{pressureTrend}} ", style: { base: "smallText", color: "{{pressureColor}}" } },
                         { type: "text", text: "{{pressure}}", style: { base: "dataText", color: "{{pressureColor}}" } }
                       ]
                     },
-                    { type: "hstack", children: [
+                    { type: "hstack", align: "center", children: [
                         { type: "spacer" },
                         { type: "text", text: "{{windIcon}} ", style: { base: "smallText", color: "{{highlightTextColor}}" } },
                         { type: "text", text: "{{windTrend }} ", style: { base: "smallText", color: "{{windSpeedColor}}" } },
@@ -208,7 +292,41 @@ module.exports = {
                 }
               }
             ]
-          }
+          },
+          {
+            type: "hstack",
+            padding: new Rect(0, 0, 0, 0),
+            size: new Size(0, 40),
+            align: "center",
+            children: [
+              {
+                type: "vstack",
+                padding: new Rect(0, 0, 0, 0),
+                size: new Size(0, 0),
+                justify: "center",
+                children: [
+                  {
+                    type: "hstack",
+                    children: [
+                      { type: "spacer" },
+                  { type: "text", text: "{{current_pressureMb}}", style: "defaultText" },
+                      { type: "spacer" }
+                    ]
+                  },
+                ]
+              },
+              {
+                type: "vstack",
+                padding: new Rect(0, 0, 0, 0),
+                align: "center",
+                children: [
+                  { type: "spacer" },
+                  { type: "text", text: "{{current_pressureMb}}", style: "defaultText" },
+                  { type: "spacer" }
+                ]
+              },
+            ]
+          },
         ],
 
         footer: [
@@ -372,21 +490,35 @@ module.exports = {
   currentDataTransform(data, config) {
 
     const v = config?.values || {}
+    const defaultTextColor = v.defaultTextColor
+
+    const nowEpoch = Math.floor(Date.now() / 1000) - 3600
+
+    const forecastData = data.forecast.forecastday  // forecastday 配列
+    const hours = forecastData.flatMap(day => day.hour)
+      .filter(h => h.time_epoch >= nowEpoch)
+      .slice(0, 1)
+
+
+    const tempC = Math.round(data.current.temp_c)
+    const humidity = data.current.humidity
+    const discomfortIndex = this.getDiscomfortIndex(tempC, humidity)
+    const rain = Math.ceil(Math.max(...[ hours[0].chance_of_rain, hours[0].chance_of_snow ]) / 5) * 5
 
     const current = {
       updated: data.current.last_updated,
       isDay: data.current.is_day,
 
-      tempC: data.current.temp_c,
+      tempC: tempC,
       feelslikeC: data.current.feelslike_c,
 
       condition: data.current.condition.text,
       icon: this.makeWeatherApiIcon(data.current.condition.icon),
 
-      humidity: data.current.humidity,
+      humidity: humidity,
       cloud: data.current.cloud,
 
-      windKph: data.current.wind_kph,
+      windKph: Math.round(data.current.wind_kph / 3.6),
       windDir: data.current.wind_dir,
       windDegree: data.current.wind_degree,
       gustKph: data.current.gust_kph,
@@ -394,8 +526,13 @@ module.exports = {
       pressureMb: data.current.pressure_mb,
       visibilityKm: data.current.vis_km,
 
-      precipMm: data.current.precip_mm,
-      uv: data.current.uv
+      precipMm: Number(data.current.precip_mm.toFixed(1)),
+      uv: data.current.uv,
+  
+      rain: rain,
+      rainColor: this.getRainColor(rain, defaultTextColor),
+      discomfortIndex: discomfortIndex,
+      discomfortIndexColor: this.getDiscomfortColor(discomfortIndex)
     }
 
     return current
@@ -406,7 +543,7 @@ module.exports = {
 
     const v = config?.values || {}
     const defaultTextColor = v.defaultTextColor
-    console.log(JSON.stringify(config, null, 2))
+//     console.log(JSON.stringify(config, null, 2))
 
     const intervalHours = v.intervalHours || 2      // 取得したい時間間隔（2時間ごと）
     const displayCount = v.displayCount || 4        // 表示件数（large widget）
@@ -429,6 +566,8 @@ module.exports = {
       const windTrend = this.trendIcon(h.wind_kph, prev.wind_kph)
       const rainTrend = this.trendIcon(h.chance_of_rain, prev.chance_of_rain)
 
+      const rain = Math.ceil(Math.max(...[ h.chance_of_rain, h.chance_of_snow ]) / 5) * 5
+
       return {
         hour: Number(h.time.split(" ")[1].slice(0, 2)) + "時",
         pressure: Math.round(h.pressure_mb),
@@ -441,8 +580,8 @@ module.exports = {
         temp: Math.round(h.temp_c),
         tempColor: this.getTempColor(Math.round(h.temp_c), defaultTextColor),
         tempTrend: tempTrend,
-        rain: Math.ceil(h.chance_of_rain / 5) * 5,
-        rainColor: this.getRainColor(h.chance_of_rain, defaultTextColor),
+        rain: rain,
+        rainColor: this.getRainColor(rain, defaultTextColor),
         rainTrend: rainTrend
       }
     })
@@ -546,6 +685,23 @@ module.exports = {
     if (curr >= 25) return "#ffff66"
     if (curr <= 0) return "#87cefa"
     return color
+  },
+
+  getDiscomfortColor(dis, color) {
+//     if ( dis <= 54 ) return '#6500cb'
+    if ( 55 <= dis && dis < 60 ) return '#487DE7'
+    if ( 60 <= dis && dis < 65 ) return '#87CEFA'
+    if ( 65 <= dis && dis < 70 ) return '#9DE24F'
+    if ( 70 <= dis && dis < 75 ) return '#FFFF66'
+    if ( 75 <= dis && dis < 80 ) return '#FFBD55'
+    if ( 80 <= dis && dis < 85 ) return '#FF6666'
+    if ( 85 <= dis ) return '#FF453A'
+    return color
+  },
+
+  getDiscomfortIndex(temp, humidity) {
+    const index = 0.81 * temp + 0.01 * humidity * (0.99 * temp - 14.3) + 46.3
+    return Number(index.toFixed(1))
   },
 
   // Test Data
