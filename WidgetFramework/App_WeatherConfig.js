@@ -27,7 +27,7 @@ module.exports = {
 
         columnText: { fontSize: 12, bold: true, color: "{{highlightTextColor}}" },
         dataText: { fontSize: 12, bold: true, color: "{{defaultTextColor}}" },
-        smallText: { fontSize: 10, bold: true, color: "{{defaultTextColor}}" }
+        smallText: { fontSize: 11, bold: true, color: "{{defaultTextColor}}" }
       },
 
       defaultOpenSections: ["General", "Style"],
@@ -141,7 +141,7 @@ module.exports = {
             children: [
               { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: 24 },
               { type: "spacer", size: 2 },
-              { type: "text", text: "{{header_titleStr}}", style: "titleText" },
+              { type: "text", text: "{{header_titleStr}}", style: "#ff9900" },
               { type: "spacer" },
               { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
             ]
@@ -172,7 +172,7 @@ module.exports = {
                 align: "center",          // 左右中央揃え
                 template: {
                   type: "vstack",
-                  size: new Size(55, 0), // 列幅
+                  size: new Size(55, 0),  // 列幅
                   children: [
                     { type: "hstack", children: [
                         { type: "spacer" },
@@ -181,20 +181,20 @@ module.exports = {
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{pressureTrend}} ", style: "smallText" },
+                        { type: "text", text: "{{pressureTrend}} ", style: { base: "smallText", color: "{{pressureTrendColor}}" } },
                         { type: "text", text: "{{pressure}}", style: "dataText" }
                       ]
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
                         { type: "text", text: "{{windIcon}} ", style: "smallText" },
-                        { type: "text", text: "{{windTrend }} ", style: "smallText" },
+                        { type: "text", text: "{{windTrend }} ", style: { base: "smallText", color: "{{windTrendColor}}" } },
                         { type: "text", text: "{{windSpeed}}", style: "dataText" }
                       ]
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{tempTrend}} ", style: "{{tempTrendColor}}", style: "smallText" },
+                        { type: "text", text: "{{tempTrend}} ", style: { base: "smallText", color: "{{tempTrendColor}}" } },
                         { type: "text", text: "{{temp}}", style: "dataText" },
                       ]
                     },
@@ -422,13 +422,13 @@ module.exports = {
       const prev = idx > 0 ? hours[idx - 1] : h
 
       function trendStyle(color) {
-        return { fontSize: 9, color: color }
+        return { fontSize: 9, bold: true, color: color }
       }
 
       function trendIcon(curr, prev) {
-        if (curr > prev) return { icon: "↑", color: "red" }
-        if (curr < prev) return { icon: "↓", color: "blue" }
-        return { icon: "→", color: "glay" }
+        if (curr > prev) return { icon: "↑", color: "#ff3b30" }
+        if (curr < prev) return { icon: "↓", color: "#007aff" }
+        return { icon: "→", color: "#8e8e93" }
       }
 
       const tempTrendObj = trendIcon(h.temp_c, prev.temp_c)
