@@ -83,7 +83,7 @@ module.exports = class WF_StorageEngine {
   getProfileDir(name) {
 
     if (!name) {
-      console.error("getProfileDir: name undefined")
+      console.warn("getProfileDir: name undefined")
       return null
     }
 
@@ -111,7 +111,7 @@ module.exports = class WF_StorageEngine {
     try {
 
       if (!path) {
-        console.error("READ: path undefined")
+        console.warn("READ: path undefined")
         return null
       }
 
@@ -125,7 +125,7 @@ module.exports = class WF_StorageEngine {
       return txt
 
     } catch (e) {
-      console.error("READ ERROR: " + e)
+      console.warn("READ ERROR: " + e)
       return null
     }
   }
@@ -135,7 +135,7 @@ module.exports = class WF_StorageEngine {
     try {
 
       if (!path) {
-        console.error("WRITE: path undefined")
+        console.warn("WRITE: path undefined")
         return
       }
 
@@ -148,7 +148,7 @@ module.exports = class WF_StorageEngine {
 
       // undefined 防止
       if (content === undefined) {
-        console.error("WRITE BLOCKED: undefined " + path)
+        console.warn("WRITE BLOCKED: undefined " + path)
         return
       }
 
@@ -160,7 +160,7 @@ module.exports = class WF_StorageEngine {
         try {
           content = JSON.stringify(content)
         } catch (e) {
-          console.error("STRINGIFY ERROR: " + e)
+          console.warn("STRINGIFY ERROR: " + e)
           return
         }
       }
@@ -168,14 +168,14 @@ module.exports = class WF_StorageEngine {
       const str = String(content)
 
       if (str === "undefined") {
-        console.error("WRITE BLOCKED: string undefined " + path)
+        console.warn("WRITE BLOCKED: string undefined " + path)
         return
       }
 
       this.fm.writeString(path, str)
 
     } catch (e) {
-      console.error("WRITE ERROR: " + e)
+      console.warn("WRITE ERROR: " + e)
     }
   }
 
@@ -186,7 +186,7 @@ module.exports = class WF_StorageEngine {
         this.fm.remove(path)
       }
     } catch (e) {
-      console.error("REMOVE ERROR: " +  e)
+      console.warn("REMOVE ERROR: " +  e)
     }
   }
 
@@ -239,8 +239,8 @@ module.exports = class WF_StorageEngine {
 
     } catch (e) {
 
-      console.error("SNAPSHOT SAVE ERROR: " + e)
-      console.error("DATA: " + data)
+      console.warn("SNAPSHOT SAVE ERROR: " + e)
+      console.warn("DATA: " + data)
 
     }
   }
@@ -298,7 +298,7 @@ module.exports = class WF_StorageEngine {
     try {
       return JSON.parse(data)
     } catch (e) {
-      console.error("JSON parse error: " + e)
+      console.warn("JSON parse error: " + e)
       return null
     }
   }
