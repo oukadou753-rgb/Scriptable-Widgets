@@ -181,26 +181,27 @@ module.exports = {
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{pressureTrend}} ", style: { base: "smallText", color: "{{pressureTrendColor}}" } },
-                        { type: "text", text: "{{pressure}}", style: "dataText" }
+                        { type: "text", text: "{{pressureTrend}} ", style: { base: "smallText", color: "{{pressureColor}}" } },
+                        { type: "text", text: "{{pressure}}", style: { base: "dataText", color: "{{pressureColor}}" } }
                       ]
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{windIcon}} ", style: "smallText" },
-                        { type: "text", text: "{{windTrend }} ", style: { base: "smallText", color: "{{windTrendColor}}" } },
-                        { type: "text", text: "{{windSpeed}}", style: "dataText" }
+                        { type: "text", text: "{{windIcon}} ", style: { base: "smallText", color: "{{highlightTextColor}}" } },
+                        { type: "text", text: "{{windTrend }} ", style: { base: "smallText", color: "{{windSpeedColor}}" } },
+                        { type: "text", text: "{{windSpeed}}", style: { base: "dataText", color: "{{windSpeedColor}}" } }
                       ]
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{tempTrend}} ", style: { base: "smallText", color: "{{tempTrendColor}}" } },
-                        { type: "text", text: "{{temp}}", style: "dataText" },
+                        { type: "text", text: "{{tempTrend}} ", style: { base: "smallText", color: "{{tempColor}}" } },
+                        { type: "text", text: "{{temp}}", style: { base: "dataText", color: "{{tempColor}}" } }
                       ]
                     },
                     { type: "hstack", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{rain}}", style: "dataText" },
+                        { type: "text", text: "{{rainTrend}} ", style: { base: "smallText", color: "{{rainColor}}" } },
+                        { type: "text", text: "{{rain}}", style: { base: "dataText", color: "{{rainColor}}" } }
                       ]
                     }
                   ]
@@ -404,6 +405,8 @@ module.exports = {
   forecastDataTransform(data, config) {
 
     const v = config?.values || {}
+    const defaultTextColor = v.defaultTextColor
+    console.log(JSON.stringify(config, null, 2))
 
     const intervalHours = v.intervalHours || 2      // 取得したい時間間隔（2時間ごと）
     const displayCount = v.displayCount || 4        // 表示件数（large widget）
@@ -421,33 +424,26 @@ module.exports = {
     const items = hours.map((h, idx) => {
       const prev = idx > 0 ? hours[idx - 1] : h
 
-      function trendStyle(color) {
-        return { fontSize: 9, bold: true, color: color }
-      }
-
-      function trendIcon(curr, prev) {
-        if (curr > prev) return { icon: "↑", color: "#ff3b30" }
-        if (curr < prev) return { icon: "↓", color: "#007aff" }
-        return { icon: "→", color: "#8e8e93" }
-      }
-
-      const tempTrendObj = trendIcon(h.temp_c, prev.temp_c)
-      const pressureTrendObj = trendIcon(h.pressure_mb, prev.pressure_mb)
-      const windTrendObj = trendIcon(h.wind_kph, prev.wind_kph)
+      const tempTrend = this.trendIcon(h.temp_c, prev.temp_c)
+      const pressureTrend = this.trendIcon(h.pressure_mb, prev.pressure_mb)
+      const windTrend = this.trendIcon(h.wind_kph, prev.wind_kph)
+      const rainTrend = this.trendIcon(h.chance_of_rain, prev.chance_of_rain)
 
       return {
         hour: Number(h.time.split(" ")[1].slice(0, 2)) + "時",
         pressure: Math.round(h.pressure_mb),
-        pressureTrend: pressureTrendObj.icon,
-        pressureTrendColor: pressureTrendObj.color,
+        pressureColor: this.getPressureColor(h.pressure_mb, prev.pressure_mb, defaultTextColor),
+        pressureTrend: pressureTrend,
         windIcon: this.convertWindDegToIcon(h.wind_degree),
-        windSpeed: Math.round(h.wind_kph),
-        windTrend: windTrendObj.icon,
-        windTrendColor: windTrendObj.color,
+        windSpeed: Math.round(h.wind_kph / 3.6),
+        windSpeedColor: this.getWindColor(Math.round(h.wind_kph / 3.6), defaultTextColor),
+        windTrend: windTrend,
         temp: Math.round(h.temp_c),
-        tempTrend: tempTrendObj.icon,
-        tempTrendColor: tempTrendObj.color,
-        rain: Math.round(h.chance_of_rain)
+        tempColor: this.getTempColor(Math.round(h.temp_c), defaultTextColor),
+        tempTrend: tempTrend,
+        rain: Math.ceil(h.chance_of_rain / 5) * 5,
+        rainColor: this.getRainColor(h.chance_of_rain, defaultTextColor),
+        rainTrend: rainTrend
       }
     })
 
@@ -513,6 +509,43 @@ module.exports = {
     if (deg >= 247.5 && deg < 292.5) return "←"
     if (deg >= 292.5 && deg < 337.5) return "↖"
     return "↑"
+  },
+
+  trendIcon(curr, prev) {
+    if (curr > prev) return "↑"
+    if (curr < prev) return "↓"
+    return "→"
+  },
+
+  getRainColor(curr, color) {
+    if (curr == 100) return "#ff453a"
+    if (curr >= 80) return "#ff453a"
+    if (curr >= 60) return "#ff6666"
+    if (curr >= 40) return "#ffff66"
+    return color
+  },
+
+  getPressureColor(curr, prev, color) {
+    if (prev < 1000) return "#ff6666"
+    if (Math.abs(curr - prev) >= 5) return "#ff6666"
+    if (Math.abs(curr - prev) >= 3) return "#ffff66"
+    return color
+  },
+
+  getWindColor(curr, color) {
+    if (curr == 20) return "#ff453a"
+    if (curr >= 15) return "#ff6666"
+    if (curr >= 10) return "#ffbd55"
+    if (curr >= 5) return "#ffff66"
+    return color
+  },
+
+  getTempColor(curr, color) {
+    if (curr >= 35) return "#ff453a"
+    if (curr >= 30) return "#ff6666"
+    if (curr >= 25) return "#ffff66"
+    if (curr <= 0) return "#87cefa"
+    return color
   },
 
   // Test Data
