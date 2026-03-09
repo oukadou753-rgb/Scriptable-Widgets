@@ -27,7 +27,7 @@ module.exports = {
 
         columnText: { fontSize: 12, bold: true, color: "{{highlightTextColor}}" },
         dataText: { fontSize: 12, bold: true, color: "{{defaultTextColor}}" },
-        smallText: { fontSize: 12, bold: false, color: "{{defaultTextColor}}" }
+        smallText: { fontSize: 10, bold: true, color: "{{defaultTextColor}}" }
       },
 
       defaultOpenSections: ["General", "Style"],
