@@ -20,7 +20,7 @@ module.exports = {
         bodyText: { fontSize: 13, bold: false, color: "{{bodyTextColor}}" },
         footerText: { fontSize: 9, bold: false, color: "{{footerTextColor}}" },
 
-        titleText: { fontSize: 16, bold: true, color: "{{highlightTextColor}}" },
+        titleText: { fontSize: 14, bold: true, color: "{{highlightTextColor}}" },
         versionText: { fontSize: 9, bold: false, color: "{{defaultTextColor}}" },
         updateText: { fontSize: 9, bold: false, color: "{{highlightTextColor}}" },
         locationText: { fontSize: 14, bold: false, color: "{{highlightTextColor}}" }
@@ -133,7 +133,7 @@ module.exports = {
             align: "center",
             children: [
               { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: 24 },
-              { type: "spacer", size: 5 },
+              { type: "spacer", size: 2 },
               { type: "text", text: "{{header_titleStr}}", style: "titleText" },
               { type: "spacer" },
               { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
@@ -143,22 +143,59 @@ module.exports = {
 
         body: [
           {
-            type: "repeat",
-            items: "{{items}}",
-            sortBy: "value",
-            order: "{{sort}}",
-            limit: "{{limit}}",
-            empty: { type: "text", text: "No Data", style: "bodyText" },
-            template: {
-              type: "hstack",
-              size: { width: 300, height: 40 },
-              justify: "space-between",
-              children: [
-                { type: "text", text: "{{index}}. {{title}}", style: "bodyText" },
-                { type: "text", text: "{{value}} ({{sub}})", style: "bodyText" },
-                { type: "text", text: "🔥", style: "bodyText", show: "{{flag}}" }
-              ]
-            }
+            type: "hstack",
+            justify: "space-between",
+            children: [
+              {
+                type: "vstack",
+                size: new Size(80, 0),
+                children: [
+                  { type: "text", text: "時間:" },
+                  { type: "text", text: "気圧:" },
+                  { type: "text", text: "風速:" },
+                  { type: "text", text: "気温:" },
+                  { type: "text", text: "降水:" }
+                ]
+              },
+              {
+                type: "repeat",
+                items: "{{items}}",
+                direction: "horizontal",  // 横並び
+                spacing: 6,
+                align: "center",          // 左右中央揃え
+                template: {
+                  type: "vstack",
+                  size: new Size(40, 0), // 列幅
+                  children: [
+                    { type: "hstack", children: [
+                        { type: "spacer" },
+                        { type: "text", text: "{{pressure}}" }
+                      ]
+                    },
+                    { type: "hstack", children: [
+                        { type: "spacer" },
+                        { type: "text", text: "{{hour}}" }
+                      ]
+                    },
+                    { type: "hstack", children: [
+                        { type: "spacer" },
+                        { type: "text", text: "{{windSpeed}}" }
+                      ]
+                    },
+                    { type: "hstack", children: [
+                        { type: "spacer" },
+                        { type: "text", text: "{{temp}}" }
+                      ]
+                    },
+                    { type: "hstack", children: [
+                        { type: "spacer" },
+                        { type: "text", text: "{{rain}}" }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
           }
         ],
 
@@ -191,10 +228,12 @@ module.exports = {
         header: [
           {
             type: "hstack",
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+            align: "center",
             justify: "space-between",
             children: [
-              { type: "text", text: "{{titleStr}}", style: "title" },
-              { type: "text", text: "v{{version.fw}}", style: "version" }
+              { type: "text", text: "{{header_titleStr}}", style: "title" },
+              { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
             ]
           }
         ],
@@ -203,6 +242,10 @@ module.exports = {
           {
             type: "repeat",
             items: "{{items}}",
+            direction: "vertical",
+            spacing: 8,
+            align: "start",
+
 //             filter: "{{value >= minScore}}",
             sortBy: "value",
             order: "{{sort}}",
@@ -210,7 +253,6 @@ module.exports = {
             empty: { type: "text", text: "No Data", style: "bodyText" },
             template: {
               type: "hstack",
-              justify: "space-between",
               children: [
                 { type: "text", text: "{{index}}. {{title}}", style: "bodyText" },
                 { type: "text", text: "{{value}} ({{sub}})", style: "bodyText" },
@@ -225,7 +267,8 @@ module.exports = {
             type: "hstack",
             justify: "end",
             children: [
-              { type: "text", text: "Update: {{updateStr}}", style: "updateText" }
+              { type: "text", text: "Update: ", style: "updateText" },
+              { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
             ]
           }
         ],
@@ -244,41 +287,60 @@ module.exports = {
   transform(data, config) {
 
     const v = config?.values || {}
-//     console.log(JSON.stringify(v, null, 2))
-    console.log(JSON.stringify(data.current, null, 2))
+    console.log(JSON.stringify(v, null, 2))
+//     console.log(JSON.stringify(data, null, 2))
 
-    const minScore = Number(v.minScore) || 0
-    const limit = Number(v.limit) || 0
+    if (v.useTestData) return this.testDataTransform(data, config)
 
-    // 元データ正規化
-    const rawList = Array.isArray(data?.news)
-      ? data.news
-      : []
+// const items = [
+//   {
+//     pressure: [1000,1002,1001,1000],
+//     windIcon: ["↑","↗","→","↘"],
+//     windSpeed: [3,4,2,5],
+//     temp: [9,8,7,6],
+//     rain: [0,10,20,30]
+//   }
+// ]
+const items = [
+  { hour: 2, pressure: 1000, windIcon: "↑", windSpeed: 3, temp: 9, rain: 0 },
+  { hour: 4, pressure: 1001, windIcon: "↑", windSpeed: 4, temp: 8, rain: 10 },
+  { hour: 6, pressure: 1002, windIcon: "↑", windSpeed: 2, temp: 7, rain: 20 },
+  { hour: 8, pressure: 1003, windIcon: "↑", windSpeed: 5, temp: 6, rain: 30 },
+]
 
-    // データ整形（ここが本体）
-    let items = rawList.map((item, i) => {
+    // current 情報を整理
+    const current = {
+      updated: data.current.last_updated,
+      isDay: data.current.is_day,
 
-      const score = Number(item?.score) || 0
+      tempC: data.current.temp_c,
+      feelslikeC: data.current.feelslike_c,
 
-      return {
-        // 共通キー
-        title: item?.title || "No Title",
-        value: score,
-        sub: this.getRank(score),
-        flag: score >= minScore,
+      condition: data.current.condition.text,
+      icon: this.makeWeatherApiIcon(data.current.condition.icon),
 
-        // 追加情報
-        index: i + 1,
-        raw: item
-      }
-    })
+      humidity: data.current.humidity,
+      cloud: data.current.cloud,
+
+      windKph: data.current.wind_kph,
+      windDir: data.current.wind_dir,
+      windDegree: data.current.wind_degree,
+      gustKph: data.current.gust_kph,
+
+      pressureMb: data.current.pressure_mb,
+      visibilityKm: data.current.vis_km,
+
+      precipMm: data.current.precip_mm,
+      uv: data.current.uv
+    }
+//     console.log(JSON.stringify(current, null, 2))
 
     // Online判定
     const online = v.isOnline ?? false
     const dayTime = true
     const status = {
       icon: "location.fill",
-      color: "#ffffff", //'#d1cdda',
+      color: "#d1cdda",
       opacity: online ? 0.6 : 0.3
     }
 
@@ -291,17 +353,14 @@ module.exports = {
 
     // location
     const location = config?.location || null
-    const current = data.current || null
-    const icon = current ? current.condition.text.icon : ""
-    const url = this.makeWeatherApiIcon(current.condition.icon)
 
     // メタ情報
     const meta = {
       count: items.length,
       header: {
-        titleStr: current ? current.condition.text : v.titleStr,
+        titleStr: current.condition,
         titleIcon: {
-          src: url,
+          src: current.icon,
           tint: "#ffffff"
         }
       },
@@ -311,6 +370,7 @@ module.exports = {
       footer: {
         updateStr
       },
+      current,
       status,
       location: {
         lat: location?.lat ?? null,
@@ -400,6 +460,69 @@ module.exports = {
     }
   },
 
+  // Test Data Transform
+  testDataTransform(data, config) {
+
+    const v = config?.values || {}
+
+    const minScore = Number(v.minScore) || 0
+    const limit = Number(v.limit) || 0
+
+    // 元データ正規化
+    const rawList = Array.isArray(data?.news)
+      ? data.news
+      : []
+
+    // データ整形（ここが本体）
+    let items = rawList.map((item, i) => {
+
+      const score = Number(item?.score) || 0
+
+      return {
+        // 共通キー
+        title: item?.title || "No Title",
+        value: score,
+        sub: this.getRank(score),
+        flag: score >= minScore,
+
+        // 追加情報
+        index: i + 1,
+        raw: item
+      }
+    })
+
+    // Online判定
+    const online = v.isOnline ?? false
+    const status = {
+      icon: "location.fill",
+      color: "#d1cdda",
+      opacity: online ? 0.6 : 0.3
+    }
+
+    // 更新時間生成
+    const updateStr = this.formatTime(data.last_updated_epoch, "yyyy/MM/dd HH:mm")
+
+    // メタ情報
+    const meta = {
+      count: items.length,
+      header: {
+        titleStr: v.titleStr
+      },
+      body: {
+        
+      },
+      footer: {
+        updateStr
+      },
+        status
+    }
+
+    // 共通データ返却（統一フォーマット）
+    return {
+      items,
+      ...this.flatObj(meta)
+    }
+  },
   // ランキング
   getRank(score) {
 
