@@ -35,22 +35,22 @@ module.exports = class WF_WidgetRenderer {
       }
     }
 
-  //Header
-  if (Array.isArray(layout.header) && layout.header.length) {
-    await this.renderBlock(widget, layout.header, context)
-    widget.addSpacer()
-  }
+    //Header
+    if (Array.isArray(layout.header) && layout.header.length) {
+      await this.renderBlock(widget, layout.header, context)
+      widget.addSpacer()
+    }
 
-  // Body
-  if (Array.isArray(layout.body) && layout.body.length) {
-    await this.renderBlock(widget, layout.body, context)
-  }
+    // Body
+    if (Array.isArray(layout.body) && layout.body.length) {
+      await this.renderBlock(widget, layout.body, context)
+    }
 
-  // Footer
-  if (Array.isArray(layout.footer) && layout.footer.length) {
-    widget.addSpacer()
-    await this.renderBlock(widget, layout.footer, context)
-  }
+    // Footer
+    if (Array.isArray(layout.footer) && layout.footer.length) {
+      widget.addSpacer()
+      await this.renderBlock(widget, layout.footer, context)
+    }
 
     return widget
   }
@@ -59,58 +59,37 @@ module.exports = class WF_WidgetRenderer {
   // ブロック描画
   // =========================
   async renderBlock(container, blocks, context) {
-
     if (!Array.isArray(blocks)) return
 
     for (const block of blocks) {
       if (!block || typeof block !== "object") continue
 
-      if (block.show !== undefined) {
-        const visible = this.evaluate(block.show, context)
-        if (!visible) continue
-      }
+      // show判定
+      if (block.show !== undefined && !this.evaluate(block.show, context)) continue
 
       // =========================
-      // repeat（完全版）
+      // repeat対応
       // =========================
       if (block.type === "repeat") {
 
         let items = this.resolveData(block.items, context)
-
         if (!Array.isArray(items)) items = []
 
         // filter
         if (block.filter) {
-          items = items.filter(item => {
-            const tmpCtx = { ...context, item }
-            return this.evaluate(block.filter, tmpCtx)
-          })
+          items = items.filter(item => this.evaluate(block.filter, { ...context, item }))
         }
 
         // sort
         if (block.sortBy) {
-
           const key = block.sortBy
-
-          const orderRaw = block.order
-            ? this.bind(block.order, context)
-            : "desc"
-
-          const order = orderRaw === "asc" ? 1 : -1
-
+          const order = (block.order && this.bind(block.order, context) === "asc") ? 1 : -1
           items = [...items].sort((a, b) => {
-            const av = a?.[key]
-            const bv = b?.[key]
-
+            const av = a?.[key], bv = b?.[key]
             if (av === bv) return 0
             if (av === undefined) return 1
             if (bv === undefined) return -1
-
-            if (typeof av === "string") {
-              return av.localeCompare(bv) * order
-            }
-
-            return (Number(av) - Number(bv)) * order
+            return (typeof av === "string" ? av.localeCompare(bv) : Number(av) - Number(bv)) * order
           })
         }
 
@@ -120,39 +99,37 @@ module.exports = class WF_WidgetRenderer {
           items = items.slice(0, limit)
         }
 
-        // empty対応
-        if (items.length === 0) {
-          if (block.empty) {
-            await this.renderElement(container, block.empty, context)
-          }
+        // empty
+        if (items.length === 0 && block.empty) {
+          await this.renderElement(container, block.empty, context)
           continue
         }
 
-        // repeat用コンテナ
+        // repeat用Stack
         const repeatStack = container.addStack()
-        repeatStack.layoutHorizontally()
-        repeatStack.spacing = 6
+        if (block.direction === "vertical") repeatStack.layoutVertically()
+        else repeatStack.layoutHorizontally()  // default horizontal
 
-        // 描画
+        repeatStack.spacing = block.spacing ?? 6
+
+        // alignContent
+        if (block.align === "top") repeatStack.topAlignContent()
+        else if (block.align === "center") repeatStack.centerAlignContent()
+        else if (block.align === "bottom") repeatStack.bottomAlignContent()
+
+        // template描画（再帰）
         for (let i = 0; i < items.length; i++) {
-
           const item = items[i]
-
-          const newCtx = {
-            ...context,
-            item: item || {},
-            index: i + 1
-          }
-
-          if (block.template) {
-            await this.renderBlock(repeatStack, [block.template], newCtx)
-          }
+          const newCtx = { ...context, item, index: i + 1 }
+          if (block.template) await this.renderBlock(repeatStack, [block.template], newCtx)
         }
 
         continue
       }
 
+      // =========================
       // 通常描画
+      // =========================
       await this.renderElement(container, block, context)
     }
   }
@@ -161,32 +138,49 @@ module.exports = class WF_WidgetRenderer {
   // 要素描画
   // =========================
   async renderElement(container, el, context) {
+    if (!el || typeof el !== "object" || !el.type) return
+    if (el.show !== undefined && !this.evaluate(el.show, context)) return
 
-    if (!el || typeof el !== "object") return
-    if (!el.type) return
+    // children 内 repeat でも描画される
+    if (el.type === "repeat") {
+      let items = this.resolveData(el.items, context)
+      if (!Array.isArray(items)) items = []
 
-    // show（完全版）
-    if (el.show !== undefined) {
-      const visible = this.evaluate(el.show, context)
-      if (!visible) return
+      if (items.length === 0 && el.empty) {
+        await this.renderElement(container, el.empty, context)
+        return
+      }
+
+      // repeatStack を作る（横/縦選択）
+      const repeatStack = container.addStack()
+      if (el.direction === "vertical") repeatStack.layoutVertically()
+      else repeatStack.layoutHorizontally()
+
+      repeatStack.spacing = el.spacing ?? 6
+
+      if (el.align === "top") repeatStack.topAlignContent()
+      else if (el.align === "center") repeatStack.centerAlignContent()
+      else if (el.align === "bottom") repeatStack.bottomAlignContent()
+
+      // template を repeatStack に再帰描画
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        const newCtx = { ...context, item, index: i + 1 }
+        if (el.template) {
+          // ←ここで再帰呼び出し
+          await this.renderBlock(repeatStack, [el.template], newCtx)
+        }
+      }
+      return
     }
 
+    // 通常描画
     switch (el.type) {
-
-      case "text":
-        return this.renderText(container, el, context)
-
-      case "hstack":
-        return this.renderStack(container, el, context, true)
-
-      case "vstack":
-        return this.renderStack(container, el, context, false)
-
-      case "spacer":
-      return this.renderSpacer(container, el)
-  
-      case "image":
-        return await this.renderImage(container, el, context)
+      case "text": return this.renderText(container, el, context)
+      case "hstack": return this.renderStack(container, el, context, true)
+      case "vstack": return this.renderStack(container, el, context, false)
+      case "spacer": return this.renderSpacer(container, el)
+      case "image": return await this.renderImage(container, el, context)
     }
   }
 
@@ -207,79 +201,48 @@ module.exports = class WF_WidgetRenderer {
   // Stack
   // =========================
   async renderStack(container, el, context, horizontal) {
-
     const stack = container.addStack()
 
-    // --- サイズ ---
-    if(el.size){
-      stack.size = new Size(el.size.width, el.size.height)
-    }
+    // サイズ
+    if (el.size) stack.size = new Size(el.size.width, el.size.height)
 
-    // --- Padding 追加 ---
+    // Padding
     if (el.padding) {
       const pad = el.padding
-      stack.setPadding(
-        pad.top ?? 0,
-        pad.right ?? 0,
-        pad.bottom ?? 0,
-        pad.left ?? 0
-      )
+      stack.setPadding(pad.top ?? 0, pad.right ?? 0, pad.bottom ?? 0, pad.left ?? 0)
     }
 
-    // --- Spacing 追加 ---
+    // Spacing
     if (el.spacing != null) stack.spacing = Number(el.spacing)
 
-    // --- 配置方向 ---
+    // 配置方向
     if (horizontal) stack.layoutHorizontally()
     else stack.layoutVertically()
 
-    const children = Array.isArray(el.children) ? el.children : []
-
-    // --- アライン ---
+    // alignContent
     if (el.align === "top") stack.topAlignContent()
     else if (el.align === "center") stack.centerAlignContent()
     else if (el.align === "bottom") stack.bottomAlignContent()
 
-    // --- ジャスティファイ ---
+    const children = Array.isArray(el.children) ? el.children : []
+
+    // justify
     if (!el.justify || el.justify === "start") {
-
-      for (const child of children) {
-        if (el.type == "vstack")log("vstack: " + child)
-        await this.renderElement(stack, child, context)
-      }
+      for (const child of children) await this.renderElement(stack, child, context)
     }
-
     else if (el.justify === "center") {
-
       stack.addSpacer()
-
-      for (const child of children) {
-        if (el.type == "vstack")log("vstack: " + child)
-        await this.renderElement(stack, child, context)
-      }
-
+      for (const child of children) await this.renderElement(stack, child, context)
       stack.addSpacer()
     }
-
     else if (el.justify === "end") {
-
       stack.addSpacer()
-
-      for (const child of children) {
-        if (el.type == "vstack")log("vstack: " + child)
-        await this.renderElement(stack, child, context)
-      }
+      for (const child of children) await this.renderElement(stack, child, context)
     }
-
     else if (el.justify === "space-between") {
-
       for (let i = 0; i < children.length; i++) {
-
         await this.renderElement(stack, children[i], context)
-
-        if (i < children.length - 1) {
-          stack.addSpacer()
-        }
+        if (i < children.length - 1) stack.addSpacer()
       }
     }
 
