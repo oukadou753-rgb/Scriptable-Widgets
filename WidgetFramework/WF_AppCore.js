@@ -373,7 +373,7 @@ module.exports = class WF_AppCore extends WF_CoreBase {
 
   deepClone(obj) {
     if (obj === undefined) {
-      throw new Error("deepClone: undefined detected")
+      throw new warn("deepClone: undefined detected")
     }
     return JSON.parse(JSON.stringify(obj))
   }
