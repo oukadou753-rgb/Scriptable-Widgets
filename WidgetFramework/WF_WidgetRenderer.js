@@ -317,14 +317,27 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   // Style
   // =========================
-  applyStyle(textItem, styleName, context) {
+  applyStyle(textItem, styleInput, context) {
 
     const styles = context.config?.styles || {}
 
-    const style =
-      styles[styleName] ||
-      styles.defaultText ||
-      {}
+    let style = {}
+
+    if (typeof styleInput === "string") {
+      style = styles[styleInput] || styles.defaultText || {}
+    }
+    else if (typeof styleInput === "object") {
+      // base スタイル取得
+      if (styleInput.base) {
+        style = { ...(styles[styleInput.base] || {}) }
+      }
+
+      // base の上に上書き
+      style = { ...style, ...styleInput }
+    }
+    else {
+      style = styles.defaultText || {}
+    }
 
     const size = Number(style.fontSize) || 14
 
@@ -333,12 +346,14 @@ module.exports = class WF_WidgetRenderer {
       : Font.systemFont(size)
 
     const rawColor = style.color
-      ? this.resolveColor(style.color, context)
+      ? this.resolveColor(this.bind(style.color, context), context)
       : null
 
     const finalColor = this.toColor(rawColor)
 
-    textItem.textColor = finalColor
+    if (finalColor) {
+      textItem.textColor = finalColor
+    }
   }
 
   // =========================
