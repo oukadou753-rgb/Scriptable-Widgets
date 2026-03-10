@@ -518,7 +518,7 @@ module.exports = class WF_WidgetRenderer {
     let baseDir
 
     // FileManager切替
-    switch (storageType) {
+    switch (this.storageType) {
 
       case "icloud":
         fm = FileManager.iCloud()
