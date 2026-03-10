@@ -545,6 +545,9 @@ module.exports = class WF_WidgetRenderer {
     const appRoot = fm.joinPath(root, this.appId)
     const cacheDir = fm.joinPath(appRoot, "img")
 
+    if (!fm.fileExists(root)) {
+      fm.createDirectory(root)
+
     if(!fm.fileExists(appRoot))
       fm.createDirectory(appRoot)
 
