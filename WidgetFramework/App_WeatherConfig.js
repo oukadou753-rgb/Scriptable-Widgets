@@ -145,7 +145,7 @@ module.exports = {
             children: [
               { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: 24 },
               { type: "spacer", size: 3 },
-              { type: "text", text: "{{header_titleStr}}", style: "#ff9900" },
+              { type: "text", text: "{{header_titleStr}}", style: "titleText" },
               { type: "spacer" },
               { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
             ]
@@ -160,7 +160,7 @@ module.exports = {
             children: [
               {
                 type: "vstack",
-                size: new Size(160, 70),
+                size: new Size(160, 0),
                 align: "center",
                 children: [
                   {
@@ -176,7 +176,7 @@ module.exports = {
               {
                 type: "vstack",
                 padding: new Rect(0, 0, 0, 0),
-                size: new Size(120, 70),
+                size: new Size(125, 0),
                 align: "center",
                 children: [
                   {
@@ -195,35 +195,29 @@ module.exports = {
                   },
                   {
                     type: "hstack",
-                    padding: new Rect(0, 0, 0, 0),
                     align: "center",
                     children: [
-                      { type: "spacer" },
+                      { type: "spacer", size: 10 },
                       { type: "text", text: "不快指数：", style: "currentColumnText" },
-                      { type: "text", text: "{{current_discomfortIndex}}", style: { base: "currentDataText", color: "{{current_discomfortIndexColor}}" } },
-                      { type: "spacer" }
+                      { type: "text", text: "{{current_discomfortIndex}}", style: { base: "currentDataText", color: "{{current_discomfortIndexColor}}" } }
                     ]
                   },
                   {
                     type: "hstack",
-                    padding: new Rect(0, 0, 0, 0),
                     align: "center",
                     children: [
-                      { type: "spacer" },
+                      { type: "spacer", size: 10 },
                       { type: "text", text: "降水確率：", style: "currentColumnText" },
-                      { type: "text", text: "{{current_rain}}％", style: { base: "currentDataText", color: "{{current_rainColor}}" } },
-                      { type: "spacer" }
+                      { type: "text", text: "{{current_rain}}％", style: { base: "currentDataText", color: "{{current_rainColor}}" } }
                     ]
                   },
                   {
                     type: "hstack",
-                    padding: new Rect(0, 0, 0, 0),
                     align: "center",
                     children: [
-                      { type: "spacer" },
+                      { type: "spacer", size: 10 },
                       { type: "text", text: "雨量：", style: "currentColumnText" },
-                      { type: "text", text: "{{current_precipMm}}㎜", style: "currentDataText" },
-                      { type: "spacer" }
+                      { type: "text", text: "{{current_precipMm}}㎜", style: "currentDataText" }
                     ]
                   }
                 ]
@@ -232,13 +226,11 @@ module.exports = {
           },
           {
             type: "hstack",
-            padding: new Rect(0, 0, 0, 0),
-            justify: "space-between",
+            justify: "center",
             children: [
               {
                 type: "vstack",
-                padding: new Rect(0, 0, 0, 0),
-                size: new Size(55, 0),
+                size: new Size(50, 0),
                 children: [
                   { type: "text", text: "{{intervalHours}}時間予報", style: { base: "smallText", color: "{{highlightTextColor}}" } },
                   { type: "text", text: "気圧(hPa)", style: "columnText" },
@@ -255,8 +247,7 @@ module.exports = {
                 align: "center",          // 左右中央揃え
                 template: {
                   type: "vstack",
-                  padding: new Rect(0, 0, 0, 0),
-                  size: new Size(48, 0),  // 列幅
+                  size: new Size(50, 0),  // 列幅
                   children: [
                     { type: "hstack", align: "center", children: [
                         { type: "spacer" },
@@ -276,13 +267,13 @@ module.exports = {
                         { type: "text", text: "{{windSpeed}}", style: { base: "dataText", color: "{{windSpeedColor}}" } }
                       ]
                     },
-                    { type: "hstack", children: [
+                    { type: "hstack", align: "center", children: [
                         { type: "spacer" },
                         { type: "text", text: "{{tempTrend}} ", style: { base: "smallText", color: "{{tempColor}}" } },
                         { type: "text", text: "{{temp}}", style: { base: "dataText", color: "{{tempColor}}" } }
                       ]
                     },
-                    { type: "hstack", children: [
+                    { type: "hstack", align: "center", children: [
                         { type: "spacer" },
                         { type: "text", text: "{{rainTrend}} ", style: { base: "smallText", color: "{{rainColor}}" } },
                         { type: "text", text: "{{rain}}", style: { base: "dataText", color: "{{rainColor}}" } }
@@ -295,14 +286,11 @@ module.exports = {
           },
           {
             type: "hstack",
-            padding: new Rect(0, 0, 0, 0),
             size: new Size(0, 40),
             align: "center",
             children: [
               {
                 type: "vstack",
-                padding: new Rect(0, 0, 0, 0),
-                size: new Size(0, 0),
                 justify: "center",
                 children: [
                   {
@@ -317,7 +305,6 @@ module.exports = {
               },
               {
                 type: "vstack",
-                padding: new Rect(0, 0, 0, 0),
                 align: "center",
                 children: [
                   { type: "spacer" },
@@ -339,8 +326,10 @@ module.exports = {
           },
           {
             type: "hstack",
-            justify: "end",
+            justify: "start",
             children: [
+              { type: "text", text: "APP_DEV_MODE", style: "footerText", show: "{{debug}}" },
+              { type: "spacer" },
               { type: "text", text: "Update: ", style: "updateText" },
               { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
             ]
@@ -434,6 +423,8 @@ module.exports = {
   metaDataTransform(data, config) {
 
     const v = config?.values || {}
+    console.log(JSON.stringify(config, null, 2))
+    const debug = false
 
     // Online判定
     const online = v.isOnline ?? false
@@ -474,6 +465,7 @@ module.exports = {
       },
       current,
       status,
+      debug,
       location: {
         lat: location?.lat ?? null,
         lon: location?.lon ?? null,
@@ -532,7 +524,7 @@ module.exports = {
       rain: rain,
       rainColor: this.getRainColor(rain, defaultTextColor),
       discomfortIndex: discomfortIndex,
-      discomfortIndexColor: this.getDiscomfortColor(discomfortIndex)
+      discomfortIndexColor: this.getDiscomfortColor(discomfortIndex, defaultTextColor)
     }
 
     return current
@@ -781,7 +773,8 @@ module.exports = {
       footer: {
         updateStr
       },
-        status
+        status,
+        debug: false
     }
 
     // 共通データ返却（統一フォーマット）
@@ -798,4 +791,12 @@ module.exports = {
     if (score >= 60) return "B"
     return "C"
   }
+}
+
+const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
+if (module_name == Script.name()) {
+  (async() => {
+    const Main = importModule("Main")
+    if (Main.run) await Main.run()
+  })()
 }
