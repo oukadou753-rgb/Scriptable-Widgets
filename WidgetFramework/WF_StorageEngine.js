@@ -6,15 +6,29 @@
  **/
 module.exports = class WF_StorageEngine {
 
-  constructor(appId, useiCloud) {
+  constructor(appId, storageType) {
 
     this.appId = appId
-    this.useiCloud = useiCloud
+    this.storageType = storageType || "local"
 
-    // 切り替え
-    this.fm = this.useiCloud
-      ? FileManager.iCloud()
-      : FileManager.local()
+    // FileManager切替
+    switch (storageType) {
+
+      case "icloud":
+        this.fm = FileManager.iCloud()
+        this.baseDir = this.fm.documentsDirectory()
+        break
+
+      case "bookmark":
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.bookmarkedPath("Scriptable")
+        break
+
+      default:
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.documentsDirectory()
+
+    }
 
     // ルート（WF_Data固定）
     this.root = this.fm.joinPath(
