@@ -93,18 +93,6 @@ module.exports = class WF_AppCore extends WF_CoreBase {
       { title: "Snapshot" }
     )
   }
-
-  // Check Online
-  async _checkOnline() {
-    try {
-      const req = new Request("https://www.apple.com")
-      req.timeoutInterval = 2
-      await req.load()
-      return true
-    } catch(e) {
-      return false
-    }
-  }
   
   async editConfig() {
     try {
