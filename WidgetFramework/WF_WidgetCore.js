@@ -4,10 +4,12 @@
 /**
  * WF_WidgetCore
  **/
-const WF_CoreBase = importModule("WidgetFramework/WF_CoreBase")
-const StorageEngine = importModule("WidgetFramework/WF_StorageEngine")
-const WidgetRenderer = importModule("WidgetFramework/WF_WidgetRenderer")
-const ProfileEngine = importModule("WidgetFramework/WF_ProfileEngine")
+const { loadModule } = importModule("ModuleLoader")
+
+const WF_CoreBase = loadModule("WidgetFramework/WF_CoreBase")
+const StorageEngine = loadModule("WidgetFramework/WF_StorageEngine")
+const WidgetRenderer = loadModule("WidgetFramework/WF_WidgetRenderer")
+const ProfileEngine = loadModule("WidgetFramework/WF_ProfileEngine")
 
 module.exports = class WF_WidgetCore extends WF_CoreBase {
 
