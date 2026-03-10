@@ -6,8 +6,9 @@
  **/
 module.exports = class WF_WidgetRenderer {
 
-  constructor(appId) {
+  constructor(appId, storageType) {
     this.appId = appId
+    this.storageType = storageType || "local"
   }
 
   // =========================
@@ -514,6 +515,29 @@ module.exports = class WF_WidgetRenderer {
   async fetchImage(url){
 
     const fm = FileManager.iCloud()
+
+
+    // FileManager切替
+    switch (storageType) {
+
+      let fm
+      let baseDir
+
+      case "icloud":
+        fm = FileManager.iCloud()
+        baseDir = fm.documentsDirectory()
+        break
+
+      case "bookmark":
+        fm = FileManager.local()
+        baseDir = fm.bookmarkedPath("Scriptable")
+        break
+
+      default:
+        fm = FileManager.local()
+        baseDir = fm.documentsDirectory()
+
+    }
 
     // ルート（WF_Data固定）
     const root = fm.joinPath(
