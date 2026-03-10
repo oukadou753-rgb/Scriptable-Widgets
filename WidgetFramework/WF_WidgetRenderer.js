@@ -538,7 +538,7 @@ module.exports = class WF_WidgetRenderer {
 
     // ルート（WF_Data固定）
     const root = fm.joinPath(
-      fm.documentsDirectory(),
+      baseDir,
       "WF_Data"
     )
 
