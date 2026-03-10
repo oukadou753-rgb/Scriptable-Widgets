@@ -6,12 +6,12 @@
  **/
 const { loadModule } = importModule("ModuleLoader")
 
-const WF_CoreBase = loadModule("WidgetFramework/WF_CoreBase")
-const StorageEngine = loadModule("WidgetFramework/WF_StorageEngine")
-const WidgetRenderer = loadModule("WidgetFramework/WF_WidgetRenderer")
-const MenuEngine = loadModule("WidgetFramework/WF_MenuEngine")
-const ProfileEngine = loadModule("WidgetFramework/WF_ProfileEngine")
-const WF_ConfigUI = loadModule("WidgetFramework/WF_ConfigUI")
+const WF_CoreBase = importModule("WidgetFramework/WF_CoreBase")
+const StorageEngine = importModule("WidgetFramework/WF_StorageEngine")
+const WidgetRenderer = importModule("WidgetFramework/WF_WidgetRenderer")
+const MenuEngine = importModule("WidgetFramework/WF_MenuEngine")
+const ProfileEngine = importModule("WidgetFramework/WF_ProfileEngine")
+const WF_ConfigUI = importModule("WidgetFramework/WF_ConfigUI")
 
 module.exports = class WF_AppCore extends WF_CoreBase {
 
