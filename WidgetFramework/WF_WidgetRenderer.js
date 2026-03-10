@@ -514,14 +514,11 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   async fetchImage(url){
 
-    const fm = FileManager.iCloud()
-
+    let fm
+    let baseDir
 
     // FileManager切替
     switch (storageType) {
-
-      let fm
-      let baseDir
 
       case "icloud":
         fm = FileManager.iCloud()
