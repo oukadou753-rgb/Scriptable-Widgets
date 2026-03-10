@@ -9,7 +9,15 @@ const DEFAULT_APP_ID = "Weather"
 const APP_DEV_MODE = false
 const APP_ID = args.widgetParameter || DEFAULT_APP_ID
 const APP_VERSION = "1.0.0"
-const APP_INFO = {id: APP_ID, version: APP_VERSION}
+const APP_INFO = {
+  id: APP_ID,
+  version: APP_VERSION,
+  debug: APP_DEV_MODE,
+  storageType: "icloud"
+}
+// "icloud"
+// "local"
+// "bookmark"
 
 const Main = {
 
@@ -23,11 +31,14 @@ const Main = {
   },
 
   async start(APP_CONFIG) {
-    if (APP_DEV_MODE || (config.runsInWidget && !config.runsInApp)) {
+    
+    const fm = FileManager.iCloud()
+
+    if ((config.runsInWidget && !config.runsInApp)) {
       const WF_WidgetCore = importModule("WidgetFramework/WF_WidgetCore")
       await (new WF_WidgetCore(APP_INFO, APP_CONFIG)).start();
     } else {
-      const WF_AppCore = importModule("WidgetFramework/WF_AppCore");
+      const WF_AppCore = importModule("WidgetFramework/WF_AppCore")
       await (new WF_AppCore(APP_INFO, APP_CONFIG)).start()
     }
   },
