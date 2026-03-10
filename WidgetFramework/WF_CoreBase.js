@@ -8,7 +8,7 @@ const DataProvider = importModule("WidgetFramework/WF_DataProvider")
 
 module.exports = class WF_CoreBase {
 
-  constructor(appInfo, appConfig) {
+  constructor(appInfo) {
     this.appId = appId || Script.name()
     this.storageType = appInfo.storageType
   }
