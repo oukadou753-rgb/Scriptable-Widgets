@@ -31,9 +31,6 @@ const Main = {
   },
 
   async start(APP_CONFIG) {
-    
-    const fm = FileManager.iCloud()
-
     if ((config.runsInWidget && !config.runsInApp)) {
       const WF_WidgetCore = importModule("WidgetFramework/WF_WidgetCore")
       await (new WF_WidgetCore(APP_INFO, APP_CONFIG)).start();
