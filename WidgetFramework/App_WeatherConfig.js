@@ -58,7 +58,7 @@ module.exports = {
 
         myApiKey: { type: "text", label: "API KEY", section: "API", default: "MY_APIKEY" },
         useCacheData: { type: "bool", label: "Use Cache Data", section: "API", default: true },
-        refreshMinutes: { type: "number", label: "Refresh Minutes", section: "API", default: 15 },
+        refreshMinutes: { type: "number", label: "Refresh Minutes", section: "API", default: 5 },
         forceRefresh: { type: "bool", label: "Force Refresh in App", section: "API", default: false },
 
         intervalHours: { type: "number", label: "Interval Hours", section: "API", default: 2 },
@@ -238,13 +238,13 @@ module.exports = {
               {
                 type: "vstack",
                 padding: new Rect(0, 0, 0, 0),
-                size: new Size(57, 0),
+                size: new Size(55, 0),
                 children: [
-                  { type: "text", text: "{{intervalHours}}時間予報:", style: { base: "smallText", color: "{{highlightTextColor}}" } },
-                  { type: "text", text: "気圧(hPa):", style: "columnText" },
-                  { type: "text", text: "風速(m):", style: "columnText" },
-                  { type: "text", text: "気温(°C):", style: "columnText" },
-                  { type: "text", text: "降水(%):", style: "columnText" }
+                  { type: "text", text: "{{intervalHours}}時間予報", style: { base: "smallText", color: "{{highlightTextColor}}" } },
+                  { type: "text", text: "気圧(hPa)", style: "columnText" },
+                  { type: "text", text: "風速(m)", style: "columnText" },
+                  { type: "text", text: "気温(°C)", style: "columnText" },
+                  { type: "text", text: "降水(%)", style: "columnText" }
                 ]
               },
               {
