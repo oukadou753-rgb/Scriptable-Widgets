@@ -399,8 +399,9 @@ module.exports = class WF_WidgetRenderer {
     }
 
     // textOpacity
-    if (style.opacity) {
-      textItem.textOpacity = style.opacity
+    const opacity = this.bind(style.opacity, context)
+    if (opacity) {
+      textItem.textOpacity = opacity
     }
   }
 
