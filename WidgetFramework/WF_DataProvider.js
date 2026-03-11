@@ -65,7 +65,16 @@ module.exports = class WF_DataProvider {
 
           const newLoc = await this.getCurrentLocation()
 
-          if (newLoc) {
+        if (newLoc) {
+
+          const cached = this.storage.readJSON("location")
+
+          const shouldUpdate =
+            !cached ||
+            this.shouldUpdateLocation(newLoc, cached, 1)
+
+          if (shouldUpdate) {
+
             const geo = await this.getLocationName(newLoc.lat, newLoc.lon)
 
             location = {
@@ -76,7 +85,13 @@ module.exports = class WF_DataProvider {
             }
 
             this.saveLocationCache(location)
+
           } else {
+
+            location = cached
+
+          }
+        } else {
 
             // ① cached location
             const cached = this.storage.readJSON("location")
