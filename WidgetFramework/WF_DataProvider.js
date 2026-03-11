@@ -357,9 +357,23 @@ module.exports = class WF_DataProvider {
     }
     catch(e) {
       console.warn("API timeout")
-      return null
-    }
 
+      // =========================
+      // stale cache fallback
+      // =========================
+      if (cache && cache.data) {
+
+        console.warn("Using stale cache")
+
+        return {
+          data: cache.data || {},
+          location: apiConfig.useLocation ? location : null
+        }
+      }
+
+      // キャッシュも無い場合のみエラー
+      throw e
+    }
   }
 
   // =========================
