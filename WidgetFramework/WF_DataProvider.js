@@ -106,6 +106,31 @@ module.exports = class WF_DataProvider {
 
       const data = await this.fetch(url)
 
+      // =========================
+      // APIエラー判定
+      // =========================
+      if (
+        !data ||
+        data.cod && Number(data.cod) !== 200 ||
+        data.error ||
+        data.message === "error"
+      ) {
+        console.warn("API error response")
+
+        if (cache && cache.data) {
+          console.warn("Using cached data")
+          return {
+            data: cache.data || {},
+            location: apiConfig.useLocation ? location : null
+          }
+        }
+
+        throw new warn("API returned error JSON")
+      }
+
+      // =========================
+      // 正常時のみキャッシュ保存
+      // =========================
       this.storage.writeJSON(cacheKey, {
         data,
         timestamp: Date.now()
