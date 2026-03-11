@@ -3,14 +3,19 @@
 // icon-color: deep-gray; icon-glyph: download;
 /**
  * DevLoader
- * 2026/03/08
+ * 2026/03/10
  **/
+const storageType = "icloud"
+// const storageType = "local"
+// const storageType = "bookmark"
+
+const loadMain = true
+
 const useDiff = true
 const useTarget = true
 const targetFiles = [
 //   "Main.js",
 //   "Tools/DevLoader.js",
-//   "Tools/HotLoader.js",
 //   "WidgetFramework/App_WeatherConfig.js",
 //   "WidgetFramework/WF_AppCore.js",
 //   "WidgetFramework/WF_ConfigUI.js",
@@ -33,25 +38,50 @@ const targetFolders = [
  * targetFiles: 個別ファイル指定（GitHub 相対パス）
  * targetFolders: フォルダ単位指定（例: ["WidgetFramework"]）
  **/
-async function devLoader({ useDiff = true, useTarget = false, targetFiles = null, targetFolders = null } = {}) {
+async function devLoader({
+  useDiff = true,
+  useTarget = false,
+  useiCloud = true,
+  useBookmark = false,
+  targetFiles = null,
+  targetFolders = null
+} = {}) {
 
   const user = "oukadou753-rgb"
   const repo = "Scriptable-Widgets"
   const branch = "main"
 
-  const fm = FileManager.iCloud()
-  const baseDir = fm.documentsDirectory()
-  const shaRoot = fm.joinPath(baseDir, "WidgetFramework")
+  let fm
+  let baseDir
+
+  switch (storageType) {
+
+    case "icloud":
+      fm = FileManager.iCloud()
+      baseDir = fm.documentsDirectory()
+      break
+
+    case "bookmark":
+      fm = FileManager.local()
+      baseDir = fm.bookmarkedPath("Scriptable")
+      break
+
+    default:
+      fm = FileManager.local()
+      baseDir = fm.documentsDirectory()
+
+  }
+  console.warn("Using " + storageType)
 
   // --- SHA 管理用 ---
-  const shaFilePath = fm.joinPath(shaRoot, "github_sha.json") // ← 先頭に.は付けない
+  const shaFilePath = fm.joinPath(baseDir, "github_sha.json")
   let localSHA = {}
   if (fm.fileExists(shaFilePath)) {
     try { localSHA = JSON.parse(fm.readString(shaFilePath)) } catch(e) { localSHA = {} }
   }
 
   // --- GitHub 全ファイル取得（再帰的） ---
-  const treeCacheFile = fm.joinPath(shaRoot, "github_tree_cache.json")
+  const treeCacheFile = fm.joinPath(baseDir, "github_tree_cache.json")
   const cacheLife = 600 // 10分
 
   let tree
@@ -134,58 +164,26 @@ async function devLoader({ useDiff = true, useTarget = false, targetFiles = null
     console.log("Downloaded: " + file.path)
   }
 
+  // --- GitHubから削除されたファイルを削除 ---
+  for (const path in localSHA) {
+    if (!newSHA[path]) {
+      const removePath = fm.joinPath(baseDir, path)
+      if (fm.fileExists(removePath)) {
+        fm.remove(removePath)
+        console.log("Removed: " + path)
+      }
+    }
+  }
+
   // SHA 保存
   fm.writeString(shaFilePath, JSON.stringify(newSHA, null, 2))
   console.log("Update complete")
 
   // --- Main 実行 ---
-  const Main = importModule("Main")
-  if (Main.run) await Main.run()
+  if (loadMain) {
+    const Main = importModule("Main")
+    if (Main.run) await Main.run(storageType)
+  }
 }
 
 await devLoader({ useDiff, useTarget, targetFiles, targetFolders })
-
-/**
- * DevLoader 呼び出しテンプレート（新フラグ版）
- **/
-
-// --- 初回全ファイル取得 ---
-// await devLoader({
-//   useDiff: false,          // 差分無視
-//   useTarget: false          // 全体対象
-// })
-
-// --- 通常運用: 指定ファイルのみ更新 ---
-// await devLoader({
-//   useDiff: true,           // 差分のみ
-//   useTarget: true,         // 指定対象のみ
-//   targetFiles: ["WidgetFramework/WF_AppCore.js","WidgetFramework/WF_DataProvider.js"]
-// })
-
-// --- 特定フォルダ単位で更新 ---
-// await devLoader({
-//   useDiff: true,           // 差分のみ
-//   useTarget: true,         // 指定フォルダのみ
-//   targetFolders: ["WidgetFramework"]
-// })
-
-// --- ファイル＋フォルダ併用 ---
-// await devLoader({
-//   useDiff: true,
-//   useTarget: true,
-//   targetFiles: ["Main.js"],
-//   targetFolders: ["WidgetFramework"]
-// })
-
-// --- HotReload: SHA 差分で更新されたファイルのみ自動取得 ---
-// await devLoader({
-//   useDiff: true,
-//   useTarget: false
-// })
-
-// --- HotReload + 特定フォルダ併用 ---
-// await devLoader({
-//   useDiff: true,
-//   useTarget: true,
-//   targetFolders: ["WidgetFramework"]
-// })
