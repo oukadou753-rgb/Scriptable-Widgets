@@ -244,7 +244,7 @@ module.exports = {
                   { type: "text", text: " / ", style: "largeText" },
                   { type: "text", text: "{{current_tempMin}}", style: "largeText" },
                   { type: "text", text: "°C", style: "currentDataText" },
-                  { type: "spacer" },
+                  { type: "spacer", size: 15 },
                   { type: "text", text: "体感温度：", style: "currentColumnText" },
                   { type: "text", text: "{{current_feelslike}}", style: "largeText" },
                   { type: "text", text: "°C", style: "currentDataText" },
@@ -259,7 +259,7 @@ module.exports = {
                   { type: "text", text: "風速：", style: "currentColumnText" },
                   { type: "text", text: "{{current_windSpeed}}", style: { base: "largeText", color: "{{current_windSpeedColor}}" } },
                   { type: "text", text: "m/s", style: { base: "currentDataText", color: "{{current_windSpeedColor}}" } },
-                  { type: "spacer" },
+                  { type: "spacer", size: 15 },
                   { type: "text", text: "風向き：", style: "currentColumnText" },
                   { type: "text", text: "{{current_windIcon}} ", style: "currentColumnText" },
                   { type: "text", text: "{{current_windDegree}}", style: "largeText" },
@@ -348,14 +348,16 @@ module.exports = {
           {
             type: "hstack",
             size: new Size(0, 25),
-            spacing: 6,
+            spacing: 3,
             align: "center",
             children: [
               { type: "spacer" },
-              { type: "image", src: "{{current_sunriseIcon}}", tint: "{{current_sunriseIconColor}}", size: 30 },
+              { type: "image", src: "{{current_sunriseIcon}}", tint: "{{current_sunriseIconColor}}", size: 28 },
               { type: "text", text: "{{current_sunriseTime}}", style: { base: "extraLargeText", color: "{{current_sunriseIconColor}}" } },
-              { type: "spacer" },
-              { type: "image", src: "{{current_sunsetIcon}}", tint: "{{current_sunsetIconColor}}", size: 30 },
+              { type: "spacer", size: 5 },
+              { type: "text", text: "{{current_sunIcon}}", style: { base: "extraLargeText", color: "{{current_sunsetIconColor}}" } },
+              { type: "spacer", size: 5 },
+              { type: "image", src: "{{current_sunsetIcon}}", tint: "{{current_sunsetIconColor}}", size: 28 },
               { type: "text", text: "{{current_sunsetTime}}", style: { base: "extraLargeText", color: "{{current_sunsetIconColor}}" } },
               { type: "spacer" }
             ]
@@ -376,7 +378,7 @@ module.exports = {
             size: new Size(0, 12),
             justify: "start",
             children: [
-              { type: "text", text: "APP_DEV_MODE", style: "footerText" },
+//               { type: "text", text: "{{location_latStr}} : {{location_lonStr}}", style: "footerText" },
               { type: "spacer" },
               { type: "text", text: "Update: ", style: "updateText" },
               { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
@@ -562,6 +564,7 @@ module.exports = {
     const sunriseTime = this.convert12to24(forecastData[ 0 ].astro.sunrise)
     const sunsetTime = this.convert12to24(forecastData[ 0 ].astro.sunset)
     const isDay = this.isTimeInRangeAcrossDay(`${h}:${m}`, sunriseTime, sunsetTime)
+    const isAm = now.getHours() < 12
 
     const current = {
       updated: data.current.last_updated,
@@ -596,13 +599,15 @@ module.exports = {
       discomfortIndex: discomfortIndex,
       discomfortIndexColor: this.getDiscomfortColor(discomfortIndex, defaultTextColor),
 
+      sunIcon: this.getMoonphaseImage(now, !isDay),
+
       sunriseTime,
       sunriseIcon: "sunrise.fill",
-      sunriseIconColor: isDay ? "" : "#999999",
+      sunriseIconColor: isAm ? "" : "#666666",
 
       sunsetTime,
       sunsetIcon: "sunset.fill",
-      sunsetIconColor: isDay ? "#999999" : ""
+      sunsetIconColor: isAm ? "#666666" : ""
     }
 
     return current
@@ -811,6 +816,13 @@ module.exports = {
     }
 
     return check >= start && check <= end;
+  },
+
+  getMoonphaseImage( dt, isMoonUp = true ) {
+    Date.prototype.getMoonphase=function(){let t=0,e=0,$=0,o=0,n=this.getFullYear(),h=this.getMonth()+1,r=this.getDate();return h<3&&(n--,h+=12),++h,$=(t=365.25*n)+(e=30.6*h)+r-694039.09,$/=29.5305882,o=parseInt($),$-=o,(o=Math.round(8*$))>=8&&(o=0),o}
+    const sunIcon = '\ud83d\udfe0';
+    const moonIcons = [ '\ud83c\udf11', '\ud83c\udf12', '\ud83c\udf13', '\ud83c\udf14', '\ud83c\udf15', '\ud83c\udf16', '\ud83c\udf17', '\ud83c\udf18' ];
+    return isMoonUp ? moonIcons[ dt.getMoonphase() ] : sunIcon;
   },
 
   pos(a,b,c,d){
