@@ -5,6 +5,10 @@
  * Main
  **/
 const DEFAULT_APP_ID = "Weather"
+const DEFAULT_STRAGE_TYPE = "icloud"
+// "icloud"
+// "local"
+// "bookmark"
 
 const APP_DEV_MODE = false
 const APP_ID = args.widgetParameter || DEFAULT_APP_ID
@@ -13,11 +17,9 @@ const APP_INFO = {
   id: APP_ID,
   version: APP_VERSION,
   debug: APP_DEV_MODE,
-  storageType: "icloud"
+  storageType: DEFAULT_STRAGE_TYPE
 }
-// "icloud"
-// "local"
-// "bookmark"
+
 
 const Main = {
 
@@ -40,16 +42,18 @@ const Main = {
     }
   },
 
-  async run() {
+  async run(storageType) {
+    APP_INFO.storageType = storageType
+    console.warn(`Using ${storageType}`)
     const APP_CONFIG = Main.loadAppConfig(APP_ID);
     await Main.start(APP_CONFIG)
   }
 }
-module.exports = Main;
+module.exports = Main
 
 const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
 if (module_name == Script.name()) {
   (async() => {
-    await Main.run()
+    await Main.run(DEFAULT_STRAGE_TYPE)
   })()
 }
