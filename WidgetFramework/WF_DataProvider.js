@@ -228,6 +228,7 @@ module.exports = class WF_DataProvider {
 
         return `${k}=${encodeURIComponent(val)}`
       })
+      .filter(Boolean)
       .join("&")
 
     return query ? `${base}/${endpoint}?${query}` : `${base}/${endpoint}`
