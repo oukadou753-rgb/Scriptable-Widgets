@@ -29,6 +29,7 @@ module.exports = {
         currentDataText: { fontSize: 12, bold: true, color: "{{defaultTextColor}}" },
         columnText: { fontSize: 11, bold: true, color: "{{highlightTextColor}}" },
         dataText: { fontSize: 11, bold: true, color: "{{defaultTextColor}}" },
+        extraLargeText: { fontSize: 24, bold: true, color: "{{defaultTextColor}}" },
         largeText: { fontSize: 20, bold: true, color: "{{defaultTextColor}}" },
         normalText: { fontSize: 16, bold: true, color: "{{defaultTextColor}}" },
         smallText: { fontSize: 9, bold: true, color: "{{defaultTextColor}}" }
@@ -163,7 +164,7 @@ module.exports = {
             children: [
               {
                 type: "vstack",
-                size: new Size(150, 0),
+                size: new Size(140, 0),
                 padding: this.pos(5, 5, 5, -5),
                 align: "center",
                 children: [
@@ -179,7 +180,7 @@ module.exports = {
               },
               {
                 type: "vstack",
-                size: new Size(110, 0),
+                size: new Size(120, 0),
                 align: "center",
                 children: [
                   {
@@ -190,7 +191,7 @@ module.exports = {
                       { type: "spacer" },
                       { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: "#ff453a" } },
                       { type: "text", text: "°C", style: { base: "normalText", color: "#ff453a" } },
-                      { type: "spacer", size: 10 },
+                      { type: "spacer", size: 13 },
                       { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: "#487de7" } },
                       { type: "text", text: "％", style: { base: "normalText", color: "#487de7" } },
                       { type: "spacer" }
@@ -260,6 +261,7 @@ module.exports = {
                   { type: "text", text: "m/s", style: { base: "currentDataText", color: "{{current_windSpeedColor}}" } },
                   { type: "spacer" },
                   { type: "text", text: "風向き：", style: "currentColumnText" },
+                  { type: "text", text: "{{current_windIcon}} ", style: "currentColumnText" },
                   { type: "text", text: "{{current_windDegree}}", style: "largeText" },
                   { type: "spacer" }
                 ]
@@ -268,6 +270,7 @@ module.exports = {
           },
           {
             type: "hstack",
+            size: new Size(0, 75),
             justify: "center",
             children: [
               {
@@ -320,7 +323,7 @@ module.exports = {
                     },
                     { type: "hstack", align: "center", children: [
                         { type: "spacer" },
-                        { type: "text", text: "{{windIcon}} ", style: { base: "smallText", color: "{{highlightTextColor}}" } },
+                        { type: "text", text: "{{windIcon}} ", style: { base: "dataText", color: "{{highlightTextColor}}" } },
                         { type: "text", text: "{{windTrend }} ", style: { base: "smallText", color: "{{windSpeedColor}}" } },
                         { type: "text", text: "{{windSpeed}}", style: { base: "dataText", color: "{{windSpeedColor}}" } }
                       ]
@@ -342,36 +345,21 @@ module.exports = {
               }
             ]
           },
-//           {
-//             type: "hstack",
-//             size: new Size(0, 40),
-//             align: "center",
-//             children: [
-//               {
-//                 type: "vstack",
-//                 justify: "center",
-//                 children: [
-//                   {
-//                     type: "hstack",
-//                     children: [
-//                       { type: "spacer" },
-//                   { type: "text", text: "{{current_pressureMb}}", style: "defaultText" },
-//                       { type: "spacer" }
-//                     ]
-//                   },
-//                 ]
-//               },
-//               {
-//                 type: "vstack",
-//                 align: "center",
-//                 children: [
-//                   { type: "spacer" },
-//                   { type: "text", text: "{{current_pressureMb}}", style: "defaultText" },
-//                   { type: "spacer" }
-//                 ]
-//               },
-//             ]
-//           },
+          {
+            type: "hstack",
+            size: new Size(0, 25),
+            spacing: 6,
+            align: "center",
+            children: [
+              { type: "spacer" },
+              { type: "image", src: "{{current_sunriseIcon}}", tint: "{{current_sunriseIconColor}}", size: 30 },
+              { type: "text", text: "{{current_sunriseTime}}", style: { base: "extraLargeText", color: "{{current_sunriseIconColor}}" } },
+              { type: "spacer" },
+              { type: "image", src: "{{current_sunsetIcon}}", tint: "{{current_sunsetIconColor}}", size: 30 },
+              { type: "text", text: "{{current_sunsetTime}}", style: { base: "extraLargeText", color: "{{current_sunsetIconColor}}" } },
+              { type: "spacer" }
+            ]
+          },
         ],
 
         footer: [
@@ -546,7 +534,6 @@ module.exports = {
 
     const v = config?.values || {}
     const defaultTextColor = v.defaultTextColor
-//     console.log(JSON.stringify(data.current, null, 2))
 
     const nowEpoch = Math.floor(Date.now() / 1000) - 3600
 
@@ -554,33 +541,44 @@ module.exports = {
     const hours = forecastData.flatMap(day => day.hour)
       .filter(h => h.time_epoch >= nowEpoch)
       .slice(0, 1)
-    console.log(JSON.stringify(forecastData[ 0 ].day, null, 2))
 
-    const tempC = Math.round(data.current.temp_c)
+    console.log(JSON.stringify(data, null, 2))
+//     console.log(JSON.stringify(forecastData[ 0 ].day, null, 2))
+//     console.log(JSON.stringify(forecastData[ 0 ].astro, null, 2))
+
+    const temp = Math.round(data.current.temp_c)
     const tempMin = Math.round(forecastData[0].day.mintemp_c)
     const tempMax = Math.round(forecastData[0].day.maxtemp_c)
     const humidity = data.current.humidity
-    const discomfortIndex = this.getDiscomfortIndex(tempC, humidity)
+    const discomfortIndex = this.getDiscomfortIndex(temp, humidity)
     const windSpeed = (data.current.wind_kph / 3.6).toFixed(1)
     const windDegree = this.getDegreeString(data.current.wind_dir)
     const rain = Math.ceil(Math.max(...[ hours[0].chance_of_rain, hours[0].chance_of_snow ]) / 5) * 5
 
+    const now = new Date()
+    const h = String(now.getHours()).padStart(2, '0')
+    const m = String(now.getMinutes()).padStart(2, '0')
+
+    const sunriseTime = this.convert12to24(forecastData[ 0 ].astro.sunrise)
+    const sunsetTime = this.convert12to24(forecastData[ 0 ].astro.sunset)
+    const isDay = this.isTimeInRangeAcrossDay(`${h}:${m}`, sunriseTime, sunsetTime)
 
     const current = {
       updated: data.current.last_updated,
       isDay: data.current.is_day,
 
-      temp: tempC,
-      tempMin: tempMin,
-      tempMax: tempMax,
+      temp,
+      tempMin,
+      tempMax,
       feelslike: Math.round(data.current.feelslike_c),
 
       condition: data.current.condition.text,
       icon: this.makeWeatherApiIcon(data.current.condition.icon),
 
-      humidity: humidity,
+      humidity,
       cloud: data.current.cloud,
 
+      windIcon: this.convertWindDegToIcon(data.current.wind_degree),
       windSpeed: windSpeed,
       windSpeedColor: this.getWindColor(windSpeed, defaultTextColor),
       windDir: data.current.wind_dir,
@@ -596,7 +594,15 @@ module.exports = {
       rain: rain,
       rainColor: this.getRainColor(rain, defaultTextColor),
       discomfortIndex: discomfortIndex,
-      discomfortIndexColor: this.getDiscomfortColor(discomfortIndex, defaultTextColor)
+      discomfortIndexColor: this.getDiscomfortColor(discomfortIndex, defaultTextColor),
+
+      sunriseTime,
+      sunriseIcon: "sunrise.fill",
+      sunriseIconColor: isDay ? "" : "#999999",
+
+      sunsetTime,
+      sunsetIcon: "sunset.fill",
+      sunsetIconColor: isDay ? "#999999" : ""
     }
 
     return current
@@ -767,6 +773,44 @@ module.exports = {
   getDiscomfortIndex(temp, humidity) {
     const index = 0.81 * temp + 0.01 * humidity * (0.99 * temp - 14.3) + 46.3
     return Number(index.toFixed(1))
+  },
+
+  timeToMinutes(timeString) {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours * 60 + minutes;
+  },
+
+  convert12to24(time12h) {
+    // 正規表現で時、分、AM/PMを抽出
+    const [_, hours, minutes, modifier] = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+
+    let hours24 = parseInt(hours, 10);
+
+    if (modifier.toUpperCase() === 'PM' && hours24 < 12) {
+      hours24 += 12;
+    } else if (modifier.toUpperCase() === 'AM' && hours24 === 12) {
+      hours24 = 0;
+    }
+
+    // 0埋めしてHH:mm形式で返す
+    return `${String(hours24).padStart(2, '0')}:${minutes}`;
+  },
+
+  isTimeInRangeAcrossDay(checkTime, startTime, endTime) {
+    let start = this.timeToMinutes(startTime);
+    let end = this.timeToMinutes(endTime);
+    let check = this.timeToMinutes(checkTime);
+
+    // 終了時間が開始時間より前なら、翌日とみなして+24時間
+    if (end < start) {
+      end += 24 * 60;
+      // チェックする時間も、夜中の場合は+24時間する必要がある
+      if (check < start) {
+        check += 24 * 60;
+      }
+    }
+
+    return check >= start && check <= end;
   },
 
   pos(a,b,c,d){
