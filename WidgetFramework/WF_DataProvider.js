@@ -164,7 +164,11 @@ module.exports = class WF_DataProvider {
 
     const params = { ...(apiConfig.params || {}) }
 
-    if (apiConfig.useLocation && location?.lat && location?.lon) {
+    if (
+      apiConfig.useLocation &&
+      location?.lat != null &&
+      location?.lon != null
+    ) {
       params.q = `${location.lat},${location.lon}`
     }
 
