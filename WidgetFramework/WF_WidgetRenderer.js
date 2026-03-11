@@ -24,6 +24,12 @@ module.exports = class WF_WidgetRenderer {
     const values = cfg.values || {}
     const layout = cfg.layout || {}
 
+    // layout padding
+    if (layout.padding) {
+      const p = layout.padding
+      widget.setPadding(p.top, p.left, p.bottom, p.right)
+    }
+
     // 背景
     if (values.useBgGradient && values.bgColorTop && values.bgColorBottom) {
       widget.backgroundGradient = await this.setGradientBackground(values.bgColorTop, values.bgColorBottom)
