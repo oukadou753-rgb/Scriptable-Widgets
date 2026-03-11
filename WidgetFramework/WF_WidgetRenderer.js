@@ -339,8 +339,13 @@ module.exports = class WF_WidgetRenderer {
         style = { ...(styles[styleInput.base] || {}) }
       }
 
-      // base の上に上書き
-      style = { ...style, ...styleInput }
+      // 空文字は上書きしない
+      for (const k in styleInput) {
+        const v = styleInput[k]
+        if (v !== "" && v !== null && v !== undefined) {
+          style[k] = v
+        }
+      }
     }
     else {
       style = styles.defaultText || {}
