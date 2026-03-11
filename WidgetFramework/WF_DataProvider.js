@@ -224,6 +224,8 @@ module.exports = class WF_DataProvider {
           }
         }
 
+        if (val == null || val === "") return null
+
         return `${k}=${encodeURIComponent(val)}`
       })
       .join("&")
