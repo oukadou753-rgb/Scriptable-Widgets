@@ -316,9 +316,8 @@ module.exports = class WF_WidgetRenderer {
     if(size)
       node.imageSize = new Size(size, size)
   
-    if(el.opacity)
+    if(opacity !== "" && opacity !== null && opacity !== undefined)
       node.imageOpacity = Number(opacity)
-
   }
 
   // =========================
@@ -396,6 +395,12 @@ module.exports = class WF_WidgetRenderer {
       const x = Number(style.shadowOffset.x || 0)
       const y = Number(style.shadowOffset.y || 0)
       textItem.shadowOffset = new Point(x, y)
+    }
+
+    // textOpacity
+    const opacity = this.bind(style.opacity, context)
+    if (opacity !== undefined && opacity !== null) {
+      textItem.textOpacity = Number(opacity)
     }
   }
 
@@ -530,13 +535,17 @@ module.exports = class WF_WidgetRenderer {
   // ■ toColor
   // =========================
   toColor(value) {
-    if (!value) return this.getDefaultTextColor()
-    if (value instanceof Color) return value
+
+    if (value === "" || value === null || value === undefined)
+      return null
+
+    if (value instanceof Color)
+      return value
 
     try {
       return new Color(String(value))
     } catch (e) {
-      return this.getDefaultTextColor()
+      return null
     }
   }
 
