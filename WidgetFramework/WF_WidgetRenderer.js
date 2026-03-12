@@ -341,7 +341,7 @@ module.exports = class WF_WidgetRenderer {
 
       // 空文字は上書きしない
       for (const k in styleInput) {
-        //if (k === "base") continue
+        if (k === "base") continue
         const v = styleInput[k]
         if (v !== "" && v !== null && v !== undefined) {
           style[k] = v
