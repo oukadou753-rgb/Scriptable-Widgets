@@ -16,6 +16,20 @@ function pos(a,b,c,d){
     return {top:a,left:b,bottom:c,right:b}
   return {top:a,left:b,bottom:c,right:d}
 }
+function degreeTo16Compass(deg) {
+  const dirs = [
+    "N", "NNE", "NE", "ENE",
+    "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW",
+    "W", "WNW", "NW", "NNW"
+  ]
+  const index = Math.floor(((deg + 11.25) % 360) / 22.5)
+  return dirs[index]
+}
+function getDegString(deg) { return Math.floor((deg + 11.25) / 22.5) * 22.5 + 180 }
+function drawCircle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,p=1,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[];for(let k=0;k<360;k++)g=(a-y/2)*Math.cos(m=(h=-90+p*k+o)*(Math.PI/180)),f=(a-y/2)*Math.sin(m),c=d+g,u=$+f,T.push(new Point(c,u));S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
+function drawTriangle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[],k=[];for(let F=0;F<4;F++)0==F?h=-90+o:1==F?h=-90+o+n:2==F?p=(h+(360-2*n)/2)*(Math.PI/180):3==F&&(h=-90+o+(360-n)),m=h*(Math.PI/180),2==F?(g=(a-i)*Math.cos(p),f=(a-i)*Math.sin(p)):(g=(a+r)*Math.cos(m),f=(a+r)*Math.sin(m)),c=d+g,u=$+f,T.push(new Point(c,u)),k.push([c,u]);S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
+function drawArrow(t,e,a){let r=new Size(32,32),i=new DrawContext;i.opaque=!1,i.respectScreenScale=!0,i.size=r;let n={triangle:{strokeColor:e,strokeWidth:0,fillColor:e},circle:{strokeColor:e,strokeWidth:2,fillColor:"transparent"}};return a&&drawCircle(i,r,15,0,0,0,360,t,n.circle),drawTriangle(i,r,12,0,9,140,0,t,n.triangle),i.getImage()}
 
 // ======================
 // Header Block
@@ -175,7 +189,8 @@ const currentDataBlock3 = [
           { type: "text", text: "m/s", style: { base: "currentDataText", color: "{{current_windSpeedColor}}" } },
           { type: "spacer", size: 15 },
           { type: "text", text: "風向き：", style: "currentColumnText" },
-          { type: "text", text: "{{current_windIcon}} ", style: "currentColumnText" },
+          { type: "image", src: "{{current_windIcon}}", tint: "{{highlightTextColor}}", size: 24 },
+          { type: "spacer", size: 3 },
           { type: "text", text: "{{current_windDegree}}", style: "largeText" },
           { type: "spacer" }
         ]
@@ -245,7 +260,8 @@ const forecastDataBlock = [
             },
             { type: "hstack", align: "center", children: [
                 { type: "spacer" },
-                { type: "text", text: "{{windIcon}} ", style: { base: "dataText", color: "{{highlightTextColor}}" } },
+                { type: "image", src: "{{windIcon}}", tint: "{{highlightTextColor}}", size: 13 },
+                { type: "spacer", size: 3 },
                 { type: "text", text: "{{windTrend }} ", style: { base: "smallText", color: "{{windSpeedColor}}" } },
                 { type: "text", text: "{{windSpeed}}", style: { base: "dataText", color: "{{windSpeedColor}}" } }
               ]
@@ -528,11 +544,14 @@ module.exports = {
 
     const items = this.forecastDataTransform(data, config)
     const meta = this.metaDataTransform(data, config)
+    const flat = this.flatObj(meta)
+//     console.log(Object.keys(flat))
+//     console.log(flat.current_windImage instanceof Image)
 
     // 共通データ返却（統一フォーマット）
     return {
       items,
-      ...this.flatObj(meta)
+      ...flat
     }
   },
 
@@ -631,6 +650,9 @@ module.exports = {
     const isDay = this.isTimeInRangeAcrossDay(`${h}:${m}`, sunriseTime, sunsetTime)
     const isAm = now.getHours() < 12
 
+    const wind_degree = data.current.wind_degree
+    const windIcon = drawArrow(getDegString(wind_degree), null, true)
+
     const current = {
       updated: data.current.last_updated,
 //       isDay: data.current.is_day,
@@ -646,7 +668,7 @@ module.exports = {
       humidity,
 //       cloud: data.current.cloud,
 
-      windIcon: this.convertWindDegToIcon(data.current.wind_degree),
+      windIcon,
       windSpeed: windSpeed,
       windSpeedColor: this.getWindColor(windSpeed, defaultTextColor),
       windDir: data.current.wind_dir,
@@ -709,12 +731,15 @@ module.exports = {
       const rainTrend = this.trendIcon(h.chance_of_rain, prev.chance_of_rain)
       const rain = Math.ceil(Math.max(...[ h.chance_of_rain, h.chance_of_snow ]) / 5) * 5
 
+      const wind_degree = h.wind_degree
+      const windIcon = drawArrow(getDegString(wind_degree), null, true)
+
       return {
         hour: Number(h.time.split(" ")[1].slice(0, 2)) + "時",
         pressure: Math.round(h.pressure_mb),
         pressureColor: this.getPressureColor(h.pressure_mb, prev.pressure_mb, defaultTextColor),
         pressureTrend: pressureTrend,
-        windIcon: this.convertWindDegToIcon(h.wind_degree),
+        windIcon,
         windSpeed: Math.round(h.wind_kph / 3.6),
         windSpeedColor: this.getWindColor(Math.round(h.wind_kph / 3.6), defaultTextColor),
         windTrend: windTrend,
@@ -743,7 +768,8 @@ module.exports = {
         typeof value === "object" &&
         value !== null &&
         !Array.isArray(value) &&
-        !(value instanceof Date)
+        !(value instanceof Date) &&
+        !(value instanceof Image)
       ) {
         Object.assign(result, this.flatObj(value, newKey + "_"))
       } else {
@@ -779,7 +805,7 @@ module.exports = {
   },
 
   // 例：風向きをアイコンに変換する関数
-  convertWindDegToIcon(deg) {
+  _convertWindDegToIcon(deg) {
     if (deg >= 337.5 || deg < 22.5) return "↑"
     if (deg >= 22.5 && deg < 67.5) return "↗"
     if (deg >= 67.5 && deg < 112.5) return "→"
