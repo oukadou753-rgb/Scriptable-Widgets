@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-gray; icon-glyph: magic;
 /**
  * WF_WidgetRenderer
  **/
@@ -338,7 +341,7 @@ module.exports = class WF_WidgetRenderer {
 
       // 空文字は上書きしない
       for (const k in styleInput) {
-        if (k === "base") continue
+        //if (k === "base") continue
         const v = styleInput[k]
         if (v !== "" && v !== null && v !== undefined) {
           style[k] = v
@@ -357,13 +360,13 @@ module.exports = class WF_WidgetRenderer {
 
     const colorValue = this.bind(style.color, context)
 
-    console.log("STYLE COLOR RAW: " + style.color)
-    console.log("BIND COLOR: " + colorValue)
+//     console.log("STYLE COLOR RAW: " + style.color)
+//     console.log("BIND COLOR: " + colorValue)
 
     if (colorValue === "") {
 
       const baseColor = styles[styleInput?.base]?.color
-      console.log("USE BASE COLOR: " + baseColor)
+//       console.log("USE BASE COLOR: " + baseColor)
 
       if (baseColor) {
         const baseBind = this.bind(baseColor, context)
@@ -371,11 +374,12 @@ module.exports = class WF_WidgetRenderer {
 
         if (finalColor) {
           textItem.textColor = finalColor
-          console.log("APPLIED BASE COLOR")
+//           console.log("APPLIED BASE COLOR")
         }
       }
 
-    } else if (colorValue) {
+    }
+    else if (colorValue) {
 
       const resolvedColor = this.resolveColor(colorValue, context)
       const finalColor = this.toColor(resolvedColor)
@@ -418,7 +422,7 @@ module.exports = class WF_WidgetRenderer {
     // textOpacity
     const opacity = this.bind(style.opacity, context)
     if (opacity !== undefined && opacity !== null) {
-      //textItem.textOpacity = Number(opacity)
+      textItem.textOpacity = Number(opacity)
     }
   }
 
