@@ -20,7 +20,6 @@ const APP_INFO = {
   storageType: DEFAULT_STRAGE_TYPE
 }
 
-
 const Main = {
 
   loadAppConfig(appId) {
@@ -44,7 +43,6 @@ const Main = {
 
   async run(storageType) {
     APP_INFO.storageType = storageType
-    console.warn(`Using ${storageType}`)
     const APP_CONFIG = Main.loadAppConfig(APP_ID);
     await Main.start(APP_CONFIG)
   }
@@ -54,6 +52,7 @@ module.exports = Main
 const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
 if (module_name == Script.name()) {
   (async() => {
+    console.log("USING: " + DEFAULT_STRAGE_TYPE)
     await Main.run(DEFAULT_STRAGE_TYPE)
   })()
 }
