@@ -355,19 +355,36 @@ module.exports = class WF_WidgetRenderer {
       ? Font.boldSystemFont(size)
       : Font.systemFont(size)
 
-    let colorValue = this.bind(style.color, context)
+    const colorValue = this.bind(style.color, context)
 
-    // "" の場合は base の color を使う
+    console.log("STYLE COLOR RAW: " + style.color)
+    console.log("BIND COLOR: " + colorValue)
+
     if (colorValue === "") {
-      colorValue = style.color
-    }
 
-    const finalColor = this.toColor(
-      this.resolveColor(colorValue, context)
-    )
+      const baseColor = styles[styleInput?.base]?.color
+      console.log("USE BASE COLOR: " + baseColor)
 
-    if (finalColor) {
-      textItem.textColor = finalColor
+      if (baseColor) {
+        const baseBind = this.bind(baseColor, context)
+        const finalColor = this.toColor(baseBind)
+
+        if (finalColor) {
+          textItem.textColor = finalColor
+          console.log("APPLIED BASE COLOR")
+        }
+      }
+
+    } else if (colorValue) {
+
+      const resolvedColor = this.resolveColor(colorValue, context)
+      const finalColor = this.toColor(resolvedColor)
+
+      if (finalColor) {
+        textItem.textColor = finalColor
+        console.log("APPLIED CUSTOM COLOR")
+      }
+
     }
 
     // lineLimit
