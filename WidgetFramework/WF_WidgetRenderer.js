@@ -379,7 +379,7 @@ module.exports = class WF_WidgetRenderer {
     if (style.minimumScaleFactor !== undefined) {
       textItem.minimumScaleFactor = Number(style.minimumScaleFactor)
     }
-/*
+
     // shadowColor
     const shadowColor = this.bind(style.shadowColor, context)
     if (shadowColor) {
