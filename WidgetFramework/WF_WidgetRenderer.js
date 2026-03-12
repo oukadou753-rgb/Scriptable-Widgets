@@ -527,13 +527,14 @@ module.exports = class WF_WidgetRenderer {
   // ■ toColor
   // =========================
   toColor(value) {
-    if (!value) return this.getDefaultTextColor()
-    if (value instanceof Color) return value
-
+    if (value === "" || value === null || value === undefined)
+      return null
+    if (value instanceof Color)
+      return value
     try {
       return new Color(String(value))
     } catch (e) {
-      return this.getDefaultTextColor()
+      return null
     }
   }
 
