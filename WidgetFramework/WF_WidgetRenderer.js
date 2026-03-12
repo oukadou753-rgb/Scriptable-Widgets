@@ -355,16 +355,19 @@ module.exports = class WF_WidgetRenderer {
       ? Font.boldSystemFont(size)
       : Font.systemFont(size)
 
-    const colorValue = this.bind(style.color, context)
+    let colorValue = this.bind(style.color, context)
 
-    if (colorValue) {
-      const finalColor = this.toColor(
-        this.resolveColor(colorValue, context)
-      )
+    // "" の場合は base の color を使う
+    if (colorValue === "") {
+      colorValue = style.color
+    }
 
-      if (finalColor) {
-        textItem.textColor = finalColor
-      }
+    const finalColor = this.toColor(
+      this.resolveColor(colorValue, context)
+    )
+
+    if (finalColor) {
+      textItem.textColor = finalColor
     }
 
     // lineLimit
