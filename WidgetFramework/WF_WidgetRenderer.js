@@ -431,7 +431,7 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   bind(text, context) {
 
-    if (!text) return ""
+    if (text === undefined || text === null) return ""
 
     return String(text).replace(/{{(.*?)}}/g, (_, rawKey) => {
       const key = rawKey.trim()
