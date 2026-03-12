@@ -273,17 +273,16 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   async renderImage(container, el, context){
 
-    let image
-
-    // ★ まず Image object をチェック
     const rawSrc = this.resolveData(el.src, context)
 
-    if(rawSrc instanceof Image){
+    let image
+
+    // ★ DrawContext Image
+    if (rawSrc instanceof Image) {
 
       image = rawSrc
 
-    }
-    else{
+    } else {
 
       const src = this.bind(el.src, context)
       if(!src) return
@@ -291,14 +290,14 @@ module.exports = class WF_WidgetRenderer {
       const size = el.size || 16
 
       // URL
-      if(src.startsWith("http")){
+      if(typeof src === "string" && src.startsWith("http")){
 
         image = await this.fetchImage(src)
 
       }
 
       // SF Symbol
-      else if(!src.includes("/")){
+      else if(typeof src === "string" && !src.includes("/")){
 
         const sym = SFSymbol.named(src)
         sym.applyFont(Font.systemFont(size))
@@ -317,11 +316,11 @@ module.exports = class WF_WidgetRenderer {
 
     }
 
+    const node = container.addImage(image)
+
     const size = el.size || 16
     const tint = this.bind(el.tint, context)
     const opacity = this.bind(el.opacity, context)
-
-    const node = container.addImage(image)
 
     if(tint != "")
       node.tintColor = new Color(tint)
@@ -329,7 +328,7 @@ module.exports = class WF_WidgetRenderer {
     if(size)
       node.imageSize = new Size(size, size)
 
-    if(opacity)
+    if(opacity !== "" && opacity !== null && opacity !== undefined)
       node.imageOpacity = Number(opacity)
 
   }
