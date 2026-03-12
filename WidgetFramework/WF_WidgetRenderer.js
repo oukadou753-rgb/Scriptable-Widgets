@@ -360,11 +360,11 @@ module.exports = class WF_WidgetRenderer {
 
     const colorValue = this.bind(style.color, context)
 
-    if (colorValue) {
+    if (colorValue !== "" && colorValue !== null && colorValue !== undefined) {
       const finalColor = this.toColor(
         this.resolveColor(colorValue, context)
       )
-
+    
       if (finalColor) {
         textItem.textColor = finalColor
       }
@@ -400,10 +400,9 @@ module.exports = class WF_WidgetRenderer {
 
     // textOpacity
     const opacity = this.bind(style.opacity, context)
-    if (opacity) {
-      textItem.textOpacity = opacity
+    if (opacity !== undefined && opacity !== null) {
+      textItem.textOpacity = Number(opacity)
     }
-    */
   }
 
   // =========================
