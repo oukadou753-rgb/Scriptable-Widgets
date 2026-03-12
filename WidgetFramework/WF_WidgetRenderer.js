@@ -273,67 +273,64 @@ module.exports = class WF_WidgetRenderer {
   // =========================
 async renderImage(container, el, context){
 
-  let image
-
-  const raw = this.resolveData(el.src, context)
-
-  // ★ DrawContext Image
-  if (raw instanceof Image) {
-
-    image = raw
-
-  } else {
-
-    const src = this.bind(el.src, context)
-    if (!src) return
-
-    const size = el.size || 16
-
-    // URL
-    if (typeof src === "string" && src.startsWith("http")) {
-
-      image = await this.fetchImage(src)
-
-    }
-
-    // SF Symbol
-    else if (typeof src === "string" && !src.includes("/")) {
-
-      const sym = SFSymbol.named(src)
-      sym.applyFont(Font.systemFont(size))
-
-      image = sym.image
-
-    }
-
-    // local file
-    else if (typeof src === "string") {
-
-      const fm = FileManager.local()
-      image = fm.readImage(src)
-
-    } else {
-
-      console.warn("Invalid image src:", src)
-      return
-
-    }
-  }
-
-  const node = container.addImage(image)
+  const rawSrc = this.resolveData(el.src, context)   // ★追加
 
   const size = el.size || 16
   const tint = this.bind(el.tint, context)
   const opacity = this.bind(el.opacity, context)
 
-  if (tint !== "")
+  let image
+
+  // ★ DrawContext Image
+  if (rawSrc instanceof Image){
+
+    image = rawSrc
+
+  }
+
+  // URL
+  else if(typeof rawSrc === "string" && rawSrc.startsWith("http")){
+
+    image = await this.fetchImage(rawSrc)
+
+  }
+
+  // SF Symbol
+  else if(typeof rawSrc === "string" && !rawSrc.includes("/")){
+
+    const sym = SFSymbol.named(rawSrc)
+    sym.applyFont(Font.systemFont(size))
+
+    image = sym.image
+
+  }
+
+  // local image
+  else if(typeof rawSrc === "string"){
+
+    const fm = FileManager.local()
+    image = fm.readImage(rawSrc)
+
+  }
+
+  else{
+
+    console.warn("Invalid image src:", rawSrc)
+    return
+
+  }
+
+  const node = container.addImage(image)
+
+  if(tint != "")
     node.tintColor = new Color(tint)
 
-  if (size)
+  if(size)
     node.imageSize = new Size(size, size)
-
-  if (opacity !== "" && opacity !== null && opacity !== undefined)
+  
+  if(opacity)
     node.imageOpacity = Number(opacity)
+
 }
 
   // =========================
