@@ -271,67 +271,66 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   // Image
   // =========================
-async renderImage(container, el, context){
+  async renderImage(container, el, context){
+    const rawSrc = this.resolveData(el.src, context)   // ★追加
 
-  const rawSrc = this.resolveData(el.src, context)   // ★追加
+    const size = el.size || 16
+    const tint = this.bind(el.tint, context)
+    const opacity = this.bind(el.opacity, context)
 
-  const size = el.size || 16
-  const tint = this.bind(el.tint, context)
-  const opacity = this.bind(el.opacity, context)
+    let image
 
-  let image
+    // ★ DrawContext Image
+    if (rawSrc && rawSrc.size) {
 
-  // ★ DrawContext Image
-  if (rawSrc && rawSrc.size)
+      image = rawSrc
 
-    image = rawSrc
+    }
 
-  }
+    // URL
+    else if(typeof rawSrc === "string" && rawSrc.startsWith("http")){
 
-  // URL
-  else if(typeof rawSrc === "string" && rawSrc.startsWith("http")){
+      image = await this.fetchImage(rawSrc)
 
-    image = await this.fetchImage(rawSrc)
+    }
 
-  }
+    // SF Symbol
+    else if(typeof rawSrc === "string" && !rawSrc.includes("/")){
 
-  // SF Symbol
-  else if(typeof rawSrc === "string" && !rawSrc.includes("/")){
+      const sym = SFSymbol.named(rawSrc)
+      sym.applyFont(Font.systemFont(size))
 
-    const sym = SFSymbol.named(rawSrc)
-    sym.applyFont(Font.systemFont(size))
+      image = sym.image
 
-    image = sym.image
+    }
 
-  }
+    // local image
+    else if(typeof rawSrc === "string"){
 
-  // local image
-  else if(typeof rawSrc === "string"){
+      const fm = FileManager.local()
+      image = fm.readImage(rawSrc)
 
-    const fm = FileManager.local()
-    image = fm.readImage(rawSrc)
+    }
 
-  }
+    else{
 
-  else{
+      console.warn("Invalid image src: " + rawSrc)
+      return
 
-    console.warn("Invalid image src: " + rawSrc)
-    return
+    }
 
-  }
+    const node = container.addImage(image)
 
-  const node = container.addImage(image)
+    if(tint != "")
+      node.tintColor = new Color(tint)
 
-  if(tint != "")
-    node.tintColor = new Color(tint)
-
-  if(size)
-    node.imageSize = new Size(size, size)
+    if(size)
+      node.imageSize = new Size(size, size)
   
-  if(opacity)
-    node.imageOpacity = Number(opacity)
+    if(opacity)
+      node.imageOpacity = Number(opacity)
 
-}
+  }
 
   // =========================
   // Style
@@ -372,13 +371,9 @@ async renderImage(container, el, context){
 
     const colorValue = this.bind(style.color, context)
 
-//     console.log("STYLE COLOR RAW: " + style.color)
-//     console.log("BIND COLOR: " + colorValue)
-
     if (colorValue === "") {
 
       const baseColor = styles[styleInput?.base]?.color
-//       console.log("USE BASE COLOR: " + baseColor)
 
       if (baseColor) {
         const baseBind = this.bind(baseColor, context)
@@ -386,7 +381,6 @@ async renderImage(container, el, context){
 
         if (finalColor) {
           textItem.textColor = finalColor
-//           console.log("APPLIED BASE COLOR")
         }
       }
 
@@ -398,7 +392,6 @@ async renderImage(container, el, context){
 
       if (finalColor) {
         textItem.textColor = finalColor
-//        console.log("APPLIED CUSTOM COLOR")
       }
 
     }
