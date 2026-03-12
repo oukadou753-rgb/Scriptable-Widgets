@@ -386,7 +386,7 @@ module.exports = class WF_WidgetRenderer {
 
       if (finalColor) {
         textItem.textColor = finalColor
-        console.log("APPLIED CUSTOM COLOR")
+//        console.log("APPLIED CUSTOM COLOR")
       }
 
     }
