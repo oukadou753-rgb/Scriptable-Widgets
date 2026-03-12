@@ -421,7 +421,7 @@ module.exports = class WF_WidgetRenderer {
 
     // textOpacity
     const opacity = this.bind(style.opacity, context)
-    if (opacity !== undefined && opacity !== null) {
+    if (opacity !== "" && !isNaN(opacity)) {
       textItem.textOpacity = Number(opacity)
     }
   }
