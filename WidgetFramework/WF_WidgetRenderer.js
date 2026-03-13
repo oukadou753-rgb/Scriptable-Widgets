@@ -9,6 +9,47 @@ module.exports = class WF_WidgetRenderer {
   constructor(appId, storageType) {
     this.appId = appId
     this.storageType = storageType || "local"
+
+    this.initStorage()
+  }
+
+  // =========================
+  // initStorage
+  // =========================
+  initStorage(){
+
+    switch (this.storageType) {
+
+      case "icloud":
+        this.fm = FileManager.iCloud()
+        this.baseDir = this.fm.documentsDirectory()
+        break
+
+      case "bookmark":
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.bookmarkedPath("Scriptable")
+        break
+
+      default:
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.documentsDirectory()
+
+    }
+
+    const root = this.fm.joinPath(this.baseDir, "WF_Data")
+
+    this.appRoot = this.fm.joinPath(root, this.appId)
+    this.cacheDir = this.fm.joinPath(this.appRoot, "img")
+
+    if (!this.fm.fileExists(root))
+      this.fm.createDirectory(root)
+
+    if (!this.fm.fileExists(this.appRoot))
+      this.fm.createDirectory(this.appRoot)
+
+    if (!this.fm.fileExists(this.cacheDir))
+      this.fm.createDirectory(this.cacheDir)
+
   }
 
   // =========================
@@ -601,59 +642,17 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   async fetchImage(url){
 
-    let fm
-    let baseDir
-
-    // FileManager切替
-    switch (this.storageType) {
-
-      case "icloud":
-        fm = FileManager.iCloud()
-        baseDir = fm.documentsDirectory()
-        break
-
-      case "bookmark":
-        fm = FileManager.local()
-        baseDir = fm.bookmarkedPath("Scriptable")
-        break
-
-      default:
-        fm = FileManager.local()
-        baseDir = fm.documentsDirectory()
-
-    }
-
-    // ルート（WF_Data固定）
-    const root = fm.joinPath(
-      baseDir,
-      "WF_Data"
-    )
-
-    const appRoot = fm.joinPath(root, this.appId)
-    const cacheDir = fm.joinPath(appRoot, "img")
-
-    if (!fm.fileExists(root))
-      fm.createDirectory(root)
-
-    if(!fm.fileExists(appRoot))
-      fm.createDirectory(appRoot)
-
-    if(!fm.fileExists(cacheDir))
-      fm.createDirectory(cacheDir)
-
     const fileName = this.hash(url) + ".png"
-    const filePath = fm.joinPath(cacheDir, fileName)
+    const filePath = this.fm.joinPath(this.cacheDir, fileName)
 
-    // キャッシュがあればそれを使う
-    if(fm.fileExists(filePath)){
-      return fm.readImage(filePath)
+    if(this.fm.fileExists(filePath)){
+      return this.fm.readImage(filePath)
     }
 
-    // 無ければダウンロード
     const req = new Request(url)
     const img = await req.loadImage()
 
-    fm.writeImage(filePath, img)
+    this.fm.writeImage(filePath, img)
 
     return img
 
