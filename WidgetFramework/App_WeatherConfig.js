@@ -94,7 +94,7 @@ const currentDataBlockSmall = [
 const currentDataBlock1 = [
   {
     type: "vstack",
-    size: new Size(150, 0),
+    size: new Size(160, 0),
     padding: pos(5, 0, 0, 0),
 //     align: "center",
     children: [
