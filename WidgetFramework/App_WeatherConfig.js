@@ -5,33 +5,6 @@
  * App_Config
  **/
 // ======================
-// Function
-// ======================
-function pos(a,b,c,d){
-  if (b === undefined)
-    return {top:a,left:a,bottom:a,right:a}
-  if (c === undefined)
-    return {top:a,left:b,bottom:a,right:b}
-  if (d === undefined)
-    return {top:a,left:b,bottom:c,right:b}
-  return {top:a,left:b,bottom:c,right:d}
-}
-function degreeTo16Compass(deg) {
-  const dirs = [
-    "N", "NNE", "NE", "ENE",
-    "E", "ESE", "SE", "SSE",
-    "S", "SSW", "SW", "WSW",
-    "W", "WNW", "NW", "NNW"
-  ]
-  const index = Math.floor(((deg + 11.25) % 360) / 22.5)
-  return dirs[index]
-}
-function getDegString(deg) { return Math.floor((deg + 11.25) / 22.5) * 22.5 + 180 }
-function drawCircle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,p=1,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[];for(let k=0;k<360;k++)g=(a-y/2)*Math.cos(m=(h=-90+p*k+o)*(Math.PI/180)),f=(a-y/2)*Math.sin(m),c=d+g,u=$+f,T.push(new Point(c,u));S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
-function drawTriangle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[],k=[];for(let F=0;F<4;F++)0==F?h=-90+o:1==F?h=-90+o+n:2==F?p=(h+(360-2*n)/2)*(Math.PI/180):3==F&&(h=-90+o+(360-n)),m=h*(Math.PI/180),2==F?(g=(a-i)*Math.cos(p),f=(a-i)*Math.sin(p)):(g=(a+r)*Math.cos(m),f=(a+r)*Math.sin(m)),c=d+g,u=$+f,T.push(new Point(c,u)),k.push([c,u]);S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
-function drawArrow(t,e,a){let r=new Size(32,32),i=new DrawContext;i.opaque=!1,i.respectScreenScale=!0,i.size=r;let n={triangle:{strokeColor:e,strokeWidth:0,fillColor:e},circle:{strokeColor:e,strokeWidth:2,fillColor:"transparent"}};return a&&drawCircle(i,r,15,0,0,0,360,t,n.circle),drawTriangle(i,r,12,0,9,140,0,t,n.triangle),i.getImage()}
-
-// ======================
 // Header Block
 // ======================
 const headerBlock = [
@@ -56,7 +29,7 @@ const headerBlock = [
 const locationBlock = [
   {
     type: "hstack",
-    size: new Size(0, 20),
+    size: new Size(0, 16),
     justify: "start",
     children: [
       { type: "text", text: "{{location_name}}", style: "locationText" },
@@ -82,19 +55,54 @@ const updateBlock = [
 // ======================
 // Body Block
 // ======================
-// CurrentData Details Block 1
-const currentDataBlock1 = [
+// currentDataBlockSmall
+const currentDataBlockSmall = [
   {
     type: "vstack",
-    size: new Size(145, 0),
-    padding: pos(10, 0, 0, 0),
+    size: new Size(0, 0),
+    padding: pos(5, 0, 0, 0),
     align: "center",
     children: [
       {
         type: "hstack",
         children: [
           { type: "spacer" },
-          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", fontSize: 60, bold: true, lineLimit: 1, minimumScaleFactor: 0.8 } },
+          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", fontSize: 45, bold: true, lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "spacer" }
+        ]
+      },
+      { type: "spacer" },
+      {
+        type: "hstack",
+        size: new Size(0, 15),
+        align: "center",
+        children: [
+          { type: "spacer" },
+          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: "#ff453a", lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "text", text: "°C", style: { base: "normalText", color: "#ff453a" } },
+          { type: "spacer", size: 13 },
+          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: "#487de7", lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "text", text: "％", style: { base: "normalText", color: "#487de7" } },
+          { type: "spacer" }
+        ]
+      }
+    ]
+  }
+]
+
+// CurrentData Details Block 1
+const currentDataBlock1 = [
+  {
+    type: "vstack",
+    size: new Size(150, 0),
+    padding: pos(5, 0, 0, -15),
+    align: "center",
+    children: [
+      {
+        type: "hstack",
+        children: [
+          { type: "spacer" },
+          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", fontSize: 60, bold: true, lineLimit: 1, minimumScaleFactor: 0.9 } },
           { type: "spacer" }
         ]
       },
@@ -106,7 +114,8 @@ const currentDataBlock1 = [
 const currentDataBlock2 = [
   {
     type: "vstack",
-    size: new Size(120, 0),
+    size: new Size(110, 0),
+    padding: pos(0, 0, 0, 0),
     align: "center",
     children: [
       {
@@ -328,10 +337,10 @@ module.exports = {
         titleText: { fontSize: 14, bold: true, color: "{{highlightTextColor}}" },
         versionText: { fontSize: 9, bold: false, color: "{{defaultTextColor}}" },
         updateText: { fontSize: 9, bold: false, color: "{{highlightTextColor}}" },
-        locationText: { fontSize: 14, bold: false, color: "{{highlightTextColor}}" },
+        locationText: { fontSize: 14, bold: true, color: "{{highlightTextColor}}" },
 
-        currentColumnText: { fontSize: 12, bold: true, color: "{{highlightTextColor}}" },
-        currentDataText: { fontSize: 12, bold: true, color: "{{defaultTextColor}}" },
+        currentColumnText: { fontSize: 13, bold: true, color: "{{highlightTextColor}}" },
+        currentDataText: { fontSize: 13, bold: true, color: "{{defaultTextColor}}" },
         columnText: { fontSize: 11, bold: true, color: "{{highlightTextColor}}" },
         dataText: { fontSize: 11, bold: true, color: "{{defaultTextColor}}" },
         extraLargeText: { fontSize: 24, bold: true, color: "{{defaultTextColor}}" },
@@ -380,7 +389,7 @@ module.exports = {
           label: "Layout",
           section: "Layout",
           default: "default",
-          options: ["default", "test"],
+          options: ["default", "small", "medium", "test"],
           readonly: false,
           hidden: false
         }
@@ -472,6 +481,52 @@ module.exports = {
         }
       },
 
+      // small Layout
+      small: {
+        padding: pos(10, 10, 10, 10),
+
+        header: headerBlock,
+        body: currentDataBlockSmall,
+        footer: [
+          ...locationBlock,
+          ...updateBlock
+        ],
+
+        // Spacing
+        spacing: {
+          headerBottom: "flex",
+          bodyBottom: "flex"
+        }
+      },
+
+      // medium Layout
+      medium: {
+        padding: pos(10, 16, 10, 16),
+
+        header: headerBlock,
+        body: [
+          {
+            type: "hstack",
+            size: new Size(0, 70),
+            justify: "center",
+            children: [
+              ...currentDataBlock1,
+              ...currentDataBlock2
+            ]
+          },
+        ],
+        footer: [
+          ...locationBlock,
+          ...updateBlock
+        ],
+
+        // Spacing
+        spacing: {
+          headerBottom: "flex",
+          bodyBottom: "flex"
+        }
+      },
+
       // Test Layout
       test: {
         padding: pos(10, 16, 10, 16),
@@ -544,7 +599,7 @@ module.exports = {
 
     const items = this.forecastDataTransform(data, config)
     const meta = this.metaDataTransform(data, config)
-    const flat = this.flatObj(meta)
+    const flat = flatObj(meta)
 //     console.log(Object.keys(flat))
 //     console.log(flat.current_windImage instanceof Image)
 
@@ -569,11 +624,11 @@ module.exports = {
     const status = {
       icon: "location.fill",
       color: "#d1cdda",
-      opacity: online ? 1.0 : 0.5
+      opacity: online ? 1.0 : 0.7
     }
 
     // 更新時間生成
-    const updateStr = this.formatTime(
+    const updateStr = formatTime(
       data.current?.last_updated_epoch ??
       data.last_updated_epoch,
       "HH時mm分"
@@ -636,18 +691,18 @@ module.exports = {
     const tempMin = Math.round(forecastData[0].day.mintemp_c)
     const tempMax = Math.round(forecastData[0].day.maxtemp_c)
     const humidity = data.current.humidity
-    const discomfortIndex = this.getDiscomfortIndex(temp, humidity)
+    const discomfortIndex = getDiscomfortIndex(temp, humidity)
     const windSpeed = (data.current.wind_kph / 3.6).toFixed(1)
-    const windDegree = this.getDegreeString(data.current.wind_dir)
+    const windDegree = getDegreeString(data.current.wind_dir)
     const rain = Math.ceil(Math.max(...[ hours[0].chance_of_rain, hours[0].chance_of_snow ]) / 5) * 5
 
     const now = new Date()
     const h = String(now.getHours()).padStart(2, '0')
     const m = String(now.getMinutes()).padStart(2, '0')
 
-    const sunriseTime = this.convert12to24(forecastData[ 0 ].astro.sunrise)
-    const sunsetTime = this.convert12to24(forecastData[ 0 ].astro.sunset)
-    const isDay = this.isTimeInRangeAcrossDay(`${h}:${m}`, sunriseTime, sunsetTime)
+    const sunriseTime = convert12to24(forecastData[ 0 ].astro.sunrise)
+    const sunsetTime = convert12to24(forecastData[ 0 ].astro.sunset)
+    const isDay = isTimeInRangeAcrossDay(`${h}:${m}`, sunriseTime, sunsetTime)
     const isAm = now.getHours() < 12
 
     const wind_degree = data.current.wind_degree
@@ -663,16 +718,16 @@ module.exports = {
       feelslike: Math.round(data.current.feelslike_c),
 
       condition: data.current.condition.text,
-      icon: this.makeWeatherApiIcon(data.current.condition.icon),
+      icon: makeWeatherApiIcon(data.current.condition.icon),
 
       humidity,
 //       cloud: data.current.cloud,
 
       windIcon,
       windSpeed: windSpeed,
-      windSpeedColor: this.getWindColor(windSpeed, defaultTextColor),
+      windSpeedColor: getWindColor(windSpeed, defaultTextColor),
       windDir: data.current.wind_dir,
-      windDegree: this.getDegreeString(data.current.wind_dir),
+      windDegree: getDegreeString(data.current.wind_dir),
 //       gustKph: data.current.gust_kph,
 
       pressureMb: data.current.pressure_mb,
@@ -682,21 +737,21 @@ module.exports = {
 //       uv: data.current.uv,
   
       rain: rain || 0,
-      rainColor: this.getRainColor(rain, defaultTextColor),
+      rainColor: getRainColor(rain, defaultTextColor),
       discomfortIndex: discomfortIndex,
-      discomfortIndexColor: this.getDiscomfortColor(discomfortIndex, defaultTextColor),
+      discomfortIndexColor: getDiscomfortColor(discomfortIndex, defaultTextColor),
 
-      moonphaseIcon: this.getMoonphaseImage(now, true),
+      moonphaseIcon: getMoonphaseImage(now, true),
 
       sunriseTime,
       sunriseIcon: "sunrise.fill",
       sunriseColor: isAm ? "" : "#999999",
-      sunriseOpacity: isAm ? 1 : 0.5,
+      sunriseOpacity: isAm ? 1 : 0.7,
 
       sunsetTime,
       sunsetIcon: "sunset.fill",
       sunsetColor: isAm ? "#999999" : "",
-      sunsetOpacity: isAm ? 0.5 : 1
+      sunsetOpacity: isAm ? 0.7 : 1
     }
 
     return current
@@ -725,10 +780,10 @@ module.exports = {
     const items = hours.map((h, idx) => {
       const prev = idx > 0 ? hours[idx - 1] : h
 
-      const tempTrend = this.trendIcon(h.temp_c, prev.temp_c)
-      const pressureTrend = this.trendIcon(h.pressure_mb, prev.pressure_mb)
-      const windTrend = this.trendIcon(h.wind_kph, prev.wind_kph)
-      const rainTrend = this.trendIcon(h.chance_of_rain, prev.chance_of_rain)
+      const tempTrend = trendIcon(h.temp_c, prev.temp_c)
+      const pressureTrend = trendIcon(h.pressure_mb, prev.pressure_mb)
+      const windTrend = trendIcon(h.wind_kph, prev.wind_kph)
+      const rainTrend = trendIcon(h.chance_of_rain, prev.chance_of_rain)
       const rain = Math.ceil(Math.max(...[ h.chance_of_rain, h.chance_of_snow ]) / 5) * 5
 
       const wind_degree = h.wind_degree
@@ -737,185 +792,22 @@ module.exports = {
       return {
         hour: Number(h.time.split(" ")[1].slice(0, 2)) + "時",
         pressure: Math.round(h.pressure_mb),
-        pressureColor: this.getPressureColor(h.pressure_mb, prev.pressure_mb, defaultTextColor),
+        pressureColor: getPressureColor(h.pressure_mb, prev.pressure_mb, defaultTextColor),
         pressureTrend: pressureTrend,
         windIcon,
         windSpeed: Math.round(h.wind_kph / 3.6),
-        windSpeedColor: this.getWindColor(Math.round(h.wind_kph / 3.6), defaultTextColor),
+        windSpeedColor: getWindColor(Math.round(h.wind_kph / 3.6), defaultTextColor),
         windTrend: windTrend,
         temp: Math.round(h.temp_c),
-        tempColor: this.getTempColor(Math.round(h.temp_c), defaultTextColor),
+        tempColor: getTempColor(Math.round(h.temp_c), defaultTextColor),
         tempTrend: tempTrend,
         rain: rain,
-        rainColor: this.getRainColor(rain, defaultTextColor),
+        rainColor: getRainColor(rain, defaultTextColor),
         rainTrend: rainTrend
       }
     })
 
     return items
-  },
-  // Object 平坦化
-  flatObj(obj, prefix = '') {
-
-    const result = {}
-
-    for (const key in obj) {
-      const value = obj[key]
-
-      const newKey = prefix ? `${prefix}${key}` : key
-
-      if (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value) &&
-        !(value instanceof Date) &&
-        !(value instanceof Image)
-      ) {
-        Object.assign(result, this.flatObj(value, newKey + "_"))
-      } else {
-        result[newKey] = value
-      }
-    }
-
-    return result
-  },
-
-  // Epoch Date Formatter
-  formatTime(epoch, format = "HH:mm") {
-
-    if (!epoch) return "--:--"
-
-    const ts = new Date(
-      epoch > 1e12 ? epoch : epoch * 1000
-    )
-
-    const df = new DateFormatter()
-    df.dateFormat = format
-
-    return df.string(ts)
-  },
-
-  parseURL(t){let e={href:t},a=["protocol host hostname port pathname query hash".split(" "),"directory filename query".split(" "),"basename extension".split(" ")];return[/^(?:(https?:)?(?:\/\/(([^\/:]+)(?::([0-9]+))?)))?(\/?[^?#]*)(\??[^?#]*)(#?.*)/,/^(?:[^:\/?#]+:)?(?:\/\/[^\/?#]*)?(?:([^?#]*\/)([^\/?#]*))?(\?[^#]*)?(?:#.*)?$/,/^([^/]*)\.([^.]+)?$/].map((r,i)=>{let n=String(2==i?e.filename:t).match(r);n&&a[i].forEach(function(t,a){e[t]=void 0===n[a+1]?null:n[a+1]})}),e},
-  makeWeatherApiIcon(url) {
-    let {  protocol, host, pathname, filename } = this.parseURL(url)
-    url = (protocol || 'https') + '://' + host + pathname
-    if (url.includes('day')) filename = filename.replace('.', 'd.')
-    else if (url.includes('night')) filename = filename.replace('.', 'n.')
-    return url
-  },
-
-  // 例：風向きをアイコンに変換する関数
-  _convertWindDegToIcon(deg) {
-    if (deg >= 337.5 || deg < 22.5) return "↑"
-    if (deg >= 22.5 && deg < 67.5) return "↗"
-    if (deg >= 67.5 && deg < 112.5) return "→"
-    if (deg >= 112.5 && deg < 157.5) return "↘"
-    if (deg >= 157.5 && deg < 202.5) return "↓"
-    if (deg >= 202.5 && deg < 247.5) return "↙"
-    if (deg >= 247.5 && deg < 292.5) return "←"
-    if (deg >= 292.5 && deg < 337.5) return "↖"
-    return "↑"
-  },
-
-  getDegreeString(wind_dir) { return [ ...wind_dir.replace(/E/g, '\u6771').replace(/W/g, '\u897f').replace(/S/g, '\u5357').replace(/N/g, '\u5317') + '\u3000\u3000' ].slice(0, 3).join('') },
-
-  trendIcon(curr, prev) {
-    if (curr > prev) return "↑"
-    if (curr < prev) return "↓"
-    return "→"
-  },
-
-  getRainColor(curr, color) {
-    if (curr == 100) return "#ff453a"
-    if (curr >= 80) return "#ff453a"
-    if (curr >= 60) return "#ff6666"
-    if (curr >= 40) return "#ffff66"
-    return color
-  },
-
-  getPressureColor(curr, prev, color) {
-    if (prev < 1000) return "#ff6666"
-    if (Math.abs(curr - prev) >= 5) return "#ff6666"
-    if (Math.abs(curr - prev) >= 3) return "#ffff66"
-    return color
-  },
-
-  getWindColor(curr, color) {
-    if (curr == 20) return "#ff453a"
-    if (curr >= 15) return "#ff6666"
-    if (curr >= 10) return "#ffbd55"
-    if (curr >= 5) return "#ffff66"
-    return color
-  },
-
-  getTempColor(curr, color) {
-    if (curr >= 35) return "#ff453a"
-    if (curr >= 30) return "#ff6666"
-    if (curr >= 25) return "#ffff66"
-    if (curr <= 0) return "#87cefa"
-    return color
-  },
-
-  getDiscomfortColor(dis, color) {
-//     if ( dis <= 54 ) return '#6500cb'
-    if ( 55 <= dis && dis < 60 ) return '#487DE7'
-    if ( 60 <= dis && dis < 65 ) return '#87CEFA'
-    if ( 65 <= dis && dis < 70 ) return '#9DE24F'
-    if ( 70 <= dis && dis < 75 ) return '#FFFF66'
-    if ( 75 <= dis && dis < 80 ) return '#FFBD55'
-    if ( 80 <= dis && dis < 85 ) return '#FF6666'
-    if ( 85 <= dis ) return '#FF453A'
-    return color
-  },
-
-  getDiscomfortIndex(temp, humidity) {
-    const index = 0.81 * temp + 0.01 * humidity * (0.99 * temp - 14.3) + 46.3
-    return Number(index.toFixed(1))
-  },
-
-  timeToMinutes(timeString) {
-    const [hours, minutes] = timeString.split(':').map(Number);
-    return hours * 60 + minutes;
-  },
-
-  convert12to24(time12h) {
-    // 正規表現で時、分、AM/PMを抽出
-    const [_, hours, minutes, modifier] = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-
-    let hours24 = parseInt(hours, 10);
-
-    if (modifier.toUpperCase() === 'PM' && hours24 < 12) {
-      hours24 += 12;
-    } else if (modifier.toUpperCase() === 'AM' && hours24 === 12) {
-      hours24 = 0;
-    }
-
-    // 0埋めしてHH:mm形式で返す
-    return `${String(hours24).padStart(2, '0')}:${minutes}`;
-  },
-
-  isTimeInRangeAcrossDay(checkTime, startTime, endTime) {
-    let start = this.timeToMinutes(startTime);
-    let end = this.timeToMinutes(endTime);
-    let check = this.timeToMinutes(checkTime);
-
-    // 終了時間が開始時間より前なら、翌日とみなして+24時間
-    if (end < start) {
-      end += 24 * 60;
-      // チェックする時間も、夜中の場合は+24時間する必要がある
-      if (check < start) {
-        check += 24 * 60;
-      }
-    }
-
-    return check >= start && check <= end;
-  },
-
-  getMoonphaseImage( dt, isMoonUp = true ) {
-    Date.prototype.getMoonphase=function(){let t=0,e=0,$=0,o=0,n=this.getFullYear(),h=this.getMonth()+1,r=this.getDate();return h<3&&(n--,h+=12),++h,$=(t=365.25*n)+(e=30.6*h)+r-694039.09,$/=29.5305882,o=parseInt($),$-=o,(o=Math.round(8*$))>=8&&(o=0),o}
-    const sunIcon = '\ud83d\udfe0';
-    const moonIcons = [ '\ud83c\udf11', '\ud83c\udf12', '\ud83c\udf13', '\ud83c\udf14', '\ud83c\udf15', '\ud83c\udf16', '\ud83c\udf17', '\ud83c\udf18' ];
-    return isMoonUp ? moonIcons[ dt.getMoonphase() ] : sunIcon;
   },
 
   // Test Data
@@ -981,7 +873,7 @@ module.exports = {
     }
 
     // 更新時間生成
-    const updateStr = this.formatTime(data.last_updated_epoch, "yyyy/MM/dd HH:mm")
+    const updateStr = formatTime(data.last_updated_epoch, "yyyy/MM/dd HH:mm")
 
     // メタ情報
     const meta = {
@@ -1002,7 +894,7 @@ module.exports = {
     // 共通データ返却（統一フォーマット）
     return {
       items,
-      ...this.flatObj(meta)
+      ...flatObj(meta)
     }
   },
   // ランキング
@@ -1015,6 +907,183 @@ module.exports = {
   }
 }
 
+// ======================
+// Function
+// ======================
+function pos(a,b,c,d){
+  if (b === undefined)
+    return {top:a,left:a,bottom:a,right:a}
+  if (c === undefined)
+    return {top:a,left:b,bottom:a,right:b}
+  if (d === undefined)
+    return {top:a,left:b,bottom:c,right:b}
+  return {top:a,left:b,bottom:c,right:d}
+}
+
+function degreeTo16Compass(deg) {
+  const dirs = [
+    "N", "NNE", "NE", "ENE",
+    "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW",
+    "W", "WNW", "NW", "NNW"
+  ]
+  const index = Math.floor(((deg + 11.25) % 360) / 22.5)
+  return dirs[index]
+}
+function getDegString(deg) { return Math.floor((deg + 11.25) / 22.5) * 22.5 + 180 }
+function drawCircle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,p=1,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[];for(let k=0;k<360;k++)g=(a-y/2)*Math.cos(m=(h=-90+p*k+o)*(Math.PI/180)),f=(a-y/2)*Math.sin(m),c=d+g,u=$+f,T.push(new Point(c,u));S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
+function drawTriangle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[],k=[];for(let F=0;F<4;F++)0==F?h=-90+o:1==F?h=-90+o+n:2==F?p=(h+(360-2*n)/2)*(Math.PI/180):3==F&&(h=-90+o+(360-n)),m=h*(Math.PI/180),2==F?(g=(a-i)*Math.cos(p),f=(a-i)*Math.sin(p)):(g=(a+r)*Math.cos(m),f=(a+r)*Math.sin(m)),c=d+g,u=$+f,T.push(new Point(c,u)),k.push([c,u]);S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
+function drawArrow(t,e,a){let r=new Size(32,32),i=new DrawContext;i.opaque=!1,i.respectScreenScale=!0,i.size=r;let n={triangle:{strokeColor:e,strokeWidth:0,fillColor:e},circle:{strokeColor:e,strokeWidth:2,fillColor:"transparent"}};return a&&drawCircle(i,r,15,0,0,0,360,t,n.circle),drawTriangle(i,r,12,0,9,140,0,t,n.triangle),i.getImage()}
+
+// Object 平坦化
+function flatObj(obj, prefix = '') {
+  const result = {}
+  for (const key in obj) {
+    const value = obj[key]
+    const newKey = prefix ? `${prefix}${key}` : key
+    if (
+      typeof value === "object" &&
+      value !== null &&
+      !Array.isArray(value) &&
+      !(value instanceof Date) &&
+      !(value instanceof Image)
+    ) {
+      Object.assign(result, flatObj(value, newKey + "_"))
+    } else {
+      result[newKey] = value
+    }
+  }
+  return result
+}
+
+// Epoch Date Formatter
+function formatTime(epoch, format = "HH:mm") {
+  if (!epoch) return "--:--"
+  const ts = new Date(
+    epoch > 1e12 ? epoch : epoch * 1000
+  )
+  const df = new DateFormatter()
+  df.dateFormat = format
+  return df.string(ts)
+}
+
+function parseURL(t){let e={href:t},a=["protocol host hostname port pathname query hash".split(" "),"directory filename query".split(" "),"basename extension".split(" ")];return[/^(?:(https?:)?(?:\/\/(([^\/:]+)(?::([0-9]+))?)))?(\/?[^?#]*)(\??[^?#]*)(#?.*)/,/^(?:[^:\/?#]+:)?(?:\/\/[^\/?#]*)?(?:([^?#]*\/)([^\/?#]*))?(\?[^#]*)?(?:#.*)?$/,/^([^/]*)\.([^.]+)?$/].map((r,i)=>{let n=String(2==i?e.filename:t).match(r);n&&a[i].forEach(function(t,a){e[t]=void 0===n[a+1]?null:n[a+1]})}),e}
+function makeWeatherApiIcon(url) {
+  let {  protocol, host, pathname, filename } = parseURL(url)
+  url = (protocol || 'https') + '://' + host + pathname
+  if (url.includes('day')) filename = filename.replace('.', 'd.')
+  else if (url.includes('night')) filename = filename.replace('.', 'n.')
+  return url
+}
+
+// 例：風向きをアイコンに変換する関数
+function _convertWindDegToIcon(deg) {
+  if (deg >= 337.5 || deg < 22.5) return "↑"
+  if (deg >= 22.5 && deg < 67.5) return "↗"
+  if (deg >= 67.5 && deg < 112.5) return "→"
+  if (deg >= 112.5 && deg < 157.5) return "↘"
+  if (deg >= 157.5 && deg < 202.5) return "↓"
+  if (deg >= 202.5 && deg < 247.5) return "↙"
+  if (deg >= 247.5 && deg < 292.5) return "←"
+  if (deg >= 292.5 && deg < 337.5) return "↖"
+  return "↑"
+}
+
+function getDegreeString(wind_dir) { return [ ...wind_dir.replace(/E/g, '\u6771').replace(/W/g, '\u897f').replace(/S/g, '\u5357').replace(/N/g, '\u5317') + '\u3000\u3000' ].slice(0, 3).join('') }
+
+function trendIcon(curr, prev) {
+  if (curr > prev) return "↑"
+  if (curr < prev) return "↓"
+  return "→"
+}
+
+function getRainColor(curr, color) {
+  if (curr == 100) return "#ff453a"
+  if (curr >= 80) return "#ff453a"
+  if (curr >= 60) return "#ff6666"
+  if (curr >= 40) return "#ffff66"
+  return color
+}
+
+function getPressureColor(curr, prev, color) {
+  if (prev < 1000) return "#ff6666"
+  if (Math.abs(curr - prev) >= 5) return "#ff6666"
+  if (Math.abs(curr - prev) >= 3) return "#ffff66"
+  return color
+}
+
+function getWindColor(curr, color) {
+  if (curr == 20) return "#ff453a"
+  if (curr >= 15) return "#ff6666"
+  if (curr >= 10) return "#ffbd55"
+  if (curr >= 5) return "#ffff66"
+  return color
+}
+
+function getTempColor(curr, color) {
+  if (curr >= 35) return "#ff453a"
+  if (curr >= 30) return "#ff6666"
+  if (curr >= 25) return "#ffff66"
+  if (curr <= 0) return "#87cefa"
+  return color
+}
+
+function getDiscomfortColor(dis, color) {
+//   if ( dis <= 54 ) return '#6500cb'
+  if ( 55 <= dis && dis < 60 ) return '#487DE7'
+  if ( 60 <= dis && dis < 65 ) return '#87CEFA'
+  if ( 65 <= dis && dis < 70 ) return '#9DE24F'
+  if ( 70 <= dis && dis < 75 ) return '#FFFF66'
+  if ( 75 <= dis && dis < 80 ) return '#FFBD55'
+  if ( 80 <= dis && dis < 85 ) return '#FF6666'
+  if ( 85 <= dis ) return '#FF453A'
+  return color
+}
+
+function getDiscomfortIndex(temp, humidity) {
+  const index = 0.81 * temp + 0.01 * humidity * (0.99 * temp - 14.3) + 46.3
+  return Number(index.toFixed(1))
+}
+
+function timeToMinutes(timeString) {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function convert12to24(time12h) {
+  const [_, hours, minutes, modifier] = time12h.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  let hours24 = parseInt(hours, 10);
+  if (modifier.toUpperCase() === 'PM' && hours24 < 12) {
+    hours24 += 12;
+  } else if (modifier.toUpperCase() === 'AM' && hours24 === 12) {
+    hours24 = 0;
+  }
+  return `${String(hours24).padStart(2, '0')}:${minutes}`;
+}
+
+function isTimeInRangeAcrossDay(checkTime, startTime, endTime) {
+  let start = timeToMinutes(startTime);
+  let end = timeToMinutes(endTime);
+  let check = timeToMinutes(checkTime);
+  if (end < start) {
+    end += 24 * 60;
+    if (check < start) {
+      check += 24 * 60;
+    }
+  }
+  return check >= start && check <= end;
+}
+
+function getMoonphaseImage( dt, isMoonUp = true ) {
+  Date.prototype.getMoonphase=function(){let t=0,e=0,$=0,o=0,n=this.getFullYear(),h=this.getMonth()+1,r=this.getDate();return h<3&&(n--,h+=12),++h,$=(t=365.25*n)+(e=30.6*h)+r-694039.09,$/=29.5305882,o=parseInt($),$-=o,(o=Math.round(8*$))>=8&&(o=0),o}
+  const sunIcon = '\ud83d\udfe0';
+  const moonIcons = [ '\ud83c\udf11', '\ud83c\udf12', '\ud83c\udf13', '\ud83c\udf14', '\ud83c\udf15', '\ud83c\udf16', '\ud83c\udf17', '\ud83c\udf18' ];
+  return isMoonUp ? moonIcons[ dt.getMoonphase() ] : sunIcon;
+}
+
+// ======================
+// Module Test
+// ======================
 const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
 if (module_name == Script.name()) {
   (async() => {
