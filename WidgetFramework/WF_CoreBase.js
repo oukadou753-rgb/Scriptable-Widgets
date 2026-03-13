@@ -4,13 +4,23 @@
 /**
  * WF_CoreBase
  **/
-const DataProvider = importModule("WidgetFramework/WF_DataProvider")
-
 module.exports = class WF_CoreBase {
 
-  constructor(appInfo) {
-    this.appId = appInfo.id || Script.name()
-    this.storageType = appInfo.storageType
+  constructor(appInfo, appConfig, moduleCache) {
+    const appId = appInfo.id
+    const appVersion = appInfo.version
+
+    const {
+      ModuleLoader,
+      moduleLoader,
+
+      WF_DataProvider,
+    } = moduleCache
+
+    this.appId = appId || Script.name()
+    this.storageType = appInfo.storageType || "local"
+
+    this.WF_DataProvider = WF_DataProvider
   }
 
   async preview(size) {
@@ -45,7 +55,7 @@ module.exports = class WF_CoreBase {
 
     const { data, location } = configData.values.useTestData
       ? this.appConfig.getTestData()
-      : await new DataProvider(
+      : await new this.WF_DataProvider(
           this.appId,
           this.storage,
           {
