@@ -42,9 +42,15 @@ const Main = {
   },
 
   async run(storageType) {
-    APP_INFO.storageType = storageType
-    const APP_CONFIG = Main.loadAppConfig(APP_ID);
-    await Main.start(APP_CONFIG)
+    try {
+      APP_INFO.storageType = storageType
+      const APP_CONFIG = Main.loadAppConfig(APP_ID);
+      await Main.start(APP_CONFIG)
+    } catch(e) {
+      console.error(e.message)
+    } finally {
+      Script.complete()
+    }
   }
 }
 module.exports = Main
