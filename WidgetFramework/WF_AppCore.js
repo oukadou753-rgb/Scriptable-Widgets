@@ -62,7 +62,7 @@ module.exports = class WF_AppCore {
 
       }
 
-      this.storage.write("fw_update_check", Date.now())
+      this.storage.writeJSON("fw_update_check", Date.now())
     }
 
     this.setupMenus()
