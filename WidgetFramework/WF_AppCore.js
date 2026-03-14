@@ -37,13 +37,15 @@ module.exports = class WF_AppCore {
     this.appConfig = appConfig
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
-log(1)
-    const core = new WF_CoreBase(
-      this.appId,
-      this.storageType,
-      moduleCache
-    )
-log(2)
+
+    const core = new modules.WF_CoreBase(appInfo, appConfig, moduleCache)
+
+    Object.getOwnPropertyNames(Object.getPrototypeOf(core))
+      .filter(k => k !== "constructor")
+      .forEach(k => {
+        this[k] = core[k].bind(this)
+      })
+
     Object.assign(this, core)
   }
 
