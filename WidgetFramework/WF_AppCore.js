@@ -40,7 +40,8 @@ module.exports = class WF_AppCore {
 
     const core = new WF_CoreBase(
       this.appId,
-      this.storageType
+      this.storageType,
+      moduleCache
     )
 
     Object.assign(this, core)
