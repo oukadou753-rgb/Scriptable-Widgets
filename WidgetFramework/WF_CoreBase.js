@@ -20,6 +20,7 @@ module.exports = class WF_CoreBase {
 
     this.appId = appId || Script.name()
     this.storageType = appInfo.storageType || "local"
+    this.frameworkRepo = appInfo.frameworkRepo
 
     this.WF_DataProvider = WF_DataProvider
   }
@@ -97,14 +98,20 @@ module.exports = class WF_CoreBase {
     } catch(e) {
       return false
     }
-
   }
 
-  async checkFrameworkUpdate(url) {
+  getVersionURL() {
+
+    return `https://raw.githubusercontent.com/${this.frameworkRepo}/main/version.json?t=${Date.now()}`
+  }
+
+  async checkFrameworkUpdate() {
 
     try {
-      const req = new Request(url)
+
+      const req = new Request(this.getVersionURL())
       const remote = await req.loadJSON()
+
       const remoteVersion = remote.framework
 
       if (remoteVersion !== this.version) {
@@ -114,7 +121,9 @@ module.exports = class WF_CoreBase {
           remote: remoteVersion,
           local: this.version
         }
+
       }
+
     } catch(e) {
       console.log("Version check failed")
     }
