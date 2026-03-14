@@ -1,9 +1,6 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
-// UTF-8 日本語コメント
-// エントリ
-// Scriptable Widget Framework
 /**
  * WF_WidgetRenderer
  **/
