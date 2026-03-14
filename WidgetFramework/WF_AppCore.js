@@ -4,13 +4,9 @@
 /**
  * WF_AppCore
  **/
-const WF_CoreBase = importModule("WidgetFramework/WF_CoreBase")
-
-module.exports = class WF_AppCore extends WF_CoreBase {
+module.exports = class WF_AppCore {
 
   constructor(appInfo, appConfig, moduleCache) {
-
-    super(appInfo, appConfig, moduleCache)
 
     const appId = appInfo.id
     const appVersion = appInfo.version
@@ -41,6 +37,13 @@ module.exports = class WF_AppCore extends WF_CoreBase {
     this.appConfig = appConfig
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
+
+    const core = new WF_CoreBase(
+      this.appId,
+      this.storageType
+    )
+
+    Object.assign(this, core)
   }
 
   async start() {
