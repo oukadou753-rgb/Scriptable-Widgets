@@ -46,7 +46,7 @@ module.exports = class WF_AppCore {
   async start() {
 
     const lastCheck = this.storage.readJSON("fw_update_check")
-
+log(lastCheck)
     if (!lastCheck || Date.now() - lastCheck > 86400000) {
   
       // Framework update check
