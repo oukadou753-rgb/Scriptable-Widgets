@@ -120,7 +120,7 @@ const currentDataBlock2 = [
     children: [
       {
         type: "hstack",
-        size: new Size(0, 25),
+        size: new Size(110, 25),
 //         align: "center",
         children: [
           { type: "spacer" },
