@@ -3,6 +3,7 @@
 // icon-color: deep-gray; icon-glyph: magic;
 /**
  * WF_AppCore
+ * UTF-8 日本語コメント
  **/
 module.exports = class WF_AppCore {
 
