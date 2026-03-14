@@ -88,6 +88,7 @@ module.exports = class WF_CoreBase {
   }
 
   async checkOnline() {
+
     try {
       const req = new Request("https://www.apple.com")
       req.timeoutInterval = 2
@@ -96,7 +97,31 @@ module.exports = class WF_CoreBase {
     } catch(e) {
       return false
     }
+
   }
+
+  async checkFrameworkUpdate(url) {
+
+    try {
+      const req = new Request(url)
+      const remote = await req.loadJSON()
+      const remoteVersion = remote.framework
+
+      if (remoteVersion !== this.version) {
+
+        return {
+          update: true,
+          remote: remoteVersion,
+          local: this.version
+        }
+      }
+    } catch(e) {
+      console.log("Version check failed")
+    }
+
+    return null
+  }
+
 }
 
 function mixinCore(target, core) {
