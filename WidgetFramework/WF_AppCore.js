@@ -38,7 +38,7 @@ module.exports = class WF_AppCore {
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
 
-    const core = new modules.WF_CoreBase(appInfo, appConfig, moduleCache)
+    const core = new WF_CoreBase(appInfo, appConfig, moduleCache)
 
     Object.getOwnPropertyNames(Object.getPrototypeOf(core))
       .filter(k => k !== "constructor")
