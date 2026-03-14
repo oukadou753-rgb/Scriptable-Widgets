@@ -5,7 +5,7 @@
  * WF_AppCore
  * UTF-8 日本語コメント
  **/
-const VERSION_URL = "https://raw.githubusercontent.com/oukadou753-rgb/scriptable-widget-framework/refs/heads/main/version.json"
+const VERSION_URL = "https://raw.githubusercontent.com/oukadou753-rgb/scriptable-widget-framework/main/version.json"
 
 module.exports = class WF_AppCore {
 
