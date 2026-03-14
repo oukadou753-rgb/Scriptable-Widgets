@@ -3,6 +3,7 @@
 // icon-color: deep-gray; icon-glyph: magic;
 /**
  * App_Config
+ * UTF-8 日本語コメント
  **/
 // ======================
 // Constat
