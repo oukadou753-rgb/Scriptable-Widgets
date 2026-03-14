@@ -5,8 +5,6 @@
  * WF_AppCore
  * UTF-8 日本語コメント
  **/
-const VERSION_URL = "https://raw.githubusercontent.com/oukadou753-rgb/scriptable-widget-framework/main/version.json"
-
 module.exports = class WF_AppCore {
 
   constructor(appInfo, appConfig, moduleCache) {
@@ -48,7 +46,7 @@ module.exports = class WF_AppCore {
   async start() {
 
     // Framework update check
-    const update = await this.checkFrameworkUpdate(VERSION_URL)
+    const update = await this.checkFrameworkUpdate()
 
     if (update?.update) {
 
