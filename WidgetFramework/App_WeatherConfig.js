@@ -5,6 +5,12 @@
  * App_Config
  **/
 // ======================
+// Constat
+// ======================
+const APP_VERSION = "2.0.0"
+const DEFAULT_STRAGE_TYPE = "local" // "icloud", "local", "bookmark"
+
+// ======================
 // Header Block
 // ======================
 const headerBlock = [
@@ -42,9 +48,10 @@ const updateBlock = [
   {
     type: "hstack",
     size: new Size(0, 12),
-    justify: "start",
+//     justify: "start",
     children: [
-      { type: "text", text: "{{location_latStr}} : {{location_lonStr}}", style: "footerText" },
+      { type: "text", text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" },
+//       { type: "text", text: "{{location_latStr}} : {{location_lonStr}}", style: "footerText" },
       { type: "spacer" },
       { type: "text", text: "Update: ", style: "updateText" },
       { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
@@ -67,7 +74,7 @@ const currentDataBlockSmall = [
         type: "hstack",
         children: [
           { type: "spacer" },
-          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", fontSize: 45, bold: true, lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", font:"monospace", fontSize: 45, bold: true, lineLimit: 1, minimumScaleFactor: 0.8 } },
           { type: "spacer" }
         ]
       },
@@ -78,10 +85,10 @@ const currentDataBlockSmall = [
         align: "center",
         children: [
           { type: "spacer" },
-          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: "#ff453a", lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: "#ff453a", lineLimit: 1, minimumScaleFactor: 0.8 } },
           { type: "text", text: "°C", style: { base: "normalText", color: "#ff453a" } },
           { type: "spacer", size: 13 },
-          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: "#487de7", lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: "#487de7", lineLimit: 1, minimumScaleFactor: 0.8 } },
           { type: "text", text: "％", style: { base: "normalText", color: "#487de7" } },
           { type: "spacer" }
         ]
@@ -94,7 +101,7 @@ const currentDataBlockSmall = [
 const currentDataBlock1 = [
   {
     type: "vstack",
-    size: new Size(160, 0),
+    size: new Size(150, 0),
     padding: pos(5, 0, 0, 0),
 //     align: "center",
     children: [
@@ -102,7 +109,7 @@ const currentDataBlock1 = [
         type: "hstack",
         children: [
           { type: "spacer" },
-          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", fontSize: 60, bold: true, lineLimit: 1, minimumScaleFactor: 0.9 } },
+          { type: "text", text: "{{current_pressureMb}}", style: { base: "defaultText", font:"monospace", fontSize: 60, bold: true, lineLimit: 1, minimumScaleFactor: 0.8 } },
           { type: "spacer" }
         ]
       },
@@ -114,14 +121,12 @@ const currentDataBlock1 = [
 const currentDataBlock2 = [
   {
     type: "vstack",
-    size: new Size(110, 0),
+    size: new Size(120, 0),
     padding: pos(0, 0, 0, 0),
-//     align: "center",
     children: [
       {
         type: "hstack",
-        size: new Size(110, 25),
-//         align: "center",
+        size: new Size(0, 25),
         children: [
           { type: "spacer" },
           { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: "#ff453a" } },
@@ -136,7 +141,7 @@ const currentDataBlock2 = [
         type: "hstack",
 //         align: "center",
         children: [
-          { type: "spacer", size: 10 },
+          { type: "spacer", size: 15 },
           { type: "text", text: "不快指数：", style: "currentColumnText" },
           { type: "spacer" },
           { type: "text", text: "{{current_discomfortIndex}}", style: { base: "currentDataText", color: "{{current_discomfortIndexColor}}" } }
@@ -144,9 +149,9 @@ const currentDataBlock2 = [
       },
       {
         type: "hstack",
-        align: "center",
+//         align: "center",
         children: [
-          { type: "spacer", size: 10 },
+          { type: "spacer", size: 15 },
           { type: "text", text: "降水確率：", style: "currentColumnText" },
           { type: "spacer" },
           { type: "text", text: "{{current_rain}}％", style: { base: "currentDataText", color: "{{current_rainColor}}" } }
@@ -154,9 +159,9 @@ const currentDataBlock2 = [
       },
       {
         type: "hstack",
-//         align: "center",
+        align: "center",
         children: [
-          { type: "spacer", size: 10 },
+          { type: "spacer", size: 15 },
           { type: "text", text: "雨　　量：", style: "currentColumnText" },
           { type: "spacer" },
           { type: "text", text: "{{current_precipMm}}㎜", style: "currentDataText" }
@@ -327,7 +332,7 @@ module.exports = {
 
     return {
 
-      version: "1.0.0",
+      version: APP_VERSION,
 
       styles: {
         defaultText: { fontSize: 13, bold: false, color: "{{defaultTextColor}}" },
@@ -341,14 +346,14 @@ module.exports = {
         updateText: { fontSize: 9, bold: false, color: "{{highlightTextColor}}" },
         locationText: { fontSize: 14, bold: true, color: "{{highlightTextColor}}" },
 
-        currentColumnText: { fontSize: 13, bold: true, color: "{{highlightTextColor}}" },
-        currentDataText: { fontSize: 13, bold: true, color: "{{defaultTextColor}}" },
-        columnText: { fontSize: 11, bold: true, color: "{{highlightTextColor}}" },
-        dataText: { fontSize: 11, bold: true, color: "{{defaultTextColor}}" },
-        extraLargeText: { fontSize: 24, bold: true, color: "{{defaultTextColor}}" },
-        largeText: { fontSize: 20, bold: true, color: "{{defaultTextColor}}" },
-        normalText: { fontSize: 16, bold: true, color: "{{defaultTextColor}}" },
-        smallText: { fontSize: 9, bold: true, color: "{{defaultTextColor}}" }
+        currentColumnText: { font:"monospace", fontSize: 13, bold: true, color: "{{highlightTextColor}}" },
+        currentDataText: { font:"monospace", fontSize: 13, bold: true, color: "{{defaultTextColor}}" },
+        columnText: { font:"monospace", fontSize: 11, bold: true, color: "{{highlightTextColor}}" },
+        dataText: { font:"monospace", fontSize: 11, bold: true, color: "{{defaultTextColor}}" },
+        extraLargeText: { font:"monospace", fontSize: 24, bold: true, color: "{{defaultTextColor}}" },
+        largeText: { font:"monospace", fontSize: 20, bold: true, color: "{{defaultTextColor}}" },
+        normalText: { font:"monospace", fontSize: 16, bold: true, color: "{{defaultTextColor}}" },
+        smallText: { font:"monospace", fontSize: 9, bold: true, color: "{{defaultTextColor}}" }
       },
 
       defaultOpenSections: ["General", "Style"],
@@ -1090,6 +1095,6 @@ const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
 if (module_name == Script.name()) {
   (async() => {
     const Main = importModule("Main")
-    await Main.start("icloud")
+    await Main.start(DEFAULT_STRAGE_TYPE)
   })()
 }
