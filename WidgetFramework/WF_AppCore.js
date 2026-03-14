@@ -5,6 +5,8 @@
  * WF_AppCore
  * UTF-8 日本語コメント
  **/
+const VERSION_URL = "https://raw.githubusercontent.com/user/widget-framework/main/version.json"
+
 module.exports = class WF_AppCore {
 
   constructor(appInfo, appConfig, moduleCache) {
