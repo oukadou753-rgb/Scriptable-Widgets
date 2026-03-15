@@ -407,27 +407,7 @@ module.exports = class WF_WidgetRenderer {
       style = styles.defaultText || {}
     }
 
-    const size = Number(style.fontSize) || 14
-
-    if (style.font instanceof Font) {
-
-      textItem.font = style.font
-
-    }
-    else if (style.font === "monospace") {
-
-      textItem.font = style.bold
-        ? Font.boldMonospacedSystemFont(size)
-        : Font.mediumMonospacedSystemFont(size)
-
-    }
-    else {
-
-      textItem.font = style.bold
-        ? Font.boldSystemFont(size)
-        : Font.systemFont(size)
-
-    }
+    textItem.font = this.getFont(style)
 
     const colorValue = this.bind(style.color, context)
 
@@ -614,7 +594,11 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   // getFont
   // =========================
-  getFont(type, size, bold) {
+  getFont(style) {
+
+    const size = Number(style.fontSize) || 14
+    const type = style.font || "system"
+    const bold = style.bold || false
 
     const key = `${type}_${size}_${bold}`
 
@@ -625,13 +609,25 @@ module.exports = class WF_WidgetRenderer {
     let font
 
     if (type === "monospace") {
+
       font = bold
         ? Font.boldMonospacedSystemFont(size)
         : Font.monospacedSystemFont(size)
-    } else {
+
+    }
+    else if (type === "rounded") {
+
+      font = bold
+        ? Font.boldRoundedSystemFont(size)
+        : Font.roundedSystemFont(size)
+
+    }
+    else {
+
       font = bold
         ? Font.boldSystemFont(size)
         : Font.systemFont(size)
+
     }
 
     this.fontCache[key] = font
