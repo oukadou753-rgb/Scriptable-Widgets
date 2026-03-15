@@ -24,6 +24,8 @@ const headerBlock = [
       { type: "spacer", size: 3 },
       { type: "text", text: "{{header_titleStr}}", style: "titleText" },
       { type: "spacer" },
+      { type: "text", text: "{{current_discomfortIndexStr}}", style: { base: "defaultText", color: "{{current_discomfortIndexColor}}" } },
+      { type: "spacer", size: 5 },
       { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 14 }
     ]
   }
@@ -297,7 +299,7 @@ const forecastDataBlock = [
 const astroBlock = [
   {
     type: "hstack",
-    size: new Size(0, 25),
+    size: new Size(0, 30),
     spacing: 3,
     align: "center",
     children: [
@@ -642,8 +644,8 @@ module.exports = {
       header: {
         titleStr: current.condition,
         titleIcon: {
-          src: current.icon,
-          tint: "#ffffff"
+          src: current.conditionIcon,
+          tint: current.isDay ? "" : "#ffffff"
         }
       },
       body: {
@@ -688,9 +690,22 @@ module.exports = {
     const tempMin = Math.round(forecastData[0].day.mintemp_c)
     const tempMax = Math.round(forecastData[0].day.maxtemp_c)
     const humidity = data.current.humidity
+
     const discomfortIndex = getDiscomfortIndex(temp, humidity)
+    const [ discomfortIndexColor, discomfortIndexStr ] = colorByThreshold(discomfortIndex, [
+      [85, ["#ff453a", "暑くてたまらない"]],
+      [80, ["#ff6666", "暑くて汗が出る"]],
+      [75, ["#ffbd55", "やや暑い"]],
+      [70, ["#ffff66", "暑くない"]],
+      [65, ["#9de24f", "快い"]],
+      [60, ["#87cefa", "何も感じない"]],
+      [54, ["#487de7", "肌寒い"]]
+      ], ["#6500cb", "寒い"])
+
     const windSpeed = (data.current.wind_kph / 3.6).toFixed(1)
     const windDegree = getDegreeString(data.current.wind_dir)
+    const windIcon = drawArrow(getDegString(data.current.wind_degree), null, true)
+
     const rain = Math.ceil(Math.max(...[ hours[0].chance_of_rain, hours[0].chance_of_snow ]) / 5) * 5
 
     const now = new Date()
@@ -699,44 +714,41 @@ module.exports = {
 
     const sunriseTime = convert12to24(forecastData[ 0 ].astro.sunrise)
     const sunsetTime = convert12to24(forecastData[ 0 ].astro.sunset)
+
     const isDay = isTimeInRangeAcrossDay(`${h}:${m}`, sunriseTime, sunsetTime)
     const isAm = now.getHours() < 12
 
-    const wind_degree = data.current.wind_degree
-    const windIcon = drawArrow(getDegString(wind_degree), null, true)
-
     const current = {
       updated: data.current.last_updated,
-//       isDay: data.current.is_day,
+      isDay: data.current.is_day,
 
       temp,
       tempMin,
       tempMax,
+
       feelslike: Math.round(data.current.feelslike_c),
 
       condition: data.current.condition.text,
-      icon: makeWeatherApiIcon(data.current.condition.icon),
+      conditionIcon: makeWeatherApiIcon(data.current.condition.icon),
 
       humidity,
-//       cloud: data.current.cloud,
 
+      windSpeed,
       windIcon,
-      windSpeed: windSpeed,
-      windSpeedColor: getWindColor(windSpeed, defaultTextColor),
+      windSpeedColor: colorByThreshold(windSpeed, [[20, "#ff453a"], [15, "#ff6666"], [10, "#ffbd55"], [5, "#ffff66"]], defaultTextColor),
       windDir: data.current.wind_dir,
       windDegree: getDegreeString(data.current.wind_dir),
-//       gustKph: data.current.gust_kph,
 
       pressureMb: data.current.pressure_mb,
-//       visibilityKm: data.current.vis_km,
 
       precipMm: data.current.precip_mm.toFixed(1),
-//       uv: data.current.uv,
   
-      rain: rain || 0,
-      rainColor: getRainColor(rain, defaultTextColor),
-      discomfortIndex: discomfortIndex,
-      discomfortIndexColor: getDiscomfortColor(discomfortIndex, defaultTextColor),
+      rain,
+      rainColor: colorByThreshold(rain, [[100, "#ff453a"], [80, "#ff453a"], [60, "#ff6666"], [40, "#ffff66"]], defaultTextColor),
+
+      discomfortIndex,
+      discomfortIndexColor,
+      discomfortIndexStr,
 
       moonphaseIcon: getMoonphaseImage(now, true),
 
@@ -748,7 +760,12 @@ module.exports = {
       sunsetTime,
       sunsetIcon: "sunset.fill",
       sunsetColor: isAm ? "#999999" : "",
-      sunsetOpacity: isAm ? 0.7 : 1
+      sunsetOpacity: isAm ? 0.7 : 1,
+
+//       cloud: data.current.cloud,
+//       gustKph: data.current.gust_kph,
+//       visibilityKm: data.current.vis_km,
+//       uv: data.current.uv,
     }
 
     return current
@@ -783,24 +800,29 @@ module.exports = {
       const rainTrend = trendIcon(h.chance_of_rain, prev.chance_of_rain)
       const rain = Math.ceil(Math.max(...[ h.chance_of_rain, h.chance_of_snow ]) / 5) * 5
 
-      const wind_degree = h.wind_degree
-      const windIcon = drawArrow(getDegString(wind_degree), null, true)
+      const temp = Math.round(h.temp_c)
+      const windSpeed = Math.round(h.wind_kph / 3.6)
+      const windIcon = drawArrow(getDegString(h.wind_degree), null, true)
 
       return {
         hour: Number(h.time.split(" ")[1].slice(0, 2)) + "時",
+
         pressure: Math.round(h.pressure_mb),
         pressureColor: getPressureColor(h.pressure_mb, prev.pressure_mb, defaultTextColor),
-        pressureTrend: pressureTrend,
+        pressureTrend,
+
+        windSpeed,
+        windSpeedColor: colorByThreshold(windSpeed, [[20, "#ff453a"], [15, "#ff6666"], [10, "#ffbd55"], [5, "#ffff66"]], defaultTextColor),
+        windTrend,
         windIcon,
-        windSpeed: Math.round(h.wind_kph / 3.6),
-        windSpeedColor: getWindColor(Math.round(h.wind_kph / 3.6), defaultTextColor),
-        windTrend: windTrend,
-        temp: Math.round(h.temp_c),
-        tempColor: getTempColor(Math.round(h.temp_c), defaultTextColor),
-        tempTrend: tempTrend,
-        rain: rain,
-        rainColor: getRainColor(rain, defaultTextColor),
-        rainTrend: rainTrend
+
+        temp,
+        tempColor: colorByThreshold(temp, [[35, "#ff453a"], [30, "#ff6666"], [25, "#ffff66"], [0, "#87cefa"]], defaultTextColor),
+        tempTrend,
+
+        rain,
+        rainColor: colorByThreshold(rain, [[100, "#ff453a"], [80, "#ff453a"], [60, "#ff6666"], [40, "#ffff66"]], defaultTextColor),
+        rainTrend
       }
     })
 
@@ -994,12 +1016,14 @@ function trendIcon(curr, prev) {
   return "→"
 }
 
-function getRainColor(curr, color) {
-  if (curr == 100) return "#ff453a"
-  if (curr >= 80) return "#ff453a"
-  if (curr >= 60) return "#ff6666"
-  if (curr >= 40) return "#ffff66"
-  return color
+function colorByThreshold(v, table, defaultColor) {
+
+  for (const [limit, color] of table) {
+    if (v >= limit) return color
+  }
+
+  return defaultColor
+
 }
 
 function getPressureColor(curr, prev, color) {
@@ -1009,33 +1033,26 @@ function getPressureColor(curr, prev, color) {
   return color
 }
 
-function getWindColor(curr, color) {
-  if (curr == 20) return "#ff453a"
-  if (curr >= 15) return "#ff6666"
-  if (curr >= 10) return "#ffbd55"
-  if (curr >= 5) return "#ffff66"
-  return color
-}
-
-function getTempColor(curr, color) {
-  if (curr >= 35) return "#ff453a"
-  if (curr >= 30) return "#ff6666"
-  if (curr >= 25) return "#ffff66"
-  if (curr <= 0) return "#87cefa"
-  return color
-}
-
-function getDiscomfortColor(dis, color) {
+// colorByThreshold(dis, [
+// [85, ["#ff453a", "aaa"]],
+// [80, ["#ff6666", "aaa"]],
+// [75, ["#ffbd55", "aaa"]],
+// [70, ["#ffff66", "aaa"]],
+// [65, ["#9de24f", "aaa"]],
+// [60, ["#87cefa", "aaa"]],
+// [54, ["#487de8", "aaa"]]
+// ], [def, "ddd"])
+// function getDiscomfortColor(dis, color) {
 //   if ( dis <= 54 ) return '#6500cb'
-  if ( 55 <= dis && dis < 60 ) return '#487DE7'
-  if ( 60 <= dis && dis < 65 ) return '#87CEFA'
-  if ( 65 <= dis && dis < 70 ) return '#9DE24F'
-  if ( 70 <= dis && dis < 75 ) return '#FFFF66'
-  if ( 75 <= dis && dis < 80 ) return '#FFBD55'
-  if ( 80 <= dis && dis < 85 ) return '#FF6666'
-  if ( 85 <= dis ) return '#FF453A'
-  return color
-}
+//   if ( 55 <= dis && dis < 60 ) return '#487DE7'
+//   if ( 60 <= dis && dis < 65 ) return '#87CEFA'
+//   if ( 65 <= dis && dis < 70 ) return '#9DE24F'
+//   if ( 70 <= dis && dis < 75 ) return '#FFFF66'
+//   if ( 75 <= dis && dis < 80 ) return '#FFBD55'
+//   if ( 80 <= dis && dis < 85 ) return '#FF6666'
+//   if ( 85 <= dis ) return '#FF453A'
+//   return color
+// }
 
 function getDiscomfortIndex(temp, humidity) {
   const index = 0.81 * temp + 0.01 * humidity * (0.99 * temp - 14.3) + 46.3
