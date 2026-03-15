@@ -624,21 +624,11 @@ module.exports = class WF_WidgetRenderer {
     if (type === "semibold") {
       font = Font.semiboldSystemFont(size)
     }
-    else if (type === "medium") {
-      font = Font.mediumSystemFont(size)
-    }
     else if (type === "monospace") {
 
       font = bold
         ? Font.boldMonospacedSystemFont(size)
         : Font.monospacedSystemFont(size)
-
-    }
-    else if (type === "rounded") {
-
-      font = bold
-        ? Font.boldRoundedSystemFont(size)
-        : Font.roundedSystemFont(size)
 
     }
     else {
