@@ -26,6 +26,12 @@ const COLORS = {
     highlight: "#87cefa"       // 特殊 #7a4dff
   },
 
+  background: {
+    base: "#003366",
+    top: "#000000",
+    bottom: "#003366"
+  },
+
   pressure: {
     rising: "#5cc8ff",      // 上昇
     steady: "#d1cdda",      // 変化なし
@@ -103,6 +109,8 @@ const COLORS = {
   },
 
   extra: {
+    temp: "#ff453a",
+    humidity: "#09a1f9",
     rain: "#66d1ff",
     snow: "#cfe9ff",
     cloud: "#b0c4de",
@@ -162,19 +170,35 @@ const LEVEL_THRESHOLDS = {
 }
 
 // ======================
+// Font Size
+// ======================
+const SIZE_FONTS = {
+  default: 13,
+
+  header: 14,
+  body: 13,
+  footer: 9,
+
+  extraLarge: 24,
+  large: 20,
+  normal: 16,
+  small: 10
+}
+
+// ======================
 // Header Block
 // ======================
 const headerBlock = [
   {
     type: "hstack",
-    size: new Size(0, 20),
+    size: new Size(0, 24),
     align: "center",
     children: [
       { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: 24 },
       { type: "spacer", size: 3 },
-      { type: "text", text: "{{header_titleStr}}", style: "titleText" },
+      { type: "text", text: "{{header_titleStr}}", style: "headerText" },
       { type: "spacer" },
-      { type: "text", text: "{{current_discomfortIndexStr}}", style: { base: "defaultText", color: "{{current_discomfortIndexColor}}" } },
+      { type: "text", text: "{{current_discomfortIndexStr}}", style: { base: "headerText", color: "{{current_discomfortIndexColor}}" } },
       { type: "spacer", size: 5 },
       { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 14 }
     ]
@@ -191,7 +215,7 @@ const locationBlock = [
     size: new Size(0, 16),
     align: "center",
     children: [
-      { type: "text", text: "{{location_name}}", style: "locationText" },
+      { type: "text", text: "{{location_name}}", style: { base: "footerText", fontSize: SIZE_FONTS.normal, bold: true, color: "{{highlightTextColor}}" } },
     ]
   }
 ]
@@ -203,10 +227,10 @@ const updateBlock = [
     size: new Size(0, 16),
     align: "center",
     children: [
-      { type: "text", text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" },
+//       { type: "text", text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" },
 //       { type: "text", text: "{{location_latStr}} : {{location_lonStr}}", style: "footerText" },
       { type: "spacer" },
-      { type: "text", text: "Update: ", style: "updateText" },
+      { type: "text", text: "Update: ", style: { base: "footerText", color: "{{highlightTextColor}}" } },
       { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
     ]
   }
@@ -260,7 +284,7 @@ const currentDataBlock1 = [
       {
         type: "hstack",
         children: [
-          { type: "text", text: "{{current_pressure}}", style: { base: "defaultText", font:"monospace", fontSize: 60, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.8 } }
+          { type: "text", text: "{{current_pressure}}", style: { base: "dataText", font:"monospace", fontSize: 60, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.8 } }
         ]
       },
     ]
@@ -279,11 +303,11 @@ const currentDataBlock2 = [
         justify: "center",
         align: "center",
         children: [
-          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: "#ff453a" } },
-          { type: "text", text: "°C", style: { base: "normalText", color: "#ff453a" } },
+          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.temp } },
+          { type: "text", text: "°C", style: { base: "normalText", color: COLORS.extra.temp } },
           { type: "spacer", size: 13 },
-          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: "#09a1f9" } },
-          { type: "text", text: "％", style: { base: "normalText", color: "#09a1f9" } }
+          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.humidity } },
+          { type: "text", text: "％", style: { base: "normalText", color: COLORS.extra.humidity } }
         ]
       },
       {
@@ -327,7 +351,7 @@ const currentDataBlock2 = [
 const currentDataBlock3 = [
   {
     type: "vstack",
-    size: new Size(0, 60),
+    size: new Size(0, 55),
     children: [
       {
         type: "hstack",
@@ -335,14 +359,14 @@ const currentDataBlock3 = [
         align: "center",
         children: [
           { type: "text", text: "日較差：", style: "currentColumnText" },
-          { type: "text", text: "{{current_tempMax}}", style: "largeText" },
+          { type: "text", text: "{{current_tempMax}}", style: { base: "normalText", color: "{{current_tempMaxColor}}" } },
           { type: "text", text: "°C", style: "currentDataText" },
-          { type: "text", text: " / ", style: "largeText" },
-          { type: "text", text: "{{current_tempMin}}", style: "largeText" },
+          { type: "text", text: " / ", style: "currentColumnText" },
+          { type: "text", text: "{{current_tempMin}}", style: { base: "normalText", color: "{{current_tempMinColor}}" } },
           { type: "text", text: "°C", style: "currentDataText" },
           { type: "spacer", size: 15 },
           { type: "text", text: "体感温度：", style: "currentColumnText" },
-          { type: "text", text: "{{current_feelslike}}", style: "largeText" },
+          { type: "text", text: "{{current_feelslike}}", style: { base: "normalText", color: "{{current_feelslikeColor}}" } },
           { type: "text", text: "°C", style: "currentDataText" }
         ]
       },
@@ -352,13 +376,13 @@ const currentDataBlock3 = [
         align: "center",
         children: [
           { type: "text", text: "風速：", style: "currentColumnText" },
-          { type: "text", text: "{{current_windSpeed}}", style: { base: "largeText", color: "{{current_windSpeedColor}}" } },
-          { type: "text", text: "m/s", style: { base: "currentDataText", color: "{{current_windSpeedColor}}" } },
+          { type: "text", text: "{{current_windSpeed}}", style: { base: "normalText", color: "{{current_windSpeedColor}}" } },
+          { type: "text", text: "m/s", style: "currentDataText" },
           { type: "spacer", size: 15 },
           { type: "text", text: "風向き：", style: "currentColumnText" },
           { type: "image", src: "{{current_windIcon}}", tint: "{{highlightTextColor}}", size: 24 },
-          { type: "spacer", size: 3 },
-          { type: "text", text: "{{current_windDegree}}", style: "largeText" }
+          { type: "spacer", size: 5 },
+          { type: "text", text: "{{current_windDegree}}", style: "normalText" }
         ]
       }
     ]
@@ -379,22 +403,22 @@ const forecastDataBlock = [
         children: [
           { type: "text", text: "{{intervalHours}}時間予報", style: { base: "smallText", color: "{{highlightTextColor}}" } },
           { type: "hstack", align: "center", children: [
-              { type: "text", text: "気圧", style: { base: "columnText", color: "{{highlightTextColor}}" } },
+              { type: "text", text: "気圧", style: "columnText" },
               { type: "text", text: "(hPa)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           },
           { type: "hstack", align: "center", children: [
-              { type: "text", text: "風速", style: { base: "columnText", color: "{{highlightTextColor}}" } },
+              { type: "text", text: "風速", style: "columnText" },
               { type: "text", text: "(m)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           },
           { type: "hstack", align: "center", children: [
-              { type: "text", text: "気温", style: { base: "columnText", color: "{{highlightTextColor}}" } },
+              { type: "text", text: "気温", style: "columnText" },
               { type: "text", text: "(°C)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           },
           { type: "hstack", align: "center", children: [
-              { type: "text", text: "降水", style: { base: "columnText", color: "{{highlightTextColor}}" } },
+              { type: "text", text: "降水", style: "columnText" },
               { type: "text", text: "(％)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           }
@@ -481,25 +505,28 @@ module.exports = {
       colors: COLORS,
 
       styles: {
-        defaultText: { fontSize: 13, bold: false, color: "{{defaultTextColor}}" },
-        HighlightText: { fontSize: 13, bold: false, color: "{{highlightTextColor}}" },
-        headerText: { fontSize: 13, bold: true, color: "{{headerTextColor}}" },
-        bodyText: { fontSize: 13, bold: false, color: "{{bodyTextColor}}" },
-        footerText: { fontSize: 9, bold: false, color: "{{footerTextColor}}" },
+        defaultText: { fontSize: SIZE_FONTS.default, bold: false, color: "{{defaultTextColor}}" },
+        HighlightText: { fontSize: SIZE_FONTS.default, bold: false, color: "{{highlightTextColor}}" },
 
-        titleText: { fontSize: 14, bold: true, color: "{{highlightTextColor}}" },
-        versionText: { fontSize: 9, bold: false, color: "{{defaultTextColor}}" },
-        updateText: { fontSize: 9, bold: false, color: "{{highlightTextColor}}" },
-        locationText: { fontSize: 14, bold: true, color: "{{highlightTextColor}}" },
+        headerText: { fontSize: SIZE_FONTS.header, bold: true, color: "{{headerTextColor}}" },
+        bodyText: { fontSize: SIZE_FONTS.body, bold: false, color: "{{bodyTextColor}}" },
+        footerText: { fontSize: SIZE_FONTS.footer, bold: false, color: "{{footerTextColor}}" },
+
+        titleText: { fontSize: SIZE_FONTS.header, bold: true, color: "{{highlightTextColor}}" },
+        versionText: { fontSize: SIZE_FONTS.footer, bold: false, color: "{{defaultTextColor}}" },
+        updateText: { fontSize: SIZE_FONTS.footer, bold: false, color: "{{highlightTextColor}}" },
+        locationText: { fontSize: SIZE_FONTS.body, bold: true, color: "{{highlightTextColor}}" },
 
         currentColumnText: { font:"monospace", fontSize: 13, bold: true, color: "{{highlightTextColor}}", lineLimit: 1 },
         currentDataText: { font:"monospace", fontSize: 13, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
+
         columnText: { font:"monospace", fontSize: 11, bold: true, color: "{{highlightTextColor}}", lineLimit: 1 },
         dataText: { font:"monospace", fontSize: 11, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
-        extraLargeText: { font:"monospace", fontSize: 24, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
-        largeText: { font:"monospace", fontSize: 20, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
-        normalText: { font:"monospace", fontSize: 16, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
-        smallText: { font:"monospace", fontSize: 10, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 }
+
+        extraLargeText: { font:"monospace", fontSize: SIZE_FONTS.extraLarge, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
+        largeText: { font:"monospace", fontSize: SIZE_FONTS.large, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
+        normalText: { font:"monospace", fontSize: SIZE_FONTS.normal, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 },
+        smallText: { font:"monospace", fontSize: SIZE_FONTS.small, bold: true, color: "{{defaultTextColor}}", lineLimit: 1 }
       },
 
       defaultOpenSections: ["General", "Style"],
@@ -508,15 +535,15 @@ module.exports = {
         titleStr: { type: "text", label: "Title", section: "General", default: "My Widget" },
 
         useBgGradient: { type: "bool", label: "Use Gradient Color", section: "BackgroundColor", default: true },
-        bgColorTop: { type: "color", label: "Gradient Background Top Color", section: "BackgroundColor", default: "#000000", presets: ["#000000", "#ff9900"] },
-        bgColorBottom: { type: "color", label: "Gradient Background Bottom Color", section: "BackgroundColor", default: "#003366", presets: ["#000000", "#ff9900"] },
-        bgColor: { type: "color", label: "Background Color", section: "BackgroundColor", default: "#003366", presets: ["#000000", "#ff9900"] },
+        bgColorTop: { type: "color", label: "Gradient Background Top Color", section: "BackgroundColor", default: COLORS.background.top, presets: ["#000000", "#ff9900"] },
+        bgColorBottom: { type: "color", label: "Gradient Background Bottom Color", section: "BackgroundColor", default: COLORS.background.bottom, presets: ["#000000", "#ff9900"] },
+        bgColor: { type: "color", label: "Background Color", section: "BackgroundColor", default: COLORS.background.base, presets: ["#000000", "#ff9900"] },
 
         defaultTextColor: { type: "color", label: "Default Text Color", section: "Style", default: COLORS.theme.textPrimary },
         highlightTextColor: { type: "color", label: "Highlight Text Color", section: "Style", default: COLORS.theme.highlight },
-        headerTextColor: { type: "color", label: "Header Text Color", section: "Style", default: "#ffffff" },
-        bodyTextColor: { type: "color", label: "Body Text Color", section: "Style", default: "#ffffff" },
-        footerTextColor: { type: "color", label: "Footer Text Color", section: "Style", default: "#ffffff" },
+        headerTextColor: { type: "color", label: "Header Text Color", section: "Style", default: COLORS.theme.textPrimary },
+        bodyTextColor: { type: "color", label: "Body Text Color", section: "Style", default: COLORS.theme.textPrimary },
+        footerTextColor: { type: "color", label: "Footer Text Color", section: "Style", default: COLORS.theme.textPrimary },
 
         useTestData: { type: "bool", label: "Use Test Data", section: "Debug", default: true },
         showTableFullscreen: { type: "bool", label: "Show Table Fullscreen", section: "Debug", default: true },
@@ -875,9 +902,12 @@ module.exports = {
 
       temp,
       tempMin,
+      tempMinColor: colorByThreshold(tempMin, LEVEL_THRESHOLDS.temp, LEVEL_THRESHOLDS.tempDef),
       tempMax,
+      tempMaxColor: colorByThreshold(tempMax, LEVEL_THRESHOLDS.temp, LEVEL_THRESHOLDS.tempDef),
 
       feelslike: Math.round(data.current.feelslike_c),
+      feelslikeColor: colorByThreshold(temp, LEVEL_THRESHOLDS.temp, LEVEL_THRESHOLDS.tempDef),
 
       condition: data.current.condition.text,
       conditionIcon: makeWeatherApiIcon(data.current.condition.icon),
