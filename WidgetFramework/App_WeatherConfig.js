@@ -829,20 +829,21 @@ module.exports = {
 
     const intervalHours = v.intervalHours || 2
     const displayCount = 2
-    const nowEpoch = Math.floor(Date.now() / 1000) - 3600
+    const nowEpoch = Math.floor(Date.now() / 1000) - (3600 * (intervalHours + 1))
 
-    const forecastData = data.forecast.forecastday  // forecastday 配列
+    const forecastData = data.forecast.forecastday
     const hours = forecastData.flatMap(day => day.hour)
       .filter(h => h.time_epoch >= nowEpoch)
       .filter((h, i) => i % intervalHours === 0)
       .slice(0, displayCount)
 
+//     console.log(JSON.stringify(hours[0], null, 2))
 //     console.log(JSON.stringify(data, null, 2))
 //     console.log(JSON.stringify(forecastData[ 0 ].day, null, 2))
 //     console.log(JSON.stringify(forecastData[ 0 ].astro, null, 2))
 
     const pressure_current = data.current.pressure_mb
-    const pressure_after = hours[1].pressure_mb || pressure_current
+    const pressure_after = hours[0].pressure_mb || pressure_current
 
     const temp = Math.round(data.current.temp_c)
     const tempMin = Math.round(forecastData[0].day.mintemp_c)
@@ -856,7 +857,7 @@ module.exports = {
     const windDegree = getDegreeString(data.current.wind_dir)
     const windIcon = drawArrow(getDegString(data.current.wind_degree), null, true)
 
-    const pop = Math.ceil(Math.max(...[ hours[0].chance_of_rain, hours[0].chance_of_snow ]) / 5) * 5
+    const pop = Math.ceil(Math.max(...[ hours[1].chance_of_rain, hours[1].chance_of_snow ]) / 5) * 5
 
     const now = new Date()
     const h = String(now.getHours()).padStart(2, '0')
@@ -890,7 +891,7 @@ module.exports = {
       windDegree: getDegreeString(data.current.wind_dir),
 
       pressure: pressure_current,
-      pressureColor: getPressureColor(pressure_after, pressure_current),
+      pressureColor: getPressureColor(pressure_current, pressure_after),
 
       precipMm: data.current.precip_mm.toFixed(1),
   
