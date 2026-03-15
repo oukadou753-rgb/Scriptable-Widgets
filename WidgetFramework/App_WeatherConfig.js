@@ -29,8 +29,8 @@ const COLORS = {
   pressure: {
     rising: "#5cc8ff",      // 上昇
     steady: "#d1cdda",      // 変化なし
-    falling: "#ffb347"      // 下降
-  
+    falling: "#ffb347",     // 下降
+    alert: "#ff4d4d"        // 警戒
   },
 
   temp: {
@@ -838,6 +838,9 @@ module.exports = {
 //     console.log(JSON.stringify(forecastData[ 0 ].day, null, 2))
 //     console.log(JSON.stringify(forecastData[ 0 ].astro, null, 2))
 
+    const pressure_current = data.current.pressure_mb
+    const pressure_after = forecastData[0].pressure_mb
+
     const temp = Math.round(data.current.temp_c)
     const tempMin = Math.round(forecastData[0].day.mintemp_c)
     const tempMax = Math.round(forecastData[0].day.maxtemp_c)
@@ -883,7 +886,8 @@ module.exports = {
       windDir: data.current.wind_dir,
       windDegree: getDegreeString(data.current.wind_dir),
 
-      pressureMb: data.current.pressure_mb,
+      pressureMb: pressure_current,
+      pressureColor: getPressureColor(pressure_after, pressure_current),
 
       precipMm: data.current.precip_mm.toFixed(1),
   
@@ -952,7 +956,7 @@ module.exports = {
         hour: Number(h.time.split(" ")[1].slice(0, 2)) + "時",
 
         pressure: Math.round(h.pressure_mb),
-        pressureColor: getPressureColor(h.pressure_mb, prev.pressure_mb),
+        pressureColor: getPressureColor(prev.pressure_mb, h.pressure_mb),
         pressureTrend,
 
         windSpeed,
@@ -1171,8 +1175,9 @@ function getPressureColor(curr, prev) {
   const diff = curr - prev
   const c = COLORS.pressure
   let color = c.steady
-  if (diff > 0.5) color = c.rising
-  else if (diff < -0.5) color = c.falling
+  if (diff > 4 || diff < -4) color = c.alart
+  else if (diff > 2) color = c.rising
+  else if (diff < -2) color = c.falling
   return color
 }
 
