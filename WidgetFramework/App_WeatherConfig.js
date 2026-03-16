@@ -249,11 +249,10 @@ const MARK = {
 // ======================
 const headerBlock = [
   {
-    type: "hstack",
     size: new Size(0, 24),
     align: "center",
     spacing: 3,
-    children: [
+    h: [
       { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: SIZES.image.extraLarge },
       { type: "text", text: "{{header_titleStr}}", style: "headerText" },
       { type: "spacer" },
@@ -270,28 +269,26 @@ const headerBlock = [
 // Location Name
 const locationBlock = [
   {
-    type: "hstack",
-    size: new Size(0, 14),
-    align: "center",
-    children: [
+    h: [
       { type: "text", text: "{{location_name}}", style: { base: "footerText", fontSize: SIZES.text.normal, bold: true, color: "{{highlightTextColor}}" } },
-    ]
+    ],
+    size: new Size(0, 14),
+    align: "center"
   }
 ]
 
 // Update + Location.lat/lon
 const updateBlock = [
   {
-    type: "hstack",
-    size: new Size(0, 16),
-    align: "center",
-    children: [
+    h: [
 //       { type: "text", text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" },
 //       { type: "text", text: "{{location_latStr}} : {{location_lonStr}}", style: "footerText" },
       { type: "spacer" },
       { type: "text", text: "Update: ", style: { base: "footerText", color: "{{highlightTextColor}}" } },
       { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
-    ]
+    ],
+    size: new Size(0, 16),
+    align: "center"
   }
 ]
 
@@ -301,51 +298,46 @@ const updateBlock = [
 // currentDataBlockSmall
 const currentDataBlockSmall = [
   {
-    type: "vstack",
-    size: new Size(0, 0),
-    padding: pos(5, 0, 0, 0),
-    children: [
+    v: [
       {
-        type: "hstack",
-      justify: "center",
-        align: "center",
-        children: [
+        h: [
           { type: "text", text: "{{current_pressure}}", style: { base: "bodyText", font:"monospace", fontSize: 35, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.9 } }
-        ]
+        ],
+        justify: "center",
+        align: "center"
       },
       { type: "spacer" },
       {
-        type: "hstack",
-        size: new Size(0, 15),
-        justify: "center",
-        align: "center",
-        children: [
+        h: [
           { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.temp } },
           { type: "text", text: "°C", style: { base: "normalText", color: COLORS.extra.temp } },
           { type: "spacer", size: 13 },
           { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.humidity } },
           { type: "text", text: "％", style: { base: "normalText", color: COLORS.extra.humidity } }
-        ]
+        ],
+        size: new Size(0, 15),
+        justify: "center",
+        align: "center"
       }
-    ]
+    ],
+    size: new Size(0, 0),
+    padding: pos(5, 0, 0, 0)
   }
 ]
 
 // CurrentData Details Block 1
 const currentDataBlock1 = [
   {
-    type: "vstack",
-    size: new Size(145, 0),
-    justify: "center",
-    align: "center",
-    children: [
+    v: [
       {
-        type: "hstack",
-        children: [
+        h: [
           { type: "text", text: "{{current_pressure}}", style: { base: "bodyText", font:"monospace", fontSize: 50, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.9 } }
         ]
       },
-    ]
+    ],
+    size: new Size(145, 0),
+    justify: "center",
+    align: "center"
   }
 ]
 
@@ -456,8 +448,7 @@ const currentDataBlock3 = [
 const forecastDataBlock = [
   {
     type: "hstack",
-    size: new Size(0, 73),
-    justify: "center",
+    size: new Size(0, 75),
     children: [
   
       // Column
@@ -465,25 +456,25 @@ const forecastDataBlock = [
         type: "vstack",
         size: new Size(50, 0),
         children: [
-          { type: "text", text: "{{intervalHours}}時間予報", style: { base: "smallText", fontSize: 9, color: "{{highlightTextColor}}" } },
+          { type: "text", text: "{{intervalHours}}時間予報", style: { base: "smallText", color: "{{highlightTextColor}}" } },
           { type: "hstack", align: "center", children: [
               { type: "text", text: "気圧", style: "columnText" },
-              { type: "text", text: "(hPa)", style: { base: "smallText", fontSize: 9, color: "{{highlightTextColor}}" } }
+              { type: "text", text: "(hPa)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           },
           { type: "hstack", align: "center", children: [
               { type: "text", text: "風速", style: "columnText" },
-              { type: "text", text: "(m/s)", style: { base: "smallText", fontSize: 9, color: "{{highlightTextColor}}" } }
+              { type: "text", text: "(m)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           },
           { type: "hstack", align: "center", children: [
               { type: "text", text: "気温", style: "columnText" },
-              { type: "text", text: "(°C)", style: { base: "smallText", fontSize: 9, color: "{{highlightTextColor}}" } }
+              { type: "text", text: "(°C)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           },
           { type: "hstack", align: "center", children: [
               { type: "text", text: "降水", style: "columnText" },
-              { type: "text", text: "(％)", style: { base: "smallText", fontSize: 9, color: "{{highlightTextColor}}" } }
+              { type: "text", text: "(％)", style: { base: "smallText", color: "{{highlightTextColor}}" } }
             ]
           }
         ]
