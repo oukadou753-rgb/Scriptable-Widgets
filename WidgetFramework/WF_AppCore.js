@@ -44,7 +44,7 @@ module.exports = class WF_AppCore {
   }
 
   async start() {
-
+/*
     const lastCheck = this.storage.readJSON("fw_update_check")
 
     if (!lastCheck || Date.now() - lastCheck > 86400000) {
@@ -64,7 +64,7 @@ module.exports = class WF_AppCore {
 
       this.storage.writeJSON("fw_update_check", Date.now())
     }
-
+*/
     this.setupMenus()
 
     while (true) {
