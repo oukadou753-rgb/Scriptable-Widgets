@@ -27,7 +27,11 @@ const PALETTE = Object.freeze({
   blue: "#4d8dff",
   purple: "#7a4dff",
 
-  gray: "#7f8fa6"
+  whitew: "#d1cdda",
+  gray: "#7f8fa6",
+  litegGray: "#acb6c5",
+  darkGray: "#596980",
+  black: "#000000"
 
 })
 
@@ -51,10 +55,10 @@ const COLORS = {
   theme: {
     textPrimary: "#d1cdda",    // メイン文字
     textSecondary: "#a8b2c7",  // サブ文字
-    divider: "#2c4a72",
+    divider: "#2c4a72",       // 仕切り
 
-    accent: PALETTE.blue,      // 仕切り
-    info: PALETTE.sky,         // 強調
+    accent: PALETTE.blue,      // 強調
+    info: PALETTE.sky,         // 情報
     highlight: PALETTE.purple  // 特殊
   },
 
