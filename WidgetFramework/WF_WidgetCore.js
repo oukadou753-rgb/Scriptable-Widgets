@@ -41,7 +41,7 @@ module.exports = class WF_WidgetCore {
 
   async start() {
 
-   // Framework update check
+    // Framework update check
     const update = await this.checkFrameworkUpdate()
 
     if (update?.update) {
