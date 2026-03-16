@@ -40,7 +40,7 @@ module.exports = class WF_WidgetCore {
   }
 
   async start() {
-
+/*
     // Framework update check
     const update = await this.checkFrameworkUpdate()
 
@@ -53,7 +53,7 @@ module.exports = class WF_WidgetCore {
       )
 
     }
-
+*/
     if (config.runsInWidget && !config.runsInApp) {
       const context = await this.buildContext()
       const widget = await this.renderer.render(context)
