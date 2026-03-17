@@ -716,11 +716,7 @@ module.exports = class WF_WidgetRenderer {
       font = Font.semiboldSystemFont(size)
     }
     else if (type === "monospace") {
-      Font.boldMonospacedSystemFont(size)
-      // font = bold
-      //  ? Font.boldMonospacedSystemFont(size)
-      //  : Font.monospacedSystemFont(size)
-
+      font = Font.boldMonospacedSystemFont(size)
     }
     else {
 
