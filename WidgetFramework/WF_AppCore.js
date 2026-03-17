@@ -22,8 +22,7 @@ module.exports = class WF_AppCore {
       WF_ProfileEngine,
       WF_ConfigUI,
       WF_DataProvider,
-      WF_CoreBase,
-      WF_AppCore
+      WF_CoreBase
     } = moduleCache
 
     this.appId = appId || Script.name()
