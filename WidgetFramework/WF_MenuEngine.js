@@ -122,6 +122,8 @@ module.exports = class WF_MenuEngine {
         if (result === "exit") return "exit"
         if (result === "back") return "back"
 
+        if (options.closeOnSelect) return "exit"
+
       } catch (e) {
 
         const err = new Alert()
