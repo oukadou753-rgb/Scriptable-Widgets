@@ -215,10 +215,10 @@ const LEVEL_THRESHOLDS = {
 // ======================
 const SIZES = {
   text: {
-    default: 13,
+    default: 14,
   
-    header: 14,
-    body: 13,
+    header: 16,
+    body: 14,
     footer: 9,
   
     extraLarge: 20,
@@ -245,7 +245,7 @@ const SIZES = {
   },
 
   image: {
-    extraLarge: 24,
+    extraLarge: 28,
     large: 20,
     medium: 14,
     small: 10,
@@ -266,9 +266,48 @@ const TEXT_ICON = {
 function betweenHelper(left, right) {
   return {
     justify:"space-between",
-    h:[left,right]
+    h:[left, right]
   }
 }
+
+function textHelper(text, style) {
+  return { text, style }
+}
+
+function imageHelper(image, size = 14, tint = "", opacity = 1) {
+  return { image, size, tint, opacity }
+}
+
+function unitHelper(text, unit, markColor) {
+  return {
+    justify: "end", spacing: 2,
+    h: [
+      textHelper(text, "dataText"),
+      textHelper(unit, "dataSmallText"),
+      textHelper(TEXT_ICON.mark, { base: "dataSmallText", color: markColor })
+    ]
+  }
+}
+
+function colomnHelper(text, subText) {
+  return {
+    h: [
+      textHelper(text, "columnText"),
+      textHelper(`(${subText})`, "columnSmallText")
+    ]
+  }
+}
+
+function rowHelper(text, trend, color) {
+  return {
+    justify: "end",
+    h: [
+      textHelper(trend, { base: "dataSmallText", color: color }),
+      textHelper(text, "dataText")
+    ]
+  }
+}
+
 // ======================
 // Header Block
 // ======================
@@ -276,15 +315,15 @@ const headerBlock = [
   betweenHelper(
     { size: new Size(0, 24), spacing:3,
       h: [
-        { image: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: SIZES.image.extraLarge },
-        { text: "{{header_titleStr}}", style: "headerText" }
+        imageHelper("{{header_titleIcon_src}}", SIZES.text.extraLarge, "{{header_titleIcon_tint}}"),
+        textHelper("{{header_titleStr}}", "largeText")
       ]
     },
     { spacing:3, hidden: "{{ui_level < 2}}",
       h: [
-        { text: TEXT_ICON.mark, style: { base: "headerText", fontSize: SIZES.image.small, color: "{{current_discomfortIndexColor}}" } },
-        { text: "{{current_discomfortIndexStr}}", style: "headerText" },
-        { image: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: SIZES.image.medium }
+        textHelper(TEXT_ICON.mark, { base: "mediumText", color: "{{current_discomfortIndexColor}}" }),
+        textHelper("{{current_discomfortIndexStr}}", "largeText"),
+        imageHelper("{{status_icon}}", SIZES.image.medium, "{{status_color}}", "{{status_opacity}}")
       ]
     }
   )
@@ -297,7 +336,7 @@ const headerBlock = [
 const locationBlock = [
   { hidden: "{{ui_level < 2}}",
     h: [
-      { text: "{{location_name}}", style: { base: "footerText", fontSize: SIZES.text.medium, bold: true, color: "{{highlightTextColor}}" } },
+      textHelper("{{location_name}}", { base: "largeText", color: "{{highlightTextColor}}" }),
     ]
   }
 ]
@@ -305,15 +344,15 @@ const locationBlock = [
 // Update + Location.lat/lon
 const updateBlock = [
   betweenHelper(
-    { hidden: "{{ui_level < 2}}",
+    { hidden: "{{ui_level < 2}}", show: "{{showStorageType}}",
       h: [
-        { text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" }
+        textHelper(DEFAULT_STRAGE_TYPE + " mode", "smallText")
       ]
     },
     {
       h: [
-        { text: "Update: ", style: { base: "footerText", color: "{{highlightTextColor}}" } },
-        { text: "{{footer_updateStr}}", style: "footerText" }
+        textHelper("Update: ", { base: "smallText", color: "{{highlightTextColor}}" }),
+        textHelper("{{footer_updateStr}}", "smallText")
       ]
     }
   )
@@ -328,43 +367,30 @@ const currentDataBlockSmall = [
     v: [
       { size: new Size(0, 30), padding: pos(0, 5, 0, 0), justify: "center",
         h: [
-          { type: "text", text: "{{current_pressure}}", style: { base: "dataText", fontSize: 30, color: "{{current_pressureColor}}" } }
+          textHelper("{{current_pressure}}", { base: "dataText", fontSize: 30, color: "{{current_pressureColor}}" })
         ]
       },
       { size: new Size(0, 25), justify: "center",
         h: [
-          { text: "{{current_temp}}", style: { base: "dataLargeText", color: COLORS.extra.temp } },
-          { text: "°C", style: { base: "dataText", color: COLORS.extra.temp } },
+          textHelper("{{current_temp}}", { base: "dataLargeText", color: COLORS.extra.temp }),
+          textHelper("°C", { base: "dataText", color: COLORS.extra.temp }),
           { spacer: 10 },
-          { text: "{{current_humidity}}", style: { base: "dataLargeText", color: COLORS.extra.humidity } },
-          { text: "％", style: { base: "dataText", color: COLORS.extra.humidity } }
+          textHelper("{{current_humidity}}", { base: "dataLargeText", color: COLORS.extra.humidity }),
+          textHelper("％", { base: "dataText", color: COLORS.extra.humidity })
         ]
       },
       { justify: "center",
         h: [
           { size: new Size(0, 0), justify: "start",
             v: [
-              { text: "不快指数：", style: "columnSmallText" },
-              { text: "降水確率：", style: "columnSmallText" }
+              textHelper("不快指数：", "columnSmallText"),
+              textHelper("降水確率：", "columnSmallText")
             ]
           },
           {
             v: [
-              { justify: "end", spacing: 2,
-                h: [
-                  { text: "{{current_discomfortIndex}}", style: "dataSmallText" },
-                  { text: "　", style: "dataSmallText" },
-                  { text: TEXT_ICON.mark, style: { base: "dataSmallText", color: "{{current_discomfortIndexColor}}" } }
-                ]
-              },
-              { justify: "end", spacing: 2,
-                h: [
-                  { text: "100", style: "dataSmallText" },
-//                   { text: "{{current_pop}}", style: "dataSmallText" },
-                  { text: "％", style: "dataSmallText" },
-                  { text: TEXT_ICON.mark, style: { base: "dataSmallText", color: "{{current_popColor}}" } }
-                ]
-              }
+              unitHelper("{{current_discomfortIndex}}", "　", "{{current_discomfortIndexColor}}"),
+              unitHelper("{{current_pop}}", "％", "{{current_popColor}}")
             ]
           }
         ]
@@ -377,7 +403,7 @@ const currentDataBlockSmall = [
 const currentDataBlock1 = [
   { size: new Size(140, 0), padding: pos(0, 0, 0, -10), justify: "center",
     h: [
-      { text: "{{current_pressure}}", style: { base: "dataText", fontSize: 50, color: "{{current_pressureColor}}" } }
+      textHelper("{{current_pressure}}", { base: "dataText", fontSize: 50, color: "{{current_pressureColor}}" })
     ]
   }
 ]
@@ -387,45 +413,27 @@ const currentDataBlock2 = [
     v: [
       { size: new Size(0, 25), justify: "center", spacing: 2,
         h: [
-          { text: "{{current_temp}}", style: { base: "dataExtraLargeText", color: COLORS.extra.temp } },
-          { text: "°C", style: { base: "dataText", color: COLORS.extra.temp } },
+          textHelper("{{current_temp}}", { base: "dataExtraLargeText", color: COLORS.extra.temp }),
+          textHelper("°C", { base: "dataText", color: COLORS.extra.temp }),
           { spacer: 10 },
-          { text: "{{current_humidity}}", style: { base: "dataExtraLargeText", color: COLORS.extra.humidity } },
-          { text: "％", style: { base: "dataText", color: COLORS.extra.humidity } }
+          textHelper("{{current_humidity}}", { base: "dataExtraLargeText", color: COLORS.extra.humidity }),
+          textHelper("％", { base: "dataText", color: COLORS.extra.humidity })
         ]
       },
       {
         h: [
           { size: new Size(60, 0), justify: "start",
             v: [
-              { text: "不快指数：", style: "columnText" },
-              { text: "降水確率：", style: "columnText" },
-              { text: "雨　　量：", style: "columnText" }
+              textHelper("不快指数：", "columnText"),
+              textHelper("降水確率：", "columnText"),
+              textHelper("雨　　量：", "columnText")
             ]
           },
           {
             v: [
-              { justify: "end", spacing: 2,
-                h: [
-                  { text: "{{current_discomfortIndex}}", style: "dataText" },
-                  { text: "　", style: "dataSmallText" },
-                  { text: TEXT_ICON.mark, style: { base: "dataSmallText", color: "{{current_discomfortIndexColor}}" } }
-                ]
-              },
-              { justify: "end", spacing: 2,
-                h: [
-                  { text: "{{current_pop}}", style: "dataText" },
-                  { text: "％", style: "dataSmallText" },
-                  { text: TEXT_ICON.mark, style: { base: "dataSmallText", color: "{{current_popColor}}" } }
-                ]
-              },
-              { justify: "end", spacing: 2,
-                h: [
-                  { text: "{{current_rain}}", style: "dataText" },
-                  { text: "㎜", style: "dataSmallText" },
-                  { text: TEXT_ICON.mark, style: { base: "dataSmallText", color: "{{current_rainColor}}" } }
-                ]
-              }
+              unitHelper("{{current_discomfortIndex}}", "　", "{{current_discomfortIndexColor}}"),
+              unitHelper("{{current_pop}}", "％", "{{current_popColor}}"),
+              unitHelper("{{current_rain}}", "㎜", "{{current_rainColor}}")
             ]
           }
         ]
@@ -440,28 +448,28 @@ const currentDataBlock3 = [
     v: [
       { justify: "center", spacing: 1,
         h: [
-          { text: "日較差：", style: "columnLargeText" },
-          { text: "{{current_tempMax}}", style: { base: "dataLargeText", color: "{{current_tempMaxColor}}" } },
-          { text: "°C", style: "dataText" },
-          { text: " / ", style: "columnText" },
-          { text: "{{current_tempMin}}", style: { base: "dataLargeText", color: "{{current_tempMinColor}}" } },
-          { text: "°C", style: "dataText" },
+          textHelper("日較差：", "columnLargeText"),
+          textHelper("{{current_tempMax}}", { base: "dataLargeText", color: "{{current_tempMaxColor}}" }),
+          textHelper("°C", "dataText"),
+          textHelper(" / ", "columnText"),
+          textHelper("{{current_tempMin}}", { base: "dataLargeText", color: "{{current_tempMinColor}}" }),
+          textHelper("°C", "dataText"),
           { spacer: 10 },
-          { text: "体感温度：", style: "columnLargeText" },
-          { text: "{{current_feelslike}}", style: { base: "dataLargeText", color: "{{current_feelslikeColor}}" } },
-          { text: "°C", style: "dataText" }
+          textHelper("体感温度：", "columnLargeText"),
+          textHelper("{{current_feelslike}}", { base: "dataLargeText", color: "{{current_feelslikeColor}}" }),
+          textHelper("°C", "dataText")
         ]
       },
       { justify: "center", spacing: 1,
         h: [
-          { text: "風速：", style: "columnLargeText" },
-          { text: "{{current_windSpeed}}", style: { base: "dataLargeText", color: "{{current_windSpeedColor}}" } },
-          { text: "m/s", style: "dataText" },
+          textHelper("風速：", "columnLargeText"),
+          textHelper("{{current_windSpeed}}", { base: "dataLargeText", color: "{{current_windSpeedColor}}" }),
+          textHelper("m/s", "dataText"),
           { spacer: 10 },
-          { text: "風向き：", style: "columnLargeText" },
-          { image: "{{current_windIcon}}", tint: "{{highlightTextColor}}", size: SIZES.image.large },
+          textHelper("風向き：", "columnLargeText"),
+          imageHelper("{{current_windIcon}}", SIZES.image.large, "{{highlightTextColor}}"),
           { spacer: 2 },
-          { text: "{{current_windDegree}}", style: "dataLargeText" }
+          textHelper("{{current_windDegree}}", "dataLargeText"),
         ]
       }
     ]
@@ -474,34 +482,13 @@ const forecastDataBlock = [
     h: [
 
       // Column
-      {
-        size: new Size(51, 0),
+      { size: new Size(51, 0),
         v: [
-          { text: "{{intervalHours}}時間予報", style: "columnExtraSmallText" },
-          {
-            h: [
-              { text: "気圧", style: "columnText" },
-              { text: "(hPa)", style: "columnSmallText" }
-            ]
-          },
-          {
-            h: [
-              { text: "風速", style: "columnText" },
-              { text: "(m)", style: "columnSmallText" }
-            ]
-          },
-          {
-            h: [
-              { text: "気温", style: "columnText" },
-              { text: "(°C)", style: "columnSmallText" }
-            ]
-          },
-          {
-            h: [
-              { text: "降水", style: "columnText" },
-              { text: "(％)", style: "columnSmallText" }
-            ]
-          }
+          textHelper("{{intervalHours}}時間予報", "columnExtraSmallText"),
+          colomnHelper("気圧", "hPa"),
+          colomnHelper("風速", "m/s"),
+          colomnHelper("気温", "°C"),
+          colomnHelper("降水", "％"),
         ]
       },
 
@@ -517,39 +504,20 @@ const forecastDataBlock = [
           v: [
             { justify: "end",
               h: [
-                { text: "{{hour}}", style: "columnExtraSmallText" }
+                textHelper("{{hour}}", "columnExtraSmallText")
               ]
             },
-            {
-              justify: "end",
+            rowHelper("{{pressure}}", "{{pressureTrend}} ", "{{pressureColor}}"),
+            { justify: "end",
               h: [
-                { text: "{{pressureTrend}} ", style: { base: "dataSmallText", color: "{{pressureColor}}" } },
-                { text: "{{pressure}}", style: "dataText" }
-              ]
-            },
-            {
-              justify: "end",
-              h: [
-                { image: "{{windIcon}}", tint: "{{highlightTextColor}}", size: SIZES.image.medium },
+                imageHelper("{{windIcon}}", SIZES.image.medium, "{{highlightTextColor}}"),
                 { spacer: 3 },
-                { text: "{{windTrend}} ", style: { base: "dataSmallText", color: "{{windSpeedColor}}" } },
-                { text: "{{windSpeed}}", style: "dataText" }
+                textHelper("{{windTrend}} ", { base: "dataSmallText", color: "{{windSpeedColor}}" }),
+                textHelper("{{windSpeed}}", "dataText")
               ]
             },
-            {
-              justify: "end",
-              h: [
-                { text: "{{tempTrend}} ", style: { base: "dataSmallText", color: "{{tempColor}}" } },
-                { text: "{{temp}}", style: "dataText" }
-              ]
-            },
-            {
-              justify: "end",
-              h: [
-                { text: "{{popTrend}} ", style: { base: "dataSmallText", color: "{{popColor}}" } },
-                { text: "{{pop}}", style: "dataText" }
-              ]
-            }
+            rowHelper("{{temp}}", "{{tempTrend}} ", "{{tempColor}}"),
+            rowHelper("{{pop}}", "{{popTrend}} ", "{{popColor}}")
           ]
         }
       }
@@ -561,13 +529,13 @@ const forecastDataBlock = [
 const astroBlock = [
   { size: new Size(0, 35), padding: pos(5, 0, 0, 0), justify: "center", spacing: 3, hidden: "{{ui_level < 3}}",
     h: [
-      { image: "{{current_sunriseIcon}}", tint: "{{current_sunriseColor}}", size: 28, opacity: "{{current_sunriseOpacity}}" },
-      { type: "text", text: "{{current_sunriseTime}}", style: { base: "dataText", fontSize: 24, color: "{{current_sunriseColor}}", opacity: "{{current_sunriseOpacity}}" } },
+      imageHelper("{{current_sunriseIcon}}", SIZES.image.extraLarge, "{{current_sunriseColor}}", "{{current_sunriseOpacity}}"),
+      textHelper("{{current_sunriseTime}}", { base: "dataText", fontSize: 24, color: "{{current_sunriseColor}}", opacity: "{{current_sunriseOpacity}}" }),
       { spacer: 5 },
-      { text: "{{current_moonphaseIcon}}", style: { base: "extraLargeText", shadowColor: "#d1cdda", shadowRadius: 3, shadowOffset: { x: 0, y: 0 } } },
+      textHelper("{{current_moonphaseIcon}}", { base: "extraLargeText", shadowColor: "#d1cdda", shadowRadius: 3, shadowOffset: { x: 0, y: 0 } }),
       { spacer: 5 },
-      { image: "{{current_sunsetIcon}}", tint: "{{current_sunsetColor}}", size: 28, opacity: "{{current_sunsetOpacity}}" },
-      { text: "{{current_sunsetTime}}", style: { base: "dataText", fontSize: 24, color: "{{current_sunsetColor}}", opacity: "{{current_sunsetOpacity}}" } }
+      imageHelper("{{current_sunsetIcon}}", SIZES.image.extraLarge, "{{current_sunsetColor}}", "{{current_sunsetOpacity}}"),
+      textHelper("{{current_sunsetTime}}", { base: "dataText", fontSize: 24, color: "{{current_sunsetColor}}", opacity: "{{current_sunsetOpacity}}" })
     ]
   }
 ]
@@ -635,6 +603,7 @@ module.exports = {
         footerTextColor: { type: "color", label: "Footer Text Color", section: "Style", default: COLORS.theme.textPrimary, presets: PRESETS_COLORS.theme },
 
         useTestData: { type: "bool", label: "Use Test Data", section: "Debug", default: true },
+        showStorageType: { type: "bool", label: "Show Storage Type", section: "Debug", default: true },
         showTableFullscreen: { type: "bool", label: "Show Table Fullscreen", section: "Debug", default: true },
         sort: { type: "select", label: "Sort", section: "Debug", default: "asc", options: ["asc", "desc"] },
         limit: { type: "number", label: "Limit", section: "Debug", default: 5 },
@@ -658,7 +627,7 @@ module.exports = {
           label: "Layout",
           section: "Layout",
           default: "default",
-          options: ["default", "small", "medium", "test"],
+          options: ["default", "testData"],
           readonly: false,
           hidden: false
         }
@@ -748,70 +717,23 @@ module.exports = {
         }
       },
 
-      // small Layout
-      small: {
-        padding: pos(10, 10, 10, 10),
-
-        header: headerBlock,
-        body: currentDataBlockSmall,
-        footer: [
-          ...locationBlock,
-          ...updateBlock
-        ],
-
-        // Spacing
-        spacing: {
-          headerBottom: "flex",
-          bodyBottom: "flex"
-        }
-      },
-
-      // medium Layout
-      medium: {
-        padding: pos(10, 16, 10, 16),
-
-        header: headerBlock,
-        body: [
-          {
-            type: "hstack",
-            size: new Size(0, 70),
-            children: [
-              ...currentDataBlock1,
-              ...currentDataBlock2
-            ]
-          },
-        ],
-        footer: [
-          ...locationBlock,
-          ...updateBlock
-        ],
-
-        // Spacing
-        spacing: {
-          headerBottom: "flex",
-          bodyBottom: "flex"
-        }
-      },
-
-      // Test Layout
-      test: {
+      // Test Data Layout
+      testData: {
         padding: pos(10, 16, 10, 16),
 
         header: [
           {
-            type: "hstack",
-            size: new Size(0, 16),
-            align: "center",
+            size: new Size(0, 24),
             justify: "space-between",
-            children: [
-              { type: "text", text: "{{header_titleStr}}", style: "title" },
-              { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
+            h: [
+              { text: "{{header_titleStr}}", style: "title" },
+              { image: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: 16 }
             ]
           }
         ],
 
        body: [
-          { type: "spacer" },
+        { spacer: 10 },
           {
             type: "repeat",
             items: "{{items}}",
@@ -823,13 +745,12 @@ module.exports = {
             sortBy: "value",
             order: "{{sort}}",
             limit: "{{limit}}",
-            empty: { type: "text", text: "No Data", style: "bodyText" },
+            empty: { text: "No Data", style: "bodyText" },
             template: {
-              type: "hstack",
-              children: [
-                { type: "text", text: "{{index}}. {{titleStr}} ", style: "bodyText" },
-                { type: "text", text: "{{value}} ({{sub}})", style: "bodyText" },
-                { type: "text", text: "🔥", style: "bodyText", show: "{{flag}}" }
+              h: [
+                { text: "{{index}}. {{titleStr}}", style: "bodyText" },
+                { text: "{{value}} ({{sub}})", style: "bodyText" },
+                { text: "🔥", style: "bodyText", show: "{{flag}}" }
               ]
             }
           }
@@ -837,11 +758,10 @@ module.exports = {
 
         footer: [
           {
-            type: "hstack",
             justify: "end",
-            children: [
-              { type: "text", text: "Update: ", style: "updateText" },
-              { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
+            h: [
+              { text: "Update: ", style: "updateText" },
+              { text: "{{footer_updateStr}}", style: "footerText" }
             ]
           }
         ],
@@ -1221,6 +1141,7 @@ function pos(a,b,c,d){
 //   const index = Math.floor(((deg + 11.25) % 360) / 22.5)
 //   return dirs[index]
 // }
+
 function getDegString(deg) { return Math.floor((deg + 11.25) / 22.5) * 22.5 + 180 }
 function drawCircle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,p=1,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[];for(let k=0;k<360;k++)g=(a-y/2)*Math.cos(m=(h=-90+p*k+o)*(Math.PI/180)),f=(a-y/2)*Math.sin(m),c=d+g,u=$+f,T.push(new Point(c,u));S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
 function drawTriangle(t,e,a,r,i,n,s,o,l){let c,u,d,$,m,h,p,g,f,w,y,_;d=e.width/2,$=e.height/2,r=r||0,i=i||0,n=n||0,o=o||0,w=l&&l.strokeColor?l.strokeColor:"#000",y=l&&l.strokeWidth?l.strokeWidth:0,_=l&&l.fillColor?l.fillColor:"#000";let S=new Path,T=[],k=[];for(let F=0;F<4;F++)0==F?h=-90+o:1==F?h=-90+o+n:2==F?p=(h+(360-2*n)/2)*(Math.PI/180):3==F&&(h=-90+o+(360-n)),m=h*(Math.PI/180),2==F?(g=(a-i)*Math.cos(p),f=(a-i)*Math.sin(p)):(g=(a+r)*Math.cos(m),f=(a+r)*Math.sin(m)),c=d+g,u=$+f,T.push(new Point(c,u)),k.push([c,u]);S.addLines(T),S.closeSubpath(),"transparent"!==_&&(t.addPath(S),t.setFillColor(new Color(_)),t.fillPath(S)),"transparent"!==w&&y>0&&(t.addPath(S),t.setStrokeColor(new Color(w)),t.setLineWidth(y),t.strokePath())}
