@@ -102,10 +102,10 @@ module.exports = class WF_AppCore {
     this.menu.register(
       "Preview",
       [
-        { label: "Small", action: () => { this.preview("small"); return "exit" } },
-        { label: "Medium", action: () => { this.preview("medium"); return "exit" } },
-        { label: "Large", action: () => { this.preview("large"); return "exit" } },
-        { label: "ExtraLarge", action: () => { this.preview("extraLarge"); return "exit" } }
+        { label: "Small", action: () => this.preview("small") },
+        { label: "Medium", action: () => this.preview("medium") },
+        { label: "Large", action: () => this.preview("large") },
+        { label: "ExtraLarge", action: () => this.preview("extraLarge") }
       ],
       { title: "Preview", closeOnSelect: true }
     )
