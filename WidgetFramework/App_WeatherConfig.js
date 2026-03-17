@@ -247,19 +247,29 @@ const MARK = {
 // ======================
 // Header Block
 // ======================
-const headerBlock = [
-  {
-    size: new Size(0, 24),
-    spacing: 3,
-    h: [
-      { type: "image", src: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: SIZES.image.extraLarge },
-      { type: "text", text: "{{header_titleStr}}", style: "headerText" },
-      { type: "spacer" },
-      { type: "text", text: MARK.mark, style: { base: "headerText", fontSize: SIZES.image.small, color: "{{current_discomfortIndexColor}}" } },
-      { type: "text", text: "{{current_discomfortIndexStr}}", style: "headerText" },
-      { type: "image", src: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: SIZES.image.normal }
-    ]
+function betweenHelper(left, right) {
+  return {
+    justify:"space-between",
+    h:[left,right]
   }
+}
+
+const headerBlock = [
+  betweenHelper(
+    { size: new Size(0, 24), spacing:3,
+      h: [
+        { image: "{{header_titleIcon_src}}", tint: "{{header_titleIcon_tint}}", size: SIZES.image.extraLarge },
+        { text: "{{header_titleStr}}", style: "headerText" }
+      ]
+    },
+    { spacing:3,
+      h: [
+        { text: MARK.mark, style: { base: "headerText", fontSize: SIZES.image.small, color: "{{current_discomfortIndexColor}}" } },
+        { text: "{{current_discomfortIndexStr}}", style: "headerText" },
+        { image: "{{status_icon}}", tint: "{{status_color}}", opacity: "{{status_opacity}}", size: SIZES.image.normal }
+      ]
+    }
+  )
 ]
 
 // ======================
@@ -268,25 +278,27 @@ const headerBlock = [
 // Location Name
 const locationBlock = [
   {
-    size: new Size(0, 14),
     h: [
-      { type: "text", text: "{{location_name}}", style: { base: "footerText", fontSize: SIZES.text.normal, bold: true, color: "{{highlightTextColor}}" } },
+      { text: "{{location_name}}", style: { base: "footerText", fontSize: SIZES.text.normal, bold: true, color: "{{highlightTextColor}}" } },
     ]
   }
 ]
 
 // Update + Location.lat/lon
 const updateBlock = [
-  {
-    size: new Size(0, 16),
-    h: [
-//       { type: "text", text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" },
-//       { type: "text", text: "{{location_latStr}} : {{location_lonStr}}", style: "footerText" },
-      { type: "spacer" },
-      { type: "text", text: "Update: ", style: { base: "footerText", color: "{{highlightTextColor}}" } },
-      { type: "text", text: "{{footer_updateStr}}", style: "footerText" }
-    ]
-  }
+  betweenHelper(
+    {
+      h: [
+        { text: DEFAULT_STRAGE_TYPE + " mode", style: "footerText" }
+      ]
+    },
+    {
+      h: [
+        { text: "Update: ", style: { base: "footerText", color: "{{highlightTextColor}}" } },
+        { text: "{{footer_updateStr}}", style: "footerText" }
+      ]
+    }
+  )
 ]
 
 // ======================
@@ -294,25 +306,20 @@ const updateBlock = [
 // ======================
 // currentDataBlockSmall
 const currentDataBlockSmall = [
-  {
-    padding: pos(5, 0, 0, 0),
+  { padding: pos(5, 0, 0, 0), justify:"space-between",
     v: [
-      {
-        justify: "center",
+      { justify: "center",
         h: [
           { type: "text", text: "{{current_pressure}}", style: { base: "bodyText", font:"monospace", fontSize: 35, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.9 } }
         ]
       },
-      { type: "spacer" },
-      {
-        size: new Size(0, 15),
-        justify: "center",
+      { size: new Size(0, 15), justify: "center", spacing: 2,
         h: [
-          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.temp } },
-          { type: "text", text: "°C", style: { base: "normalText", color: COLORS.extra.temp } },
-          { type: "spacer", size: 13 },
-          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.humidity } },
-          { type: "text", text: "％", style: { base: "normalText", color: COLORS.extra.humidity } }
+          { text: "{{current_temp}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.temp } },
+          { text: "°C", style: { base: "normalText", color: COLORS.extra.temp } },
+          { spacer: 13 },
+          { text: "{{current_humidity}}", style: { base: "normalText", fontSize: 20, color: COLORS.extra.humidity } },
+          { text: "％", style: { base: "normalText", color: COLORS.extra.humidity } }
         ]
       }
     ]
@@ -321,63 +328,55 @@ const currentDataBlockSmall = [
 
 // CurrentData Details Block 1
 const currentDataBlock1 = [
-  {
-    size: new Size(145, 0),
-    justify: "center",
+  { size: new Size(145, 0), justify: "center",
     v: [
       {
         h: [
-          { type: "text", text: "{{current_pressure}}", style: { base: "bodyText", font:"monospace", fontSize: 50, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.9 } }
+          { text: "{{current_pressure}}", style: { base: "bodyText", font:"monospace", fontSize: 50, bold: true, color: "{{current_pressureColor}}", lineLimit: 1, minimumScaleFactor: 0.9 } }
         ]
-      },
+      }
     ]
   }
 ]
 
 // CurrentData Details Block 2
 const currentDataBlock2 = [
-  {
-    size: new Size(120, 0),
+  { size: new Size(122, 0),
     v: [
-      {
-        size: new Size(0, 25),
-        justify: "center",
+      { size: new Size(0, 25), justify: "center",
         h: [
-          { type: "text", text: "{{current_temp}}", style: { base: "normalText", fontSize: SIZES.text.large, color: COLORS.extra.temp } },
-          { type: "text", text: "°C", style: { base: "normalText", color: COLORS.extra.temp } },
-          { type: "spacer", size: 10 },
-          { type: "text", text: "{{current_humidity}}", style: { base: "normalText", fontSize: SIZES.text.large, color: COLORS.extra.humidity } },
-          { type: "text", text: "％", style: { base: "normalText", color: COLORS.extra.humidity } }
+          { text: "{{current_temp}}", style: { base: "normalText", fontSize: SIZES.text.large, color: COLORS.extra.temp } },
+          { text: "°C", style: { base: "normalText", color: COLORS.extra.temp } },
+          { spacer: 10 },
+          { text: "{{current_humidity}}", style: { base: "normalText", fontSize: SIZES.text.large, color: COLORS.extra.humidity } },
+          { text: "％", style: { base: "normalText", color: COLORS.extra.humidity } }
         ]
       },
-      {
-        spacing: 2,
+      { spacing: 2,
         h: [
-          { type: "text", text: "不快指数：", style: { base: "columnText", fontSize: SIZES.text.normal } },
-          { type: "spacer" },
-          { type: "text", text: "{{current_discomfortIndex}}", style: { base: "dataText", fontSize: SIZES.text.normal } },
-          { type: "text", text: " ", style: { base: "dataText", fontSize: SIZES.text.small } },
-          { type: "text", text: MARK.mark, style: { base: "dataText", fontSize: SIZES.image.small, color: "{{current_discomfortIndexColor}}" } },
+          { text: "不快指数：", style: { base: "columnText", fontSize: SIZES.text.normal } },
+          { spacer: true },
+          { text: "{{current_discomfortIndex}}", style: { base: "dataText", fontSize: SIZES.text.normal } },
+          { text: " ", style: { base: "dataText", fontSize: SIZES.text.small } },
+          { text: MARK.mark, style: { base: "dataText", fontSize: SIZES.image.small, color: "{{current_discomfortIndexColor}}" } },
         ]
       },
-      {
-        spacing: 2,
+      { spacing: 2,
         h: [
-          { type: "text", text: "降水確率：", style: { base: "columnText", fontSize: SIZES.text.normal } },
-          { type: "spacer" },
-          { type: "text", text: "{{current_pop}}", style: { base: "dataText", fontSize: SIZES.text.normal } },
-          { type: "text", text: "％", style: { base: "dataText", fontSize: SIZES.text.small } },
-          { type: "text", text: MARK.mark, style: { base: "dataText", fontSize: SIZES.image.small, color: "{{current_popColor}}" } }
+          { text: "降水確率：", style: { base: "columnText", fontSize: SIZES.text.normal } },
+          { spacer: true },
+          { text: "{{current_pop}}", style: { base: "dataText", fontSize: SIZES.text.normal } },
+          { text: "％", style: { base: "dataText", fontSize: SIZES.text.small } },
+          { text: MARK.mark, style: { base: "dataText", fontSize: SIZES.image.small, color: "{{current_popColor}}" } }
         ]
       },
-      {
-        spacing: 2,
+      { spacing: 2,
         h: [
-          { type: "text", text: "雨　　量：", style: { base: "columnText", fontSize: SIZES.text.normal } },
-          { type: "spacer" },
-          { type: "text", text: "{{current_rain}}", style: { base: "dataText", fontSize: SIZES.text.normal } },
-          { type: "text", text: "㎜", style: { base: "dataText", fontSize: SIZES.text.small } },
-          { type: "text", text: MARK.mark, style: { base: "dataText", fontSize: SIZES.image.small, color: "{{current_rainColor}}" } }
+          { text: "雨　　量：", style: { base: "columnText", fontSize: SIZES.text.normal } },
+          { spacer: true },
+          { text: "{{current_rain}}", style: { base: "dataText", fontSize: SIZES.text.normal } },
+          { text: "㎜", style: { base: "dataText", fontSize: SIZES.text.small } },
+          { text: MARK.mark, style: { base: "dataText", fontSize: SIZES.image.small, color: "{{current_rainColor}}" } }
         ]
       }
     ]
@@ -415,7 +414,7 @@ const currentDataBlock3 = [
           { type: "spacer", size: 10 },
           { type: "text", text: "風向き：", style: "columnText" },
           { type: "image", src: "{{current_windIcon}}", tint: "{{highlightTextColor}}", size: SIZES.image.extraLarge },
-          { type: "spacer", size: 5 },
+          { type: "spacer", size: 2 },
           { type: "text", text: "{{current_windDegree}}", style: { base: "dataText", fontSize: SIZES.text.large } }
         ]
       }
@@ -672,7 +671,7 @@ module.exports = {
 
       // Default Layout
       default: {
-        padding: pos(16, 16, 10, 12),
+        padding: pos(10, 16, 10, 12),
 
         header: headerBlock,
         body: [
