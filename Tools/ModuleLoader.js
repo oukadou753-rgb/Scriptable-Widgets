@@ -2,6 +2,7 @@
 // These must be at the very top of the file. Do not edit.
 // icon-color: deep-gray; icon-glyph: magic;
 /**
+/**
  * ModuleLoader
  * UTF-8 日本語コメント
  **/
@@ -12,23 +13,7 @@ class ModuleLoader {
     this.storageType = storageType
     this.cache = {}
 
-    switch (storageType) {
-
-      case "icloud":
-        this.fm = FileManager.iCloud()
-        this.baseDir = this.fm.documentsDirectory()
-        break
-
-      case "bookmark":
-        this.fm = FileManager.local()
-        this.baseDir = this.fm.bookmarkedPath("Scriptable")
-        break
-
-      default:
-        this.fm = FileManager.local()
-        this.baseDir = this.fm.documentsDirectory()
-
-    }
+    this.initStorage()
 
     console.log("MODULE LOADER" + "\n")
     console.log("STORAGE: " + this.storageType)
@@ -79,6 +64,39 @@ class ModuleLoader {
   }
 
   // =========================
+  // initStorage
+  // =========================
+  initStorage(){
+
+    switch (this.storageType) {
+
+      case "icloud":
+        this.fm = FileManager.iCloud()
+        this.baseDir = this.fm.documentsDirectory()
+        break
+
+      case "bookmark":
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.bookmarkedPath("Scriptable")
+        break
+
+      default:
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.documentsDirectory()
+
+    }
+
+    this._ensureDirs()
+  }
+  
+  // =========================
+  // _ensureDirs
+  // =========================
+  _ensureDirs() {
+
+  }
+
+  // =========================
   // static shortcut
   // =========================
   static import(path, storageType = "local") {
@@ -91,24 +109,3 @@ class ModuleLoader {
 }
 
 module.exports = ModuleLoader
-
-// =========================
-// Module Test
-// =========================
-const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
-if (module_name == Script.name()) {
-  (async() => {
-    const storageType = "local"
-    const filename = "Main"
-
-//     const Main = importModule(filename)
-//     await Main.start(storageType)
-
-//     const Module = new ModuleLoader(storageType)
-//     const Main = Module.load(filename)
-//     await Main.start(storageType)
-
-    const Main = ModuleLoader.import(filename, storageType)
-    await Main.start(storageType)
-  })()
-}
