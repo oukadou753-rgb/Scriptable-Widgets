@@ -59,6 +59,8 @@ module.exports = class WF_AppCore {
 
     }
 */
+    if (await handleNotificationTap()) return
+
     this.setupMenus()
 
     while (true) {
