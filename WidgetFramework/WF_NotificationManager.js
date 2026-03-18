@@ -25,9 +25,9 @@ module.exports = class WF_NotificationManager {
   /**
    * 一度だけ通知（重複防止）
    */
-  async notifyOnce(id, payload, cooldown = 300000) {
+   async notifyOnce(id, payload, cooldown = 300000) {
 
-    const last = this.history[id]?.fireAt
+    const last = this.history[id]?.lastSent
 
     if (last && Date.now() - last < cooldown) return false
 
