@@ -9,7 +9,7 @@
 // Constat
 // ======================
 const APP_VERSION = "2.0.0"
-const DEFAULT_STRAGE_TYPE = "local" // "icloud", "local", "bookmark"
+const DEFAULT_STRAGE_TYPE = "icloud" // "icloud", "local", "bookmark"
 
 // ======================
 // Color
@@ -374,7 +374,7 @@ const updateBlock = [
   betweenHelper(
     { show: "{{ui_showForecast}}",
       h: [
-        textHelper(DEFAULT_STRAGE_TYPE + " mode", "smallText")
+//         textHelper("{{strageType}} mode", "smallText")
       ]
     },
     {
@@ -823,25 +823,6 @@ module.exports = {
     const appId = config?.appId || "WidgetFramework"
     const v = config?.values || {}
 
-    const levelMap = {
-      small: 1,
-      medium: 2,
-      large: 3,
-      extraLarge: 4
-    }
-
-    const level = levelMap[config.size] ?? 2
-
-    const isShow = true
-    const ui = {
-      isSmall: level === 1,
-      isMediumUp: level >= 2,
-      isLargeUp: level >= 3,
-
-      showForecast: level >= 2 && isShow,
-      showDetail: level >= 3
-    }
-
     if (v.useTestData) return this.testDataTransform(data, config)
 
     // 表示件数に制限された2時間毎のforecastday配列
@@ -857,50 +838,13 @@ module.exports = {
       .filter((h, i) => i % intervalHours === 0)     // 2時間毎に間引き
       .slice(0, displayCount + 2)                    // 表示件数に制限
 
-
     const items = this.forecastDataTransform(hours, config)
     const meta = this.metaDataTransform(data, hours, config)
-
-    const notifications = [
-      {
-        id: appId + "-" + formatTime(new Date(), "HH"),
-        delay: 5000,
-        title: "title",
-        subtitle: "subtitle",
-        body: "body",
-        cooldown: 3*60*1000,
-        meta: {
-          action: "openProfile",
-          profile: "default",
-          widgetFamily: "large"
-        }
-      },
-//       {
-//         id: "rain_alert3",
-//         delay: 10000,
-//         title: "タイトル",
-//         subtitle: "サブタイトル",
-//         body: "開く",
-//         cooldown: 25000,
-//         meta: {
-//           action: "openExternal",
-//           url: "https://example.com"
-//         }
-//       }
-    ]
-
-// const notifications = hours.map((h, i) => ({
-//   id: `forecast_${i}_${h.time_epoch}`,
-//   scheduleAt: new Date(h.time_epoch * 1000),
-//   title: "予報",
-//   body: `${h.temp_c}°`
-// }))
 
     // 共通データ返却（統一フォーマット）
     return {
       items,
-      notifications,
-      ...flatObj({ ...meta, ui: ui })
+      ...flatObj(meta)
     }
   },
 
@@ -909,7 +853,25 @@ module.exports = {
 
     const v = config?.values || {}
 
-    const debug = false
+    // ui
+    const levelMap = {
+      small: 1,
+      medium: 2,
+      large: 3,
+      extraLarge: 4
+    }
+
+    const level = levelMap[config.size] ?? 2
+    const isShow = true
+
+    const ui = {
+      isSmall: level === 1,
+      isMediumUp: level >= 2,
+      isLargeUp: level >= 3,
+
+      showForecast: level >= 2 && isShow,
+      showDetail: level >= 3
+    }
 
     // Online判定
     const online = v.isOnline ?? false
@@ -933,6 +895,41 @@ module.exports = {
     // current
     const current = this.currentDataTransform(data, hours, config)
 
+    // notifications
+    const notifications = [
+//       {
+//         id: appId + "-" + formatTime(new Date(), "HH"),
+//         delay: 5000,
+//         title: "title",
+//         subtitle: "subtitle",
+//         body: "body",
+//         cooldown: 3*60*1000,
+//         meta: {
+//           action: "openProfile",
+//           profile: "default",
+//           widgetFamily: "large"
+//         }
+//       },
+//       {
+//         id: "rain_alert3",
+//         delay: 10000,
+//         title: "タイトル",
+//         subtitle: "サブタイトル",
+//         body: "開く",
+//         cooldown: 25000,
+//         meta: {
+//           action: "openExternal",
+//           url: "https://example.com"
+//         }
+//       }
+    ]
+
+// const notifications = hours.map((h, i) => ({
+//   id: `forecast_${i}_${h.time_epoch}`,
+//   scheduleAt: new Date(h.time_epoch * 1000),
+//   title: "予報",
+//   body: `${h.temp_c}°`
+// }))
     // メタ情報
     const meta = {
       header: {
@@ -948,8 +945,11 @@ module.exports = {
       footer: {
         updateStr
       },
-      debug,
+
+      ui,
       status,
+      notifications,
+
       current,
       location: {
         lat: location?.lat ?? null,
@@ -1360,6 +1360,7 @@ const module_name = module.filename.match(/[^\/]+$/ )[ 0 ].replace('.js', '');
 if (module_name == Script.name()) {
   (async() => {
     const Main = importModule("Main")
-    await Main.start(DEFAULT_STRAGE_TYPE)
+    Main.setAppInfo("storageType", DEFAULT_STRAGE_TYPE)
+    await Main.start()
   })()
 }
