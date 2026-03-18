@@ -5,6 +5,12 @@
  * WF_WidgetRenderer
  * UTF-8 日本語コメント
  **/
+const ALIAS = {
+  backgroundColor: ["bgColor", "bg"],
+  fontSize: ["fs"],
+  textColor: ["color", "fgColor"]
+}
+
 module.exports = class WF_WidgetRenderer {
 
   constructor(appId, storageType) {
@@ -315,8 +321,10 @@ module.exports = class WF_WidgetRenderer {
     const stack = container.addStack()
 
     // background color
-    if (el.backgroundColor) {
-      const color = this.resolveColor(this.bind(el.backgroundColor, context), context)
+    const bg = resolveProp(el, "backgroundColor")
+
+    if (bg !== undefined) {
+      const color = this.resolveColor(this.bind(bg, context), context)
       stack.backgroundColor = this.toColor(color)
     }
 
@@ -750,6 +758,28 @@ module.exports = class WF_WidgetRenderer {
       return this.bind(color, context)
     }
     return color
+  }
+
+  // =========================
+  // resolveProp
+  // =========================
+  resolveProp(el, key) {
+    if (el[key] !== undefined) return el[key]
+
+    const aliases = ALIAS[key]
+    if (!aliases) return undefined
+
+    for (const a of aliases) {
+      if (el[a] !== undefined) return el[a]
+    }
+  }
+
+  // =========================
+  // resolveStyleProp
+  // =========================
+  resolveStyleProp(el, style, key) {
+    if (style && style[key] !== undefined) return style[key]
+    return resolveProp(el, key)
   }
 
   // =========================
