@@ -20,6 +20,7 @@ const useTarget = true
 const targetFiles = [
 //   "Main.js",
 //   "Tools/DevLoader.js",
+//   "Tools/ModuleLoader.js",
 //   "WidgetFramework/App_WeatherConfig.js",
 //   "WidgetFramework/WF_AppCore.js",
 //   "WidgetFramework/WF_ConfigUI.js",
