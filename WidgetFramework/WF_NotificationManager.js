@@ -28,9 +28,9 @@ module.exports = class WF_NotificationManager {
   async notifyOnce(id, payload, cooldown = 300000) {
 
     const last = this.history[id]?.lastSent
-
+log(list)
     if (last && Date.now() - last < cooldown) return false
-
+log(cooldown)
     await this._send(payload)
 
     this.history[id] = {
