@@ -805,9 +805,22 @@ module.exports = {
     return layouts[layoutId] || layouts.default
   },
 
+  // Notification Tap
+  onNotificationTap: async (info, core) => {
+
+    if (info.action === "openProfile") {
+      core.profile.setActive(info.profile)
+      await core.preview(info.widgetFamily)
+      return true
+    }
+
+    return false
+  },
+
   // Data変換
   transform(data, config) {
 
+    const appId = config?.appId || "WidgetFramework"
     const v = config?.values || {}
 
     const levelMap = {
@@ -824,7 +837,7 @@ module.exports = {
       isSmall: level === 1,
       isMediumUp: level >= 2,
       isLargeUp: level >= 3,
-    
+
       showForecast: level >= 2 && isShow,
       showDetail: level >= 3
     }
@@ -848,9 +861,45 @@ module.exports = {
     const items = this.forecastDataTransform(hours, config)
     const meta = this.metaDataTransform(data, hours, config)
 
+    const notifications = [
+      {
+        id: appId + "-" + formatTime(new Date(), "HH"),
+        delay: 5000,
+        title: "title",
+        subtitle: "subtitle",
+        body: "body",
+        cooldown: 3*60*1000,
+        meta: {
+          action: "openProfile",
+          profile: "default",
+          widgetFamily: "large"
+        }
+      },
+//       {
+//         id: "rain_alert3",
+//         delay: 10000,
+//         title: "タイトル",
+//         subtitle: "サブタイトル",
+//         body: "開く",
+//         cooldown: 25000,
+//         meta: {
+//           action: "openExternal",
+//           url: "https://example.com"
+//         }
+//       }
+    ]
+
+// const notifications = hours.map((h, i) => ({
+//   id: `forecast_${i}_${h.time_epoch}`,
+//   scheduleAt: new Date(h.time_epoch * 1000),
+//   title: "予報",
+//   body: `${h.temp_c}°`
+// }))
+
     // 共通データ返却（統一フォーマット）
     return {
       items,
+      notifications,
       ...flatObj({ ...meta, ui: ui })
     }
   },
