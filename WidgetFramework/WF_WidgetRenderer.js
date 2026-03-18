@@ -46,9 +46,9 @@ module.exports = class WF_WidgetRenderer {
 
     }
 
-    const root = this.fm.joinPath(this.baseDir, "WF_Data")
+    this.root = this.fm.joinPath(this.baseDir, "WF_Data")
 
-    this.appRoot = this.fm.joinPath(root, this.appId)
+    this.appRoot = this.fm.joinPath(this.root, this.appId)
     this.imageDir = this.fm.joinPath(this.appRoot, "img")
 
     this._ensureDirs()
