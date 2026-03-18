@@ -84,6 +84,8 @@ module.exports = class WF_CoreBase {
       ? this.appConfig.transform(data, transformContext)
       : data
 
+    await this.handleNotifications(finalData)
+
     return {
       appId: this.appId,
       size: finalSize,
