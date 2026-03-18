@@ -38,7 +38,7 @@ module.exports = class WF_AppCore {
     this.appConfig = appConfig
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
-    this.notificationManager = new WF_NotificationManager(this.appId, this.storage)
+    this.notification = new WF_NotificationManager(this.appId, this.storage)
 
     const core = new WF_CoreBase(appInfo, appConfig, moduleCache)
     WF_CoreBase.mixinCore(this, core)
