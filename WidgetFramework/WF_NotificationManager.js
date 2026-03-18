@@ -10,8 +10,10 @@
 
 module.exports = class WF_NotificationManager {
 
-  constructor(storage) {
+  constructor(appId, storage) {
+    this.appId = appId
     this.storage = storage
+
     this.key = "wf_notifications"
     this.history = this._load()
   }
