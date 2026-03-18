@@ -49,17 +49,29 @@ module.exports = class WF_WidgetRenderer {
     const root = this.fm.joinPath(this.baseDir, "WF_Data")
 
     this.appRoot = this.fm.joinPath(root, this.appId)
-    this.cacheDir = this.fm.joinPath(this.appRoot, "img")
+    this.imageDir = this.fm.joinPath(this.appRoot, "img")
 
-    if (!this.fm.fileExists(root))
-      this.fm.createDirectory(root)
+  }
 
-    if (!this.fm.fileExists(this.appRoot))
+  // =========================
+  // 初期ディレクトリ生成（完全修正版）
+  // =========================
+  _ensureDirs() {
+
+    // WF_Data
+    if (!this.fm.fileExists(this.root)) {
+      this.fm.createDirectory(this.root)
+    }
+
+    // appRoot
+    if (!this.fm.fileExists(this.appRoot)) {
       this.fm.createDirectory(this.appRoot)
+    }
 
-    if (!this.fm.fileExists(this.cacheDir))
-      this.fm.createDirectory(this.cacheDir)
-
+    // imageDir
+    if (!this.fm.fileExists(this.imageDir)) {
+      this.fm.createDirectory(this.imageDir)
+    }
   }
 
   // =========================
@@ -814,7 +826,7 @@ module.exports = class WF_WidgetRenderer {
   async fetchImage(url){
 
     const fileName = this.hash(url) + ".png"
-    const filePath = this.fm.joinPath(this.cacheDir, fileName)
+    const filePath = this.fm.joinPath(this.imageDir, fileName)
 
     if(this.fm.fileExists(filePath)){
       return this.fm.readImage(filePath)
