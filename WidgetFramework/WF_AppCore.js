@@ -504,28 +504,6 @@ module.exports = class WF_AppCore {
     return true
   }
 
-  async handleNotifications(ctx) {
-
-    const list = ctx.data.notifications || []
-
-    for (const n of list) {
-
-      // 即時（1回のみ）
-      if (n.when) {
-        await this.notification.notifyOnce(n.id, n)
-      }
-
-      // 予約
-      if (n.scheduleAt) {
-        await this.notification.schedule(
-          n.id,
-          new Date(n.scheduleAt),
-          n
-        )
-      }
-    }
-  }
-
   async showAbout() {
     const a = new Alert()
     a.title = "Framework v" + this.version
