@@ -211,16 +211,14 @@ const LEVEL_THRESHOLDS = {
 }
 
 // ======================
-// Font Size
+// Sizes
 // ======================
 const SIZES = {
   text: {
-    default: 14,
-  
     header: 16,
     body: 14,
     footer: 9,
-  
+
     extraLarge: 20,
     large: 14,
     medium: 12,
@@ -229,8 +227,8 @@ const SIZES = {
   },
 
   column: {
-    extraLarge: 20,
-    large: 14,
+    extraLarge: 18,
+    large: 13,
     medium: 12,
     small: 10,
     extraSmall: 9
@@ -238,7 +236,7 @@ const SIZES = {
 
   row: {
     extraLarge: 20,
-    large: 16, // culomnより強調
+    large: 16,
     medium: 12,
     small: 10,
     extraSmall: 9
@@ -247,17 +245,34 @@ const SIZES = {
   image: {
     extraLarge: 28,
     large: 20,
-    medium: 14,
-    small: 10,
-    extraSmall: 9
+    medium: 16,
+    small: 12,
+    extraSmall: 10
   }
 }
 
 const TEXT_ICON = {
+  // 基本
   mark: "■",
+  empty: "□",
+
+  // 矢印
   up: "▲",
   down: "▼",
-  right: "▶"
+  right: "▶",
+  left: "◀",
+
+  // 状態
+  circle: "●",
+  circleEmpty: "○",
+
+  // 補助
+  dot: "・",
+  dash: "—",
+
+  // 数値
+  plus: "+",
+  minus: "−"
 }
 
 // ======================
@@ -275,25 +290,38 @@ function textHelper(text, style) {
 }
 
 function imageHelper(image, size = 14, tint = "", opacity = 1) {
-  return { image, size, tint, opacity }
+  return {
+    type: "image",
+    src: image,
+    size,
+    tint,
+    opacity
+  }
 }
 
-function unitHelper(text, unit, markColor) {
+function unitHelper(text, unit, options = {}) {
   return {
-    justify: "end", spacing: 2,
+    justify: "end",
+    spacing: 2,
     h: [
       textHelper(text, "dataText"),
       textHelper(unit, "dataSmallText"),
-      textHelper(TEXT_ICON.mark, { base: "dataSmallText", color: markColor })
+      ...(options.mark ? [
+        textHelper(TEXT_ICON.mark, {
+          base: "dataSmallText",
+          color: options.color
+        })
+      ] : [])
     ]
   }
 }
 
-function colomnHelper(text, subText) {
+
+function columnHelper(text, subText) {
   return {
     h: [
       textHelper(text, "columnText"),
-      textHelper(`(${subText})`, "columnSmallText")
+      (subText != "") ? textHelper(subText, "columnSmallText") : ""
     ]
   }
 }
@@ -302,7 +330,7 @@ function rowHelper(text, trend, color) {
   return {
     justify: "end",
     h: [
-      textHelper(trend, { base: "dataSmallText", color: color }),
+      textHelper(trend ? trend + " " : "", { base: "dataSmallText", color: color }),
       textHelper(text, "dataText")
     ]
   }
@@ -319,7 +347,7 @@ const headerBlock = [
         textHelper("{{header_titleStr}}", "largeText")
       ]
     },
-    { spacing:3, hidden: "{{ui_level < 2}}",
+    { spacing:3, show: "{{ui_isMediumUp}}",
       h: [
         textHelper(TEXT_ICON.mark, { base: "mediumText", color: "{{current_discomfortIndexColor}}" }),
         textHelper("{{current_discomfortIndexStr}}", "largeText"),
@@ -334,7 +362,7 @@ const headerBlock = [
 // ======================
 // Location Name
 const locationBlock = [
-  { hidden: "{{ui_level < 2}}",
+  { show: "{{ui_isMediumUp}}",
     h: [
       textHelper("{{location_name}}", { base: "largeText", color: "{{highlightTextColor}}" }),
     ]
@@ -344,7 +372,7 @@ const locationBlock = [
 // Update + Location.lat/lon
 const updateBlock = [
   betweenHelper(
-    { hidden: "{{ui_level < 2}}", show: "{{showStorageType}}",
+    { show: "{{ui_showForecast}}",
       h: [
         textHelper(DEFAULT_STRAGE_TYPE + " mode", "smallText")
       ]
@@ -363,7 +391,7 @@ const updateBlock = [
 // ======================
 // currentDataBlockSmall
 const currentDataBlockSmall = [
-  { size: new Size(120, 0), hidden: "{{ui_level > 1}}",
+  { size: new Size(120, 0), show: "{{ui_isSmall}}",
     v: [
       { size: new Size(0, 30), padding: pos(0, 5, 0, 0), justify: "center",
         h: [
@@ -389,8 +417,8 @@ const currentDataBlockSmall = [
           },
           {
             v: [
-              unitHelper("{{current_discomfortIndex}}", "　", "{{current_discomfortIndexColor}}"),
-              unitHelper("{{current_pop}}", "％", "{{current_popColor}}")
+              unitHelper("{{current_discomfortIndex}}", "　", { mark: true, color: "{{current_discomfortIndexColor}}" }),
+              unitHelper("{{current_pop}}", "％", { mark: true, color: "{{current_popColor}}" })
             ]
           }
         ]
@@ -431,9 +459,9 @@ const currentDataBlock2 = [
           },
           {
             v: [
-              unitHelper("{{current_discomfortIndex}}", "　", "{{current_discomfortIndexColor}}"),
-              unitHelper("{{current_pop}}", "％", "{{current_popColor}}"),
-              unitHelper("{{current_rain}}", "㎜", "{{current_rainColor}}")
+              unitHelper("{{current_discomfortIndex}}", "　", { mark: true, color: "{{current_discomfortIndexColor}}" }),
+              unitHelper("{{current_pop}}", "％", { mark: true, color: "{{current_popColor}}" }),
+              unitHelper("{{current_rain}}", "㎜", { mark: true, color: "{{current_rainColor}}" })
             ]
           }
         ]
@@ -444,7 +472,7 @@ const currentDataBlock2 = [
 
 // CurrentData Details Block 3
 const currentDataBlock3 = [
-  { size: new Size(0, 50), hidden: "{{ui_level < 3}}",
+  { size: new Size(0, 50), show: "{{ui_isLargeUp}}",
     v: [
       { justify: "center", spacing: 1,
         h: [
@@ -478,17 +506,17 @@ const currentDataBlock3 = [
 
 // ForecastData Block
 const forecastDataBlock = [
-  { size: new Size(0, 75), justify: "center", hidden: "{{ui_level < 3}}",
+  { size: new Size(0, 75), justify: "center", show: "{{ui_isLargeUp}}",
     h: [
 
       // Column
-      { size: new Size(51, 0),
+      { justify: "start",
         v: [
-          textHelper("{{intervalHours}}時間予報", "columnExtraSmallText"),
-          colomnHelper("気圧", "hPa"),
-          colomnHelper("風速", "m/s"),
-          colomnHelper("気温", "°C"),
-          colomnHelper("降水", "％"),
+          textHelper("時間予報", "columnExtraSmallText"),
+          columnHelper("気　圧", ""),
+          columnHelper("風　速", ""),
+          columnHelper("気　温", ""),
+          columnHelper("降　水", ""),
         ]
       },
 
@@ -496,18 +524,18 @@ const forecastDataBlock = [
       {
         type: "repeat",
         items: "{{items}}",
-        direction: "horizontal",  // 横並び
+        direction: "horizontal",
         spacing: 2,
-        align: "center",          // 左右中央揃え
+        align: "center",
         template: {
-          size: new Size(53, 0),  // 列幅
+          size: new Size(53, 0),
           v: [
             { justify: "end",
               h: [
                 textHelper("{{hour}}", "columnExtraSmallText")
               ]
             },
-            rowHelper("{{pressure}}", "{{pressureTrend}} ", "{{pressureColor}}"),
+            rowHelper("{{pressure}}", "{{pressureTrend}}", "{{pressureColor}}"),
             { justify: "end",
               h: [
                 imageHelper("{{windIcon}}", SIZES.image.medium, "{{highlightTextColor}}"),
@@ -516,8 +544,8 @@ const forecastDataBlock = [
                 textHelper("{{windSpeed}}", "dataText")
               ]
             },
-            rowHelper("{{temp}}", "{{tempTrend}} ", "{{tempColor}}"),
-            rowHelper("{{pop}}", "{{popTrend}} ", "{{popColor}}")
+            rowHelper("{{temp}}", "{{tempTrend}}", "{{tempColor}}"),
+            rowHelper("{{pop}}", "{{popTrend}}", "{{popColor}}")
           ]
         }
       }
@@ -527,12 +555,12 @@ const forecastDataBlock = [
 
 // Astro Block
 const astroBlock = [
-  { size: new Size(0, 35), padding: pos(5, 0, 0, 0), justify: "center", spacing: 3, hidden: "{{ui_level < 3}}",
+  { size: new Size(0, 35), padding: pos(5, 0, 0, 0), justify: "center", spacing: 3, show: "{{ui_isLargeUp}}",
     h: [
       imageHelper("{{current_sunriseIcon}}", SIZES.image.extraLarge, "{{current_sunriseColor}}", "{{current_sunriseOpacity}}"),
       textHelper("{{current_sunriseTime}}", { base: "dataText", fontSize: 24, color: "{{current_sunriseColor}}", opacity: "{{current_sunriseOpacity}}" }),
       { spacer: 5 },
-      textHelper("{{current_moonphaseIcon}}", { base: "extraLargeText", shadowColor: "#d1cdda", shadowRadius: 3, shadowOffset: { x: 0, y: 0 } }),
+      textHelper("{{current_moonphaseIcon}}", { base: "dataExtraLargeText", shadowColor: "#d1cdda", shadowRadius: 3, shadowOffset: { x: 0, y: 0 } }),
       { spacer: 5 },
       imageHelper("{{current_sunsetIcon}}", SIZES.image.extraLarge, "{{current_sunsetColor}}", "{{current_sunsetOpacity}}"),
       textHelper("{{current_sunsetTime}}", { base: "dataText", fontSize: 24, color: "{{current_sunsetColor}}", opacity: "{{current_sunsetOpacity}}" })
@@ -690,12 +718,12 @@ module.exports = {
 
       // Default Layout
       default: {
-        padding: pos(10, 16, 10, 11),
+        padding: pos(10, 16, 10, 16),
 
         header: headerBlock,
         body: [
           ...currentDataBlockSmall,
-          { justify: "center", hidden: "{{ui_level < 2}}",
+          { justify: "center", show: "{{ui_isMediumUp}}",
             h: [
               ...currentDataBlock1,
               ...currentDataBlock2
@@ -823,6 +851,16 @@ module.exports = {
 
     const level = levelMap[config.size] ?? 2
 
+    const isShow = true
+    const ui = {
+      isSmall: level === 1,
+      isMediumUp: level >= 2,
+      isLargeUp: level >= 3,
+    
+      showForecast: level >= 2 && isShow,
+      showDetail: level >= 3
+    }
+
     // Online判定
     const online = v.isOnline ?? false
     const dayTime = true
@@ -861,6 +899,7 @@ module.exports = {
         updateStr
       },
       debug,
+      ui,
       status,
       current,
       location: {
@@ -869,9 +908,6 @@ module.exports = {
         latStr: location?.lat != null ? location.lat.toFixed(4) : "",
         lonStr: location?.lon != null ? location.lon.toFixed(4) : "",
         name: location?.full != null ? location.full.split(" ").slice(1).join("") : ""
-      },
-      ui: {
-        level
       }
     }
 
