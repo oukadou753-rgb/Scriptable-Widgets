@@ -13,23 +13,7 @@ module.exports = class WF_StorageEngine {
     this.storageType = storageType
 
     // FileManager切替
-    switch (storageType) {
-
-      case "icloud":
-        this.fm = FileManager.iCloud()
-        this.baseDir = this.fm.documentsDirectory()
-        break
-
-      case "bookmark":
-        this.fm = FileManager.local()
-        this.baseDir = this.fm.bookmarkedPath("Scriptable")
-        break
-
-      default:
-        this.fm = FileManager.local()
-        this.baseDir = this.fm.documentsDirectory()
-
-    }
+    this.initStorage()
 
     // ルート（WF_Data固定）
     this.root = this.fm.joinPath(
@@ -50,6 +34,30 @@ module.exports = class WF_StorageEngine {
     this.profilesFile = this.fm.joinPath(this.appRoot, "profiles.json")
 
     this._ensureDirs()
+  }
+
+  // =========================
+  // initStorage
+  // =========================
+  initStorage(){
+
+    switch (this.storageType) {
+
+      case "icloud":
+        this.fm = FileManager.iCloud()
+        this.baseDir = this.fm.documentsDirectory()
+        break
+
+      case "bookmark":
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.bookmarkedPath("Scriptable")
+        break
+
+      default:
+        this.fm = FileManager.local()
+        this.baseDir = this.fm.documentsDirectory()
+
+    }
   }
 
   // =========================
