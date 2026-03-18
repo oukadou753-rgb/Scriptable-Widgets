@@ -145,10 +145,7 @@ module.exports = class WF_CoreBase {
     if (!this.notification) return
 
     const list = data?.notifications
-    if (!Array.isArray(list) || list.length === 0) {
-      console.log("NO NOTIFICATIONS")
-      return
-    }
+    if (!Array.isArray(list) || list.length === 0) return
 
     for (const n of list) {
 
@@ -215,8 +212,6 @@ module.exports = class WF_CoreBase {
       ...(notif?.userInfo || {}),
       ...(query || {})
     }
-
-    console.log("Notification tapped: " + JSON.stringify(info))
 
     // =========================
     // 共通処理
