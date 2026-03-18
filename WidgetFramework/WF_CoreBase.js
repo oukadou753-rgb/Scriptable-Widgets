@@ -147,7 +147,11 @@ module.exports = class WF_CoreBase {
 
     for (const n of list) {
       if (n.when) {
-        await this.notification.notifyOnce(n.id, n)
+        await this.notification.notifyOnce(
+          n.id,
+          n,
+          n.cooldown
+        )
       }
       if (n.scheduleAt) {
         await this.notification.schedule(n.id, new Date(n.scheduleAt), n)
