@@ -138,6 +138,10 @@ module.exports = class WF_CoreBase {
     return null
   }
 
+  async handleNotifications(ctx) {
+    // App / Widgetでオーバーライド
+  }
+
 }
 
 function mixinCore(target, core) {
