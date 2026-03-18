@@ -15,7 +15,7 @@ module.exports = class WF_NotificationManager {
     this.storage = storage
 
     this.key = "wf_notifications"
-    this.history = this.storage.readJSON(this.key) || 
+    this.history = this.storage.readJSON(this.key) || {}
   }
 
   // =========================
