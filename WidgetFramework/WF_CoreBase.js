@@ -74,6 +74,7 @@ module.exports = class WF_CoreBase {
         ).fetchAll(this.appConfig.api)
 
     const transformContext = {
+      appId: this.appId,
       config: configData,
       values: configData.values,
       location,
