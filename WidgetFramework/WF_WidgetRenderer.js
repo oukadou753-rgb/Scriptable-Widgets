@@ -15,7 +15,7 @@ module.exports = class WF_WidgetRenderer {
 
   constructor(appId, storageType) {
     this.appId = appId
-    this.storageType = storageType || "local"
+    this.storageType = storageType
 
     this.fontCache = {}
     this.styleCache = {}
