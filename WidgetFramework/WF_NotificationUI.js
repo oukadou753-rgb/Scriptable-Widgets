@@ -135,9 +135,7 @@ module.exports = {
         detailTable.cellSpacing = 2
 
         const json = JSON.stringify(item, null, "\t")
-        const count = Object.keys(item).flat().length + 2
-
-        const lines = json.split("\n")
+        const lines = json.match(/\n/g).length + 2
 
         const row = new UITableRow()
         row.dismissOnSelect = false
@@ -152,11 +150,11 @@ module.exports = {
         const t = row.addText(json)
 
         // 見た目調整
-        t.titleFont = Font.systemFont(14)
+        t.titleFont = Font.systemFont(16)
         t.widthWeight = 100
 
         // 高さ固定
-        row.height = 14 * count * 1.4
+        row.height = 16 * lines * 1.4
 
         detailTable.addRow(row)
 
