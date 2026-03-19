@@ -40,6 +40,7 @@ module.exports = class WF_AppCore {
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
     this.notification = new WF_NotificationManager(this.appId, this.storage)
+    this.notificationUI = WF_NotificationUI
 
     const core = new WF_CoreBase(appInfo, appConfig, moduleCache)
     WF_CoreBase.mixinCore(this, core)
@@ -93,24 +94,7 @@ module.exports = class WF_AppCore {
       ],
       { title: "Main Menu" }
     )
-const NotificationUI = importModule("WF_NotificationUI")
-
-// どこかのメニューに追加
-{
-  title: "Notifications",
-  action: async (core) => {
-    await NotificationUI.showMenu(core)
-  }
-}
-    this.menu.register(
-      "Notifications",
-      [
-        { label: "Edit", action: () => this.editConfig() },
-        { label: "Reset", action: () => this.resetConfig() },
-      ],
-      { title: "Notifications" }
-    )
-
+c
     this.menu.register(
       "Notifications",
       [
@@ -122,6 +106,15 @@ const NotificationUI = importModule("WF_NotificationUI")
           label: "履歴一覧",
           action: () => NotificationUI.showHistory(this)
         }
+      ],
+      { title: "Notifications" }
+    )
+
+    this.menu.register(
+      "Notifications",
+      [
+        { label: "Edit", action: () => this.editConfig() },
+        { label: "Reset", action: () => this.resetConfig() },
       ],
       { title: "Notifications" }
     )
