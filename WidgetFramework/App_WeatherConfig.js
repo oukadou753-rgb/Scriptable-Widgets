@@ -9,7 +9,7 @@
 // Constat
 // ======================
 const APP_VERSION = "2.0.0"
-const DEFAULT_STRAGE_TYPE = "icloud" // "icloud", "local", "bookmark"
+const DEFAULT_STRAGE_TYPE = "local" // "icloud", "local", "bookmark"
 
 // ======================
 // Color
@@ -429,28 +429,28 @@ const currentDataBlockSmall = [
 
 // CurrentData Details Block 1
 const currentDataBlock1 = [
-  { size: new Size(140, 0), padding: pos(0, 0, 0, -10), justify: "center",
+  { size: new Size(135, 0), padding: pos(0, 0, 0, -5), justify: "center",
     h: [
-      textHelper("{{current_pressure}}", { base: "dataText", fontSize: 50, color: "{{current_pressureColor}}" })
+      textHelper("{{current_pressure}}", { base: "dataText", fontSize: 45, color: "{{current_pressureColor}}" })
     ]
   }
 ]
 
 const currentDataBlock2 = [
-  { size: new Size(120, 0),
+  { size: new Size(125, 0),
     v: [
       { size: new Size(0, 25), justify: "center", spacing: 2,
         h: [
           textHelper("{{current_temp}}", { base: "dataExtraLargeText", color: COLORS.extra.temp }),
           textHelper("°C", { base: "dataText", color: COLORS.extra.temp }),
-          { spacer: 10 },
+          { spacer: 5 },
           textHelper("{{current_humidity}}", { base: "dataExtraLargeText", color: COLORS.extra.humidity }),
           textHelper("％", { base: "dataText", color: COLORS.extra.humidity })
         ]
       },
       {
         h: [
-          { size: new Size(60, 0), justify: "start",
+          { size: new Size(60, 0),
             v: [
               textHelper("不快指数：", "columnText"),
               textHelper("降水確率：", "columnText"),
@@ -724,7 +724,7 @@ module.exports = {
         header: headerBlock,
         body: [
           ...currentDataBlockSmall,
-          { justify: "center", show: "{{ui_isMediumUp}}",
+          { justify: "space-between", show: "{{ui_isMediumUp}}",
             h: [
               ...currentDataBlock1,
               ...currentDataBlock2
@@ -898,19 +898,6 @@ module.exports = {
     // notifications
     const notifications = [
 //       {
-//         id: appId + "-" + formatTime(new Date(), "HH"),
-//         delay: 5000,
-//         title: "title",
-//         subtitle: "subtitle",
-//         body: "body",
-//         cooldown: 3*60*1000,
-//         meta: {
-//           action: "openProfile",
-//           profile: "default",
-//           widgetFamily: "large"
-//         }
-//       },
-//       {
 //         id: "rain_alert3",
 //         delay: 10000,
 //         title: "タイトル",
@@ -924,12 +911,13 @@ module.exports = {
 //       }
     ]
 
-// const notifications = hours.map((h, i) => ({
-//   id: `forecast_${i}_${h.time_epoch}`,
-//   scheduleAt: new Date(h.time_epoch * 1000),
-//   title: "予報",
-//   body: `${h.temp_c}°`
-// }))
+//     const notifications = hours.map((h, i) => ({
+//       id: `forecast_${i}_${h.time_epoch}`,
+//       scheduleAt: new Date(h.time_epoch * 1000),
+//       title: "予報",
+//       body: `${h.temp_c}°`
+//     }))
+
     // メタ情報
     const meta = {
       header: {
