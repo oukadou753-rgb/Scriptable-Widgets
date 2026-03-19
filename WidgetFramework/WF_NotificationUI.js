@@ -40,17 +40,7 @@ module.exports = {
     } else {
       list = core.notification.getScheduled()
     }
-/*
-let list = core.notification.list()
 
-if (!Array.isArray(list)) list = []
-
-if (this.mode === "history") {
-  list = list.filter(v => v.status === "sent")
-} else {
-  list = list.filter(v => v.status === "pending")
-}
-*/
     if (!Array.isArray(list)) list = []
 
     // =========================
@@ -74,7 +64,7 @@ if (this.mode === "history") {
       await this.createTable(table, core)
     }
 
-    const reloadBtn = tabRow.addButton("↺")
+    const reloadBtn = tabRow.addButton("更新")
     reloadBtn.onTap = async () => {
       await this.createTable(table, core)
     }
@@ -86,7 +76,7 @@ if (this.mode === "history") {
     // =========================
     const countRow = new UITableRow()
     const countText = countRow.addText(`件数: ${list.length}`)
-    countText.titleFont = Font.regularMonospacedSystemFont(14)
+    countText.titleFont = Font.systemFont(14)
     countText.rightAligned()
     table.addRow(countRow)
 
@@ -95,7 +85,8 @@ if (this.mode === "history") {
     // =========================
     if (list.length === 0) {
       const emptyRow = new UITableRow()
-      emptyRow.addText("通知はありません")
+      const emptyText = emptyRow.addText("通知はありません")
+      emptyText.titleFont = Font.systemFont(14)
       table.addRow(emptyRow)
     }
 
@@ -140,10 +131,12 @@ if (this.mode === "history") {
       row.onSelect = async () => {
 
         const detailTable = new UITable()
-        // detailTable.showSeparators = true
+        detailTable.showSeparators = true
         detailTable.cellSpacing = 2
 
-        const json = JSON.stringify(item, null, 2)
+        const json = JSON.stringify(item, null, "\t")
+        const count = Object.keys(item).flat().length + 2
+
         const lines = json.split("\n")
 
         const row = new UITableRow()
@@ -156,14 +149,14 @@ if (this.mode === "history") {
           `body: ${item.body}\n` +
           `time: ${this.formatDate(item.fireAt || item.lastSent)}`
 
-        const t = row.addText(text)
+        const t = row.addText(json)
 
         // 見た目調整
         t.titleFont = Font.systemFont(14)
         t.widthWeight = 100
 
         // 高さ固定
-        row.height = 16 * 7 * 1.4
+        row.height = 14 * count * 1.4
 
         detailTable.addRow(row)
 
@@ -198,7 +191,7 @@ if (this.mode === "history") {
   // =========================
   formatDate(ts) {
     const d = new Date(ts)
-    return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`
+    return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`
   },
 
   // =========================
