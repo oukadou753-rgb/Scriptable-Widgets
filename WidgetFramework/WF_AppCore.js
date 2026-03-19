@@ -87,6 +87,7 @@ module.exports = class WF_AppCore {
       "Main",
       [
         { label: "Preview", next: "Preview" },
+        { label: "Notif Manage", next: "Notifications" },
         { label: "Config Manage", next: "Config" },
         { label: "Snapshot Manage", next: "Snapshot" },
         { label: "Profile Manage", action: () => this.manageProfiles() },
