@@ -111,15 +111,6 @@ module.exports = class WF_AppCore {
     )
 
     this.menu.register(
-      "Notifications",
-      [
-        { label: "Edit", action: () => this.editConfig() },
-        { label: "Reset", action: () => this.resetConfig() },
-      ],
-      { title: "Notifications" }
-    )
-
-    this.menu.register(
       "Preview",
       [
         { label: "Small", action: () => this.preview("small") },
