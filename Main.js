@@ -103,6 +103,7 @@ const Main = {
 
         const WF_MenuEngine = moduleLoader.load(`${moduleDir}WF_MenuEngine`)
         const WF_ConfigUI = moduleLoader.load(`${moduleDir}WF_ConfigUI`)
+        const WF_NotificationUI = moduleLoader.load(`${moduleDir}WF_NotificationUI`)
 
         const WF_AppCore = moduleLoader.load(`${moduleDir}WF_AppCore`)
 
@@ -117,6 +118,7 @@ const Main = {
           WF_ConfigUI,
           WF_DataProvider,
           WF_NotificationManager,
+          WF_NotificationUI,
           WF_CoreBase
         }
 
