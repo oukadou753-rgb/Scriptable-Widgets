@@ -39,8 +39,10 @@ module.exports = class WF_AppCore {
     this.appConfig = appConfig
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
+
     this.notification = new WF_NotificationManager(this.appId, this.storage)
     this.notificationUI = WF_NotificationUI
+    this.notification.syncStatus()
 
     const core = new WF_CoreBase(appInfo, appConfig, moduleCache)
     WF_CoreBase.mixinCore(this, core)
@@ -87,40 +89,13 @@ module.exports = class WF_AppCore {
       "Main",
       [
         { label: "Preview", next: "Preview" },
-        { label: "Notif Manage", next: "Notifications" },
-        { label: "Notif Manage 2", next: "Notifications 2" },
+        { label: "Notif Manage", action: () => this.openNotifications() },
         { label: "Config Manage", next: "Config" },
         { label: "Snapshot Manage", next: "Snapshot" },
         { label: "Profile Manage", action: () => this.manageProfiles() },
         { label: "About", action: () => this.showAbout() }
       ],
       { title: "Main Menu" }
-    )
-
-    this.menu.register(
-      "Notifications",
-      [
-        {
-          label: "Open",
-          action: () => this.openNotifications()
-        }
-      ],
-      { title: "Notifications" }
-    )
-
-    this.menu.register(
-      "Notifications 2",
-      [
-        {
-          label: "予定一覧",
-          action: () => this.notificationUI.showScheduled(this)
-        },
-        {
-          label: "履歴一覧",
-          action: () => this.notificationUI.showHistory(this)
-        }
-      ],
-      { title: "Notifications 2" }
     )
 
     this.menu.register(
@@ -157,7 +132,7 @@ module.exports = class WF_AppCore {
 
   async openNotifications() {
     try {
-      await this.notificationUI.showMenu(this)
+      await this.notificationUI.present(this)
 
       return true
 
