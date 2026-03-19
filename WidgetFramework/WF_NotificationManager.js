@@ -18,10 +18,10 @@ module.exports = class WF_NotificationManager {
   // Public
   // =========================
 
-  /**
-   * 一度だけ通知（重複防止）
-   * payload: { id, title, subtitle?, body, delay?, cooldown?, meta? }
-   */
+  // =========================
+  // 一度だけ通知（重複防止）
+  // payload: { id, title, subtitle?, body, delay?, cooldown?, meta? }
+  // =========================
   async notifyOnce(payload) {
     if (!payload?.id) throw new Error("notifyOnce: payload.id is required")
 
@@ -47,9 +47,9 @@ module.exports = class WF_NotificationManager {
     return true
   }
 
-  /**
-   * 即時通知（delay があれば予約として扱う）
-   */
+  // =========================
+  // 即時通知（delay があれば予約として扱う）
+  // =========================
   async notify(payload) {
     if (payload.delay) {
       const fireDate = new Date(Date.now() + payload.delay)
@@ -60,9 +60,9 @@ module.exports = class WF_NotificationManager {
     return true
   }
 
-  /**
-   * 予約通知
-   */
+  // =========================
+  // 予約通知
+  // =========================
   async schedule(id, date, payload) {
     if (!id) throw new Error("schedule: id is required")
     if (!payload) throw new Error("schedule: payload is required")
@@ -84,7 +84,6 @@ module.exports = class WF_NotificationManager {
     await n.schedule()
 
     this.history[id] = {
-      lastSent: Date.now(),
       fireAt: date.getTime(),
       status: "pending",
       title: payload.title,
@@ -97,20 +96,30 @@ module.exports = class WF_NotificationManager {
     return true
   }
 
-  /**
-   * 削除（予約含む）
-   */
+  // =========================
+  // 削除（予約含む）
+  // =========================
   async remove(id) {
-    await Notification.removePending([id])
-    await Notification.removeDelivered([id])
+    if (!id) return false
 
-    delete this.history[id]
-    this._save()
+    try {
+      await Notification.removePending([id])
+      await Notification.removeDelivered([id])
+    } catch (e) {
+      // Scriptable側の失敗は無視
+    }
+
+    if (this.history[id]) {
+      delete this.history[id]
+      this._save()
+    }
+
+    return true
   }
 
-  /**
-   * 全削除
-   */
+  // =========================
+  // 全削除
+  // =========================
   async clearAll() {
     const ids = Object.keys(this.history)
     await Notification.removePending(ids)
@@ -120,22 +129,94 @@ module.exports = class WF_NotificationManager {
     this._save()
   }
 
-  /**
-   * UI 用一覧取得
-   */
+  // =========================
+  // UI 用一覧取得
+  // =========================
   list() {
-    return this.history
+    if (!this.history || typeof this.history !== "object") return []
+
+    return Object.entries(this.history).map(([id, v]) => ({
+      id,
+      title: v?.title ?? "",
+      subtitle: v?.subtitle ?? "",
+      body: v?.body ?? "",
+      status: v?.status ?? "unknown",
+      fireAt: v?.fireAt ?? null,
+      lastSent: v?.lastSent ?? null,
+      meta: v?.meta ?? {}
+    }))
+  }
+
+  // =========================
+  // getScheduled
+  // =========================
+  getScheduled() {
+    return this.list().filter(v => v.status === "pending")
+  }
+
+  // =========================
+  // getHistory
+  // =========================
+  getHistory() {
+    return this.list().filter(v => v.status === "sent")
+  }
+
+  // =========================
+  // refresh
+  // =========================
+  refresh() {
+    this.history = this._load()
+    this.syncStatus()
+  }
+
+  // =========================
+  // syncStatus
+  // =========================
+  syncStatus() {
+    const now = Date.now()
+    let changed = false
+
+    for (const id in this.history) {
+      const item = this.history[id]
+
+      if (item.status === "pending" && item.fireAt && item.fireAt <= now) {
+        item.status = "sent"
+        item.lastSent = item.fireAt
+        changed = true
+      }
+    }
+
+    if (changed) this._save()
   }
 
   // =========================
   // Private
   // =========================
 
+  // =========================
+  // _send
+  // =========================
   async _send(payload) {
     const n = this._createNotification(payload)
     await n.schedule()
+
+    if (payload?.id) {
+      this.history[payload.id] = {
+        lastSent: Date.now(),
+        status: "sent",
+        title: payload.title,
+        subtitle: payload.subtitle,
+        body: payload.body,
+        meta: payload.meta
+      }
+
+      this._save()
+    }
   }
 
+  // =========================
+  // _createNotification
+  // =========================
   _createNotification(payload) {
     const n = new Notification()
 
@@ -162,10 +243,21 @@ module.exports = class WF_NotificationManager {
     return n
   }
 
+  // =========================
+  // _load
+  // =========================
   _load() {
-    return this.storage.readJSON(this.key) || {}
+    try {
+      const data = this.storage.readJSON(this.key)
+      return data && typeof data === "object" ? data : {}
+    } catch {
+      return {}
+    }
   }
 
+  // =========================
+  // _save
+  // =========================
   _save() {
     this.storage.writeJSON(this.key, this.history)
   }
