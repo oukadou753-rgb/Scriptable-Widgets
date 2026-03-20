@@ -234,6 +234,9 @@ module.exports = {
     timeText.subtitleFont = Font.systemFont(14)
     table.addRow(timeRow)
 
+    const blankRow = new UITableRow()
+    table.addRow(blankRow)
+
     // 削除
     const deleteRow = new UITableRow()
     const deleteBtn = deleteRow.addButton("削除")
@@ -274,8 +277,8 @@ module.exports = {
   // フッター（＋一括削除）
   // =========================
   renderFooter(table, core) {
-    const spaceRow = new UITableRow()
-    table.addRow(spaceRow)
+    const blankRow = new UITableRow()
+    table.addRow(blankRow)
 
     const row = new UITableRow()
 
