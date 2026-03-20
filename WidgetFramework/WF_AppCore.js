@@ -24,6 +24,7 @@ module.exports = class WF_AppCore {
       WF_DataProvider,
       WF_NotificationManager,
       WF_NotificationUI,
+      WF_NotificationHandlers,
       WF_CoreBase
     } = moduleCache
 
@@ -43,6 +44,8 @@ module.exports = class WF_AppCore {
     this.notification = new WF_NotificationManager(this.appId, this.storage)
     this.notificationUI = WF_NotificationUI
     this.notification.syncStatus()
+
+    this.notificationHandlers = modules.notificationHandlers(this)
 
     const core = new WF_CoreBase(appInfo, appConfig, moduleCache)
     WF_CoreBase.mixinCore(this, core)
