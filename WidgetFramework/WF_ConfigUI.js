@@ -152,7 +152,11 @@ module.exports = {
       const a = new Alert()
       a.title = "Select Profile"
 
-      list.forEach(p => a.addAction(p))
+      list.forEach(o => {
+        const mark = (o === current) ? "● " : ""
+        a.addAction(mark + String(o))
+      })
+
       a.addCancelAction("Cancel")
 
       const r = await a.present()
