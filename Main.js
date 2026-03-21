@@ -4,12 +4,12 @@
 /**
  * DevWidget
  * UTF-8 日本語コメント
- * 2026/03/21 09:00
+ * 2026/03/21 21:30
  */
 const DEFAULT_APP_ID = "Weather"
 const DEFAULT_STRAGE_TYPE = "local"
 
-const APP_DEV_MODE = true
+const APP_DEV_MODE = false
 const APP_ID = args.widgetParameter || DEFAULT_APP_ID
 const APP_VERSION = "1.0.0"
 const APP_CONFIG = `App_${APP_ID}Config`
@@ -62,7 +62,7 @@ module.exports = {
 
     } finally {
 
-      this.terminate(appInfo)
+      this.terminate()
 
     }
 
@@ -88,6 +88,7 @@ module.exports = {
           try {
             obj[key] = moduleLoader.load(path)
           } catch(e) {
+            throw new Error(`Module not found: ${key}`)
             obj[key] = importModule(key)
           }
         }
@@ -117,7 +118,7 @@ module.exports = {
   // =========================
   // terminate
   // =========================
-  terminate(appInfo) {
+  terminate() {
 
     Script.complete()
 
