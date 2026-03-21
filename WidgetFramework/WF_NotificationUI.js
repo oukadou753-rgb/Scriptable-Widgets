@@ -10,8 +10,8 @@ module.exports = {
   // =========================
   // 状態
   // =========================
-  view: "list",         // list / detail
-  mode: "scheduled",    // scheduled / history
+  view: "list",
+  mode: "scheduled",
   currentItem: null,
   table: null,
 
@@ -25,7 +25,6 @@ module.exports = {
 
     this.table = table
 
-    // ★初期化
     this.view = "list"
     this.currentItem = null
 
@@ -33,7 +32,6 @@ module.exports = {
       this.mode = options.mode
     }
 
-    // ★ここ変更（await削除＋状態セット）
     if (options.openId) {
       const item = core.notification
         .getUIList("all")
@@ -50,7 +48,7 @@ module.exports = {
   },
 
   // =========================
-  // createTable（司令塔）
+  // createTable
   // =========================
   async createTable(table, core) {
     table.removeAllRows()
@@ -74,6 +72,50 @@ module.exports = {
   },
 
   // =========================
+  // 共通部品
+  // =========================
+  createRow() {
+    const row = new UITableRow()
+    row.dismissOnSelect = false
+    row.cellSpacing = 10
+    return row
+  },
+
+  createKeyValueRow(label, value) {
+    const row = this.createRow()
+
+    const left = row.addText(label)
+    left.widthWeight = 70
+    left.titleFont = Font.semiboldSystemFont(16)
+
+    const right = row.addText(String(value))
+    right.widthWeight = 30
+    right.rightAligned()
+    right.titleFont = Font.systemFont(12)
+
+    return { row, left, right }
+  },
+
+  createActionRow(buttons) {
+    const row = this.createRow()
+
+    for (const btn of buttons) {
+      const b = row.addButton(btn.label)
+      if (btn.onTap) b.onTap = btn.onTap
+      if (btn.dismiss) b.dismissOnTap = true
+    }
+
+    return row
+  },
+
+  createSpacer(height = 12) {
+    const row = new UITableRow()
+    row.height = height
+    row.dismissOnSelect = false
+    return row
+  },
+
+  // =========================
   // データ取得
   // =========================
   getList(core) {
@@ -84,234 +126,196 @@ module.exports = {
   },
 
   // =========================
-  // タブUI
+  // タブ
   // =========================
   renderTabs(table, core) {
-    const row = new UITableRow()
-
-    const scheduledBtn = row.addButton(
-      this.mode === "scheduled" ? "●予定" : "予定"
-    )
-    scheduledBtn.onTap = async () => {
-      this.mode = "scheduled"
-      await this.reload(table, core)
-    }
-
-    const historyBtn = row.addButton(
-      this.mode === "history" ? "●履歴" : "履歴"
-    )
-    historyBtn.onTap = async () => {
-      this.mode = "history"
-      await this.reload(table, core)
-    }
-
-    const reloadBtn = row.addButton("↺")
-    reloadBtn.onTap = async () => {
-      await this.reload(table, core)
-    }
-
-    table.addRow(row)
+    table.addRow(this.createActionRow([
+      {
+        label: this.mode === "scheduled" ? "●予定" : "予定",
+        onTap: async () => {
+          this.mode = "scheduled"
+          await this.reload(core)
+        }
+      },
+      {
+        label: this.mode === "history" ? "●履歴" : "履歴",
+        onTap: async () => {
+          this.mode = "history"
+          await this.reload(core)
+        }
+      },
+      {
+        label: "↺",
+        onTap: async () => {
+          await this.reload(core)
+        }
+      }
+    ]))
   },
 
   // =========================
   // 件数
   // =========================
   renderCount(table, list) {
-    const row = new UITableRow()
-    const text = row.addText(`件数: ${list.length}`)
-    text.titleFont = Font.systemFont(14)
-    text.rightAligned()
+    const { row, right } =
+      this.createKeyValueRow("件数", list.length)
+
+    right.rightAligned()
     table.addRow(row)
   },
 
   // =========================
-  // リスト描画
+  // リスト
   // =========================
   renderList(table, list, core) {
+
     if (!Array.isArray(list) || list.length === 0) {
-      const row = new UITableRow()
-      const rowText = row.addText("通知はありません")
-      rowText.titleFont = Font.semiboldSystemFont(16)
+      const { row } = this.createKeyValueRow("状態", "通知はありません")
       table.addRow(row)
       return
     }
 
     for (const item of list) {
-      table.addRow(this.createRow(item, core))
+      const row = this.createRow()
+      row.height = 60
+
+      const left = row.addText(
+        item.title || "",
+        `${item.subtitle || ""} ${item.body || ""}`
+      )
+      left.widthWeight = 70
+      left.titleFont = Font.semiboldSystemFont(16)
+      left.subtitleFont = Font.systemFont(14)
+
+      const right = row.addText(
+        this.formatTimeAgo(item.date),
+        this.formatDate(item.date)
+      )
+      right.widthWeight = 30
+      right.rightAligned()
+      right.titleFont = Font.systemFont(14)
+      right.subtitleFont = Font.systemFont(12)
+
+      if (item.isExpired) {
+        left.titleColor = Color.gray()
+      }
+
+      row.onSelect = async () => {
+        this.view = "detail"
+        this.currentItem = item
+        await this.reload(core)
+      }
+
+      table.addRow(row)
     }
   },
 
   // =========================
-  // 行生成
-  // =========================
-  createRow(item, core) {
-    const row = new UITableRow()
-    row.height = 60
-    row.dismissOnSelect = false
-    row.cellSpacing = 10
-
-    const title = item.title || ""
-    const subtitle = item.subtitle || ""
-    const body = item.body || ""
-
-    const left = row.addText(
-      `${title}`,
-      `${subtitle} ${body}`
-    )
-    left.widthWeight = 100
-    left.titleFont = Font.semiboldSystemFont(16)
-    left.subtitleFont = Font.systemFont(14)
-
-    const right = row.addText(
-      this.formatTimeAgo(item.date),
-      this.formatDate(item.date)
-    )
-    right.widthWeight = 25
-    right.rightAligned()
-    right.titleFont = Font.semiboldSystemFont(14)
-    right.subtitleFont = Font.systemFont(12)
-
-    // 期限切れ表示
-    if (item.isExpired) {
-      left.titleColor = Color.gray()
-    }
-
-    row.onSelect = async () => {
-      this.view = "detail"
-      this.currentItem = item
-      await this.reload(this.table, core)
-    }
-
-    return row
-  },
-
-  // =========================
-  // renderDetail
+  // 詳細
   // =========================
   renderDetail(table, core) {
     const item = this.currentItem
     if (!item) return
 
     // 戻る
-    const backRow = new UITableRow()
-    const backBtn = backRow.addButton("← 一覧")
-    backBtn.onTap = async () => {
-      this.view = "list"
-      this.currentItem = null
-      await this.reload(this.table, core)
-    }
-    table.addRow(backRow)
+    table.addRow(this.createActionRow([
+      {
+        label: "← 一覧",
+        onTap: async () => {
+          this.view = "list"
+          this.currentItem = null
+          await this.reload(core)
+        }
+      }
+    ]))
 
-    // タイトル
-    const titleRow = new UITableRow()
-    const titletext = titleRow.addText("Title", item.title || "")
-    titletext.titleFont = Font.systemFont(12)
-    titletext.subtitleFont = Font.semiboldSystemFont(16)
-    table.addRow(titleRow)
+    // 内容
+    table.addRow(this.createKeyValueRow("Title", item.title).row)
 
-    // 本文
     if (item.body) {
-      const row = new UITableRow()
-      const rowText = row.addText("Body", item.body)
-      rowText.titleFont = Font.systemFont(12)
-      rowText.subtitleFont = Font.systemFont(14)
-      table.addRow(row)
+      table.addRow(this.createKeyValueRow("Body", item.body).row)
     }
 
-    // 状態
-    const statusRow = new UITableRow()
-    const statusText = statusRow.addText("状態",
-      item.status === "pending" ? "予約中" : "送信済み"
-    )
-    statusText.titleFont = Font.systemFont(12)
-    statusText.subtitleFont = Font.systemFont(14)
-    table.addRow(statusRow)
+    table.addRow(this.createKeyValueRow(
+      "状態",
+      item.isPending ? "予約中" : "送信済み"
+    ).row)
 
-    // 時刻
-    const timeRow = new UITableRow()
-    const timeText = timeRow.addText("時刻", this.formatDate(item.date))
-    timeText.titleFont = Font.systemFont(12)
-    timeText.subtitleFont = Font.systemFont(14)
-    table.addRow(timeRow)
-
-    const blankRow = new UITableRow()
-    table.addRow(blankRow)
+    table.addRow(this.createKeyValueRow(
+      "時刻",
+      this.formatDate(item.date)
+    ).row)
 
     // 削除
-    const deleteRow = new UITableRow()
-    const deleteBtn = deleteRow.addButton("削除")
-    deleteBtn.onTap = async () => {
-      await core.notification.remove(item.id)
+    table.addRow(this.createActionRow([
+      {
+        label: "削除",
+        onTap: async () => {
+          await core.notification.remove(item.id)
+          this.view = "list"
+          await this.reload(core)
+        }
+      }
+    ]))
 
-      this.view = "list"
-      this.currentItem = null
-
-      await this.reload(this.table, core)
-    }
-    table.addRow(deleteRow)
+    table.addRow(this.createSpacer(16))
 
     // スヌーズ
     if (item.isPending) {
-      const snoozeRow = new UITableRow()
-
-      const plus5 = snoozeRow.addButton("+5分")
-      plus5.onTap = async () => {
-        await this.snooze(item, core, 5 * 60 * 1000)
-      }
-
-      const plus60 = snoozeRow.addButton("+1時間")
-      plus60.onTap = async () => {
-        await this.snooze(item, core, 60 * 60 * 1000)
-      }
-
-      const custom = snoozeRow.addButton("カスタム")
-      custom.onTap = async () => {
-        await this.snoozeCustom(item, core)
-      }
-
-      table.addRow(snoozeRow)
+      table.addRow(this.createActionRow([
+        {
+          label: "+5分",
+          onTap: async () => {
+            await this.snooze(item, core, 5 * 60 * 1000)
+          }
+        },
+        {
+          label: "+1時間",
+          onTap: async () => {
+            await this.snooze(item, core, 60 * 60 * 1000)
+          }
+        },
+        {
+          label: "カスタム",
+          onTap: async () => {
+            await this.snoozeCustom(item, core)
+          }
+        }
+      ]))
     }
   },
 
   // =========================
-  // フッター（＋一括削除）
+  // フッター
   // =========================
   renderFooter(table, core) {
-    const blankRow = new UITableRow()
-    table.addRow(blankRow)
+    table.addRow(this.createSpacer(16))
 
-    const row = new UITableRow()
+    table.addRow(this.createActionRow([
+      {
+        label: "全削除",
+        onTap: async () => {
+          const a = new Alert()
+          a.title = "全削除しますか？"
+          a.addDestructiveAction("削除")
+          a.addCancelAction("キャンセル")
 
-    const clearBtn = row.addButton("全削除")
-    clearBtn.onTap = async () => {
-      const alert = new Alert()
-      alert.title = "全削除しますか？"
-      alert.message = "すべての通知（履歴・予定）を削除します"
+          const r = await a.presentAlert()
+          if (r === -1) return
 
-      alert.addDestructiveAction("削除")
-      alert.addCancelAction("キャンセル")
-
-      const res = await alert.presentAlert()
-      if (res === -1) return
-
-      await core.notification.clearAll()
-      await this.reload(null, core)
-    }
-
-    const closeBtn = row.addButton("Close")
-    closeBtn.dismissOnTap = true
-
-    table.addRow(row)
+          await core.notification.clearAll()
+          await this.reload(core)
+        }
+      },
+      { label: "Close", dismiss: true }
+    ]))
   },
 
   // =========================
   // reload
   // =========================
-  async reload(table, core) {
-    const t = table || this.table
-    if (!t) return
-
-    await this.createTable(t, core)
+  async reload(core) {
+    await this.createTable(this.table, core)
   },
 
   // =========================
@@ -328,54 +332,27 @@ module.exports = {
     )
 
     this.view = "list"
-    this.currentItem = null
-
-    await this.reload(this.table, core)
+    await this.reload(core)
   },
 
-  // =========================
-  // snooze
-  // =========================
   async snoozeCustom(item, core) {
-    const alert = new Alert()
-    alert.title = "スヌーズ（分）"
+    const a = new Alert()
+    a.title = "スヌーズ（分）"
+    a.addTextField("例: 10", "5")
+    a.addAction("OK")
+    a.addCancelAction("キャンセル")
 
-    alert.addTextField("例: 10", "5")
+    const r = await a.presentAlert()
+    if (r === -1) return
 
-    alert.addAction("OK")
-    alert.addCancelAction("キャンセル")
+    const minutes = parseInt(a.textFieldValue(0), 10)
+    if (!minutes || minutes <= 0) return
 
-    const res = await alert.presentAlert()
-    if (res === -1) return
-
-    const input = alert.textFieldValue(0)
-    const minutes = parseInt(input, 10)
-
-    // バリデーション
-    if (isNaN(minutes) || minutes <= 0) {
-      const err = new Alert()
-      err.title = "無効な値"
-      err.message = "1以上の数字を入力してください"
-      err.addAction("OK")
-      await err.presentAlert()
-      return
-    }
-
-    const diffMs = minutes * 60 * 1000
-
-    const newTime = item.date + diffMs
-
-    await core.notification.schedule(
-      item.id,
-      new Date(newTime),
-      item
-    )
-
-    await this.reload(this.table, core)
+    await this.snooze(item, core, minutes * 60 * 1000)
   },
 
   // =========================
-  // 時間フォーマット
+  // 時刻
   // =========================
   formatDate(ts) {
     if (!ts) return ""
@@ -383,9 +360,6 @@ module.exports = {
     return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`
   },
 
-  // =========================
-  // 経過時間
-  // =========================
   formatTimeAgo(ts) {
     if (!ts) return ""
 
