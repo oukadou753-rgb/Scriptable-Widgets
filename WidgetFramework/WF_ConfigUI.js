@@ -153,7 +153,7 @@ module.exports = {
       a.title = "Select Profile"
 
       list.forEach(o => {
-        const mark = (o === current) ? "● " : ""
+        const mark = (o === activeProfile) ? "● " : ""
         a.addAction(mark + String(o))
       })
 
