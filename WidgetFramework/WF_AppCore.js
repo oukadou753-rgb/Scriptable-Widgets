@@ -25,6 +25,7 @@ module.exports = class WF_AppCore {
       WF_NotificationManager,
       WF_NotificationUI,
       WF_NotificationHandlers,
+      WF_TableUI,
       WF_CoreBase
     } = moduleCache
 
@@ -35,13 +36,14 @@ module.exports = class WF_AppCore {
     this.storage = new WF_StorageEngine(this.appId, this.storageType)
     this.renderer = new WF_WidgetRenderer(this.appId, this.storageType)
     this.menu = new WF_MenuEngine()
-    this.configUI = WF_ConfigUI
 
     this.appConfig = appConfig
     this.defaultConfig = appConfig.getDefaultConfig()
     this.profile = new WF_ProfileEngine(this.storage, this.defaultConfig)
 
     this.notification = new WF_NotificationManager(this.appId, this.storage)
+    this.configUI = WF_ConfigUI
+    this.tableUI = WF_TableUI
     this.notificationUI = WF_NotificationUI
     this.notification.syncStatus()
 
@@ -166,11 +168,15 @@ module.exports = class WF_AppCore {
       const active = this.profile.getActive()
       const cfg = this.profile.getConfig()
 
-      const newValues = await this.configUI.present(
-        {...cfg},
-        this.profile,
-        active
-      )
+//       const newValues = await this.configUI.present(
+//         {...cfg},
+//         this.profile,
+//         active
+//       )
+
+      const newValues = await this.configUI.present(this, {
+        config: {...cfg}
+      })
 
       return true
 
