@@ -421,25 +421,39 @@ module.exports = class WF_WidgetRenderer {
     // URL
     else if(typeof rawSrc === "string" && rawSrc.startsWith("http")){
 
-      image = await this.fetchImage(rawSrc)
+      try {
+        image = await this.fetchImage(rawSrc)
+      } catch(e) {
+        console.warn("Failed to fetch image from URL: " + rawSrc)
+        return
+      }
 
     }
 
     // SF Symbol
-    else if(typeof rawSrc === "string" && !rawSrc.includes("/")){
+    else if (typeof rawSrc === "string" && !rawSrc.includes("/")) {
 
       const sym = SFSymbol.named(rawSrc)
-      sym.applyFont(Font.systemFont(size))
-
-      image = sym.image
+      if (sym) {
+        sym.applyFont(Font.systemFont(size))
+        image = sym.image
+      } else {
+        console.warn(`SFSymbol not found: ${rawSrc}`)
+        return
+      }
 
     }
 
     // local image
-    else if(typeof rawSrc === "string"){
+    else if (typeof rawSrc === "string" && rawSrc !== "") {
 
       const fm = FileManager.local()
-      image = fm.readImage(rawSrc)
+      if (fm.fileExists(rawSrc)) {
+        image = fm.readImage(rawSrc)
+      } else {
+        console.warn("Local image not found: " + rawSrc)
+        return
+      }
 
     }
 
@@ -667,24 +681,18 @@ module.exports = class WF_WidgetRenderer {
   // resolve
   // =========================
   resolve(key, context) {
-
     if (!key) return undefined
 
-    if (key.includes(".")) {
-      return this.getByPath(context, key)
-    }
+    // ネストパスも対応（将来用）
+    if (key.includes(".")) return this.getByPath(context, key)
 
     const priority = context.item
       ? ["item", "location", "config.values", "data"]
       : ["location", "config.values", "data", "update"]
 
     for (const p of priority) {
-
-      const base = p.includes(".")
-        ? this.getByPath(context, p)
-        : context[p]
-
-      if (base && key in base) {
+      const base = p.includes(".") ? this.getByPath(context, p) : context[p]
+      if (base && Object.prototype.hasOwnProperty.call(base, key)) {
         return base[key]
       }
     }
@@ -694,22 +702,38 @@ module.exports = class WF_WidgetRenderer {
     return undefined
   }
 
+  // =========================
+  // getByPath
+  // =========================
   getByPath(obj, path) {
-    return path.split(".").reduce((o, k) => (o ? o[k] : undefined), obj)
+    if (!obj || !path) return undefined
+    return path.replace(/\[(\d+)\]/g, '.$1')
+              .split('.')
+              .reduce((o, k) => (o ? o[k] : undefined), obj)
   }
 
   // =========================
   // resolveData
   // =========================
   resolveData(expr, context) {
-
-    if (!expr) return null
+    if (expr === null || expr === undefined) return expr
     if (typeof expr !== "string") return expr
-    if (!expr.startsWith("{{")) return expr
 
-    const key = expr.replace(/{{|}}/g, "").trim()
+    // 部分文字列置換も配列やオブジェクトを返さない
+    const fullMatch = expr.match(/^{{\s*(.*?)\s*}}$/)
+    if (fullMatch) {
+      const key = fullMatch[1].trim()
+      const val = this.resolve(key, context)
+      return val !== undefined ? val : ""
+    }
 
-    return this.resolve(key, context)
+    // 文字列中に埋め込みがある場合は文字列化して返す
+    return expr.replace(/{{\s*(.*?)\s*}}/g, (_, key) => {
+      const val = this.resolve(key.trim(), context)
+      if (val === undefined || val === null) return ""
+      if (typeof val === "object") return ""  // 配列やオブジェクトは文字列化せず空文字に
+      return String(val)
+    })
   }
 
   // =========================
@@ -824,22 +848,41 @@ module.exports = class WF_WidgetRenderer {
   // =========================
   // ■ fetchImage
   // =========================
-  async fetchImage(url){
+  async fetchImage(url) {
+    if (!url) return null
 
     const fileName = this.hash(url) + ".png"
     const filePath = this.fm.joinPath(this.imageDir, fileName)
 
-    if(this.fm.fileExists(filePath)){
-      return this.fm.readImage(filePath)
+    // キャッシュが存在する場合は読み込む
+    if (this.fm.fileExists(filePath)) {
+      try {
+        const img = this.fm.readImage(filePath)
+        if (img) return img
+        console.warn("Cached image exists but failed to read: " + filePath)
+      } catch (e) {
+        console.warn("Error reading cached image: " + e)
+      }
     }
 
-    const req = new Request(url)
-    const img = await req.loadImage()
+    // ネットワーク取得
+    try {
+      const req = new Request(url)
+      const img = await req.loadImage()
+      if (img) {
+        try {
+          this.fm.writeImage(filePath, img)
+        } catch (e) {
+          console.warn("Failed to write image cache: " + e)
+        }
+        return img
+      }
+      console.warn("Fetched image is null: " + url)
+    } catch (e) {
+      console.warn("Failed to fetch image from URL: " + url + "\n" + e)
+    }
 
-    this.fm.writeImage(filePath, img)
-
-    return img
-
+    return null
   }
 
   // =========================
